@@ -14,9 +14,10 @@ public final class FxPlayer extends Application {
   public void start(Stage primaryStage) throws Exception {
     primaryStage.setTitle("FxPlayer");
     Parent root = FXMLLoader.load(getResource("player.fxml"));
-    primaryStage.setMinHeight(600);
-    primaryStage.setMinWidth(800);
-    primaryStage.setScene(new Scene(root, 1000, 800));
+    primaryStage.setMinHeight(1000);
+    primaryStage.setMinWidth(1200);
+    primaryStage.setScene(new Scene(root, 1200, 1000));
+    primaryStage.setMaximized(true);
     primaryStage.show();
   }
 
