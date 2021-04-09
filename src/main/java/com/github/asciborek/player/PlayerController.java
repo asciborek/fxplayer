@@ -1,27 +1,48 @@
 package com.github.asciborek.player;
 
+import com.google.inject.Inject;
 import java.net.URL;
-import java.nio.file.Paths;
+import java.util.List;
 import java.util.ResourceBundle;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableView;
+import javafx.scene.input.KeyCombination;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
+import javafx.stage.Popup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class PlayerController implements Initializable{
+public class PlayerController implements Initializable {
+
   private static final Logger LOG = LoggerFactory.getLogger(PlayerController.class);
 
+  private final ExecutorService executorService;
+
+  //JavaFX stuff
+  private static final String EXTENSION_PREFIX = "*";
+  private static final String ADD_SONG_KEY_COMBINATION = "Ctrl + Shift + A";
+  private static final String CLEAR_PLAYLIST_COMBINATION = "Ctrl + Shift + Q";
   private final ObservableList<Track> playlist = FXCollections.observableArrayList();
+  private final ExtensionFilter supportedFilesExtensionFilter = new ExtensionFilter("audio files", fileChooserExtensions());
+
+  @FXML
+  private MenuItem addTrackMenuItem;
+  @FXML
+  private MenuItem clearPlaylistMenuItem;
 
   @FXML
   private TableView<Track> playlistView;
@@ -36,19 +57,41 @@ public class PlayerController implements Initializable{
   @FXML
   private TableColumn<Track, String> filenameColumn;
 
+  @Inject
+  public PlayerController(ExecutorService executorService) {
+    this.executorService = executorService;
+  }
+
   public void initialize(URL url, ResourceBundle resourceBundle) {
     playlistView.setItems(playlist);
     setCellValueFactories();
+    registerKeyCombinations();
   }
 
-  public void clearPlaylist(ActionEvent actionEvent) {
+  public void addTrack() {
+    FileChooser fileChooser = new FileChooser();
+    fileChooser.getExtensionFilters().add(supportedFilesExtensionFilter);
+    var selectedFile = fileChooser.showOpenDialog(new Popup());
+    MetadataUtils.getTrackMetaData(selectedFile)
+        .ifPresent(playlist::add);
+  }
+
+
+  public void addDirectory() {
+    var directoryChooser = new DirectoryChooser();
+    var selectedDirectory = directoryChooser.showDialog(new Popup());
+    CompletableFuture.supplyAsync(new DirectoryTracksProvider(selectedDirectory), executorService)
+        .thenAccept(playlist::addAll);
+  }
+
+  public void clearPlaylist() {
+    LOG.info("Clear playlist. Removed items size: {}", playlist.size());
     playlist.clear();
   }
 
-  public void quit(ActionEvent actionEvent) {
+  public void quit() {
     LOG.info("MenuItem quit event");
     Platform.exit();
-    System.exit(0);
   }
 
   private void setCellValueFactories() {
@@ -57,6 +100,11 @@ public class PlayerController implements Initializable{
     artistColumn.setCellValueFactory(this::getArtistProperty);
     lengthColumn.setCellValueFactory(this::getLengthProperty);
     filenameColumn.setCellValueFactory(this::getFileNameProperty);
+  }
+
+  private void registerKeyCombinations() {
+    addTrackMenuItem.setAccelerator(KeyCombination.keyCombination(ADD_SONG_KEY_COMBINATION));
+    clearPlaylistMenuItem.setAccelerator(KeyCombination.keyCombination(CLEAR_PLAYLIST_COMBINATION));
   }
 
   private StringProperty getTitleProperty(CellDataFeatures<Track, String> cellData) {
@@ -77,6 +125,12 @@ public class PlayerController implements Initializable{
 
   private StringProperty getFileNameProperty(CellDataFeatures<Track, String> cellData) {
     return new SimpleStringProperty(cellData.getValue().getFileName());
+  }
+
+  private List<String> fileChooserExtensions() {
+    return FileExtension.getSupportedExtensions().stream()
+        .map(ext -> EXTENSION_PREFIX + ext)
+        .collect(Collectors.toUnmodifiableList());
   }
 
 }

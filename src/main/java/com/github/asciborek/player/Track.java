@@ -1,23 +1,22 @@
 package com.github.asciborek.player;
 
 import java.nio.file.Path;
+import java.time.Duration;
 
 public final class Track {
 
   private final String title;
   private final String album;
   private final String artist;
-  private final int duration;
-  private final String length;
+  private final Duration duration;
   private final String fileName;
   private final Path filePath;
 
-  public Track(String title, String album, String artist, int duration, Path filePath) {
+  public Track(String title, String album, String artist, Duration duration, Path filePath) {
     this.title = title;
     this.album = album;
     this.artist = artist;
     this.duration = duration;
-    this.length = String.valueOf(duration);
     this.filePath = filePath;
     this.fileName = filePath.getFileName().toString();
   }
@@ -38,12 +37,12 @@ public final class Track {
     return artist;
   }
 
-  public int getDuration() {
+  public Duration getDuration() {
     return duration;
   }
 
   public String getLength() {
-    return length;
+    return String.format("%02d:%02d", duration.toMinutes(), duration.toSeconds());
   }
 
   public String getFileName() {
@@ -59,7 +58,7 @@ public final class Track {
     private String title = "";
     private String album = "";
     private String artist = "";
-    private int duration;
+    private Duration duration;
     private Path filePath;
 
     private TrackBuilder() {}
@@ -83,7 +82,7 @@ public final class Track {
       return this;
     }
 
-    public TrackBuilder withDuration(int duration) {
+    public TrackBuilder withDuration(Duration duration) {
       this.duration = duration;
       return this;
     }
