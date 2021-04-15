@@ -14,7 +14,9 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.Slider;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableView;
@@ -56,6 +58,10 @@ public class PlayerController implements Initializable {
   private TableColumn<Track, String> lengthColumn;
   @FXML
   private TableColumn<Track, String> filenameColumn;
+  @FXML
+  private Label volumeLabel;
+  @FXML
+  private Slider volumeSlider;
 
   @Inject
   public PlayerController(ExecutorService executorService) {
@@ -76,7 +82,6 @@ public class PlayerController implements Initializable {
         .ifPresent(playlist::add);
   }
 
-
   public void addDirectory() {
     var directoryChooser = new DirectoryChooser();
     var selectedDirectory = directoryChooser.showDialog(new Popup());
@@ -93,6 +98,12 @@ public class PlayerController implements Initializable {
     LOG.info("MenuItem quit event");
     Platform.exit();
   }
+
+  public void changeVolume() {
+    volumeLabel.setText(" " + (int)volumeSlider.getValue() + "%");
+    LOG.info("slider value: {}", volumeSlider.getValue());
+  }
+
 
   private void setCellValueFactories() {
     titleColumn.setCellValueFactory(this::getTitleProperty);

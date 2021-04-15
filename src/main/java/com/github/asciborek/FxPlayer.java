@@ -32,7 +32,7 @@ public final class FxPlayer extends Application {
   }
 
   @Override
-  public void stop() throws Exception {
+  public void stop() {
     LOG.info("shutting down application...");
     ExecutorService executorService = injector.getInstance(ExecutorService.class);
     LOG.info("shutting down executorService");

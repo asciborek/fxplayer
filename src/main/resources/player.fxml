@@ -6,6 +6,13 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
 <BorderPane xmlns="http://javafx.com/javafx"
   xmlns:fx="http://javafx.com/fxml"
   fx:controller="com.github.asciborek.player.PlayerController"
@@ -16,7 +23,8 @@
       <Menu text="Music">
         <MenuItem fx:id="addTrackMenuItem" text="Add a Track" onAction="#addTrack"/>
         <MenuItem fx:id="addDirectory" text="Add a Directory" onAction="#addDirectory"/>
-        <MenuItem fx:id="clearPlaylistMenuItem" text="Clear the Playlist" onAction="#clearPlaylist"/>
+        <MenuItem fx:id="clearPlaylistMenuItem" text="Clear the Playlist"
+          onAction="#clearPlaylist"/>
         <MenuItem text="Quit" onAction="#quit"/>
       </Menu>
     </MenuBar>
@@ -33,5 +41,41 @@
       </columns>
     </TableView>
   </center>
+
+  <bottom>
+    <VBox spacing="20">
+      <HBox minHeight="50">
+        <Button minHeight="50" minWidth="50"
+          style="-fx-background-color: white; -fx-border-radius: 2;  -fx-border-color:black;">
+          <graphic>
+            <ImageView>
+              <Image url="@icons/previous.png"/>
+            </ImageView>
+          </graphic>
+        </Button>
+        <Button minHeight="50" minWidth="50"
+          style="-fx-background-color: white; -fx-border-radius: 2;  -fx-border-color:black;">
+          <graphic>
+            <ImageView>
+              <Image url="@icons/play_stop.png"/>
+            </ImageView>
+          </graphic>
+        </Button>
+        <Button minHeight="50" minWidth="50"
+          style="-fx-background-color: white; -fx-border-radius: 2;  -fx-border-color:black;">
+          <graphic>
+            <ImageView>
+              <Image url="@icons/next.png"/>
+            </ImageView>
+          </graphic>
+        </Button>
+        <ImageView style="-fx-start-margin: 100">
+          <Image url="@icons/volume.png"/>
+        </ImageView>
+        <Slider fx:id="volumeSlider" minWidth="200" value="100" onMouseReleased="#changeVolume"/>
+        <Label fx:id="volumeLabel" text=" 100%"/>
+      </HBox>
+    </VBox>
+  </bottom>
 
 </BorderPane>
