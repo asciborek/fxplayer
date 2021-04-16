@@ -21,6 +21,18 @@ public final class Track {
     this.fileName = filePath.getFileName().toString();
   }
 
+  @Override
+  public String toString() {
+    return "Track{" +
+        "title='" + title + '\'' +
+        ", album='" + album + '\'' +
+        ", artist='" + artist + '\'' +
+        ", duration=" + duration +
+        ", fileName='" + fileName + '\'' +
+        ", filePath=" + filePath +
+        '}';
+  }
+
   public static TrackBuilder builder() {
     return TrackBuilder.builder();
   }
@@ -51,6 +63,10 @@ public final class Track {
 
   public Path getFilePath() {
     return filePath;
+  }
+
+  public String getFileUrl() {
+    return getFilePath().toUri().toASCIIString();
   }
 
   public static final class TrackBuilder {

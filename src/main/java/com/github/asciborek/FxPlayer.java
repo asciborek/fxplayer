@@ -2,6 +2,7 @@ package com.github.asciborek;
 
 import static com.google.common.io.Resources.getResource;
 
+import com.github.asciborek.player.PlayerModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import java.util.concurrent.ExecutorService;
@@ -16,14 +17,15 @@ import org.slf4j.LoggerFactory;
 public final class FxPlayer extends Application {
 
   private static final Logger LOG = LoggerFactory.getLogger(FxPlayer.class);
-  private final Injector injector = Guice.createInjector(new ApplicationModule());
+  private final Injector injector = Guice.createInjector(new ApplicationModule(), new PlayerModule());
 
   @Override
   public void start(Stage primaryStage) throws Exception {
     primaryStage.setTitle("FxPlayer");
     FXMLLoader loader = new FXMLLoader();
+    loader.setLocation(getResource("fxml/main_window.fxml"));
     loader.setControllerFactory(injector::getInstance);
-    Parent root = loader.load(getResource("player.fxml").openStream());
+    Parent root = loader.load();
     primaryStage.setMinHeight(1000);
     primaryStage.setMinWidth(1200);
     primaryStage.setScene(new Scene(root, 1200, 1000));

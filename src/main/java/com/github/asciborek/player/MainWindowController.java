@@ -1,5 +1,7 @@
 package com.github.asciborek.player;
 
+import com.github.asciborek.player.event.DoubleClickOnPlaylistEvent;
+import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import java.net.URL;
 import java.util.List;
@@ -10,17 +12,15 @@ import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.Slider;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableView;
 import javafx.scene.input.KeyCombination;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
@@ -28,19 +28,19 @@ import javafx.stage.Popup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class PlayerController implements Initializable {
+public class MainWindowController implements Initializable {
 
-  private static final Logger LOG = LoggerFactory.getLogger(PlayerController.class);
+  private static final Logger LOG = LoggerFactory.getLogger(MainWindowController.class);
 
   private final ExecutorService executorService;
 
-  //JavaFX stuff
   private static final String EXTENSION_PREFIX = "*";
   private static final String ADD_SONG_KEY_COMBINATION = "Ctrl + Shift + A";
   private static final String CLEAR_PLAYLIST_COMBINATION = "Ctrl + Shift + Q";
-  private final ObservableList<Track> playlist = FXCollections.observableArrayList();
   private final ExtensionFilter supportedFilesExtensionFilter = new ExtensionFilter("audio files", fileChooserExtensions());
+  private final ObservableList<Track> playlist;
 
+  // UI Fields
   @FXML
   private MenuItem addTrackMenuItem;
   @FXML
@@ -58,14 +58,12 @@ public class PlayerController implements Initializable {
   private TableColumn<Track, String> lengthColumn;
   @FXML
   private TableColumn<Track, String> filenameColumn;
-  @FXML
-  private Label volumeLabel;
-  @FXML
-  private Slider volumeSlider;
+
 
   @Inject
-  public PlayerController(ExecutorService executorService) {
+  public MainWindowController(ExecutorService executorService, ObservableList<Track> playlist) {
     this.executorService = executorService;
+    this.playlist = playlist;
   }
 
   public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -98,12 +96,6 @@ public class PlayerController implements Initializable {
     LOG.info("MenuItem quit event");
     Platform.exit();
   }
-
-  public void changeVolume() {
-    volumeLabel.setText(" " + (int)volumeSlider.getValue() + "%");
-    LOG.info("slider value: {}", volumeSlider.getValue());
-  }
-
 
   private void setCellValueFactories() {
     titleColumn.setCellValueFactory(this::getTitleProperty);

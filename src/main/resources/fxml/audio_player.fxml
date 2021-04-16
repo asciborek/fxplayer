@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<VBox xmlns="http://javafx.com/javafx"
+  xmlns:fx="http://javafx.com/fxml"
+  fx:controller="com.github.asciborek.player.AudioPlayerController"
+  prefHeight="100.0" prefWidth="800.0">
+
+    <HBox minHeight="50">
+      <Button minHeight="50" minWidth="50"
+        style="-fx-background-color: white; -fx-border-radius: 2;  -fx-border-color:black;">
+        <graphic>
+          <ImageView>
+            <Image url="@../icons/previous.png"/>
+          </ImageView>
+        </graphic>
+      </Button>
+      <Button minHeight="50" minWidth="50"
+        style="-fx-background-color: white; -fx-border-radius: 2;  -fx-border-color:black;">
+        <graphic>
+          <ImageView>
+            <Image url="@../icons/play_stop.png"/>
+          </ImageView>
+        </graphic>
+      </Button>
+      <Button minHeight="50" minWidth="50"
+        style="-fx-background-color: white; -fx-border-radius: 2;  -fx-border-color:black;">
+        <graphic>
+          <ImageView>
+            <Image url="@../icons/next.png"/>
+          </ImageView>
+        </graphic>
+      </Button>
+      <ImageView style="-fx-start-margin: 100">
+        <Image url="@../icons/volume.png"/>
+      </ImageView>
+      <Slider fx:id="volumeSlider" minWidth="200" value="100" onMouseReleased="#changeVolume"/>
+      <Label fx:id="volumeLabel" text=" 100%"/>
+    </HBox>
+
+</VBox>
