@@ -1,7 +1,5 @@
 package com.github.asciborek.player;
 
-import com.github.asciborek.player.event.DoubleClickOnPlaylistEvent;
-import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import java.net.URL;
 import java.util.List;
@@ -20,7 +18,6 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableView;
 import javafx.scene.input.KeyCombination;
-import javafx.scene.input.MouseEvent;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
@@ -31,14 +28,14 @@ import org.slf4j.LoggerFactory;
 public class MainWindowController implements Initializable {
 
   private static final Logger LOG = LoggerFactory.getLogger(MainWindowController.class);
-
-  private final ExecutorService executorService;
-
   private static final String EXTENSION_PREFIX = "*";
   private static final String ADD_SONG_KEY_COMBINATION = "Ctrl + Shift + A";
   private static final String CLEAR_PLAYLIST_COMBINATION = "Ctrl + Shift + Q";
   private final ExtensionFilter supportedFilesExtensionFilter = new ExtensionFilter("audio files", fileChooserExtensions());
+
+  private final ExecutorService executorService;
   private final ObservableList<Track> playlist;
+
 
   // UI Fields
   @FXML
@@ -58,7 +55,6 @@ public class MainWindowController implements Initializable {
   private TableColumn<Track, String> lengthColumn;
   @FXML
   private TableColumn<Track, String> filenameColumn;
-
 
   @Inject
   public MainWindowController(ExecutorService executorService, ObservableList<Track> playlist) {
