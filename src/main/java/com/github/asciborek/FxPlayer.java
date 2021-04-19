@@ -20,6 +20,11 @@ public final class FxPlayer extends Application {
   private final Injector injector = Guice.createInjector(new ApplicationModule(), new PlayerModule());
 
   @Override
+  public void init() throws Exception {
+    Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown));
+  }
+
+  @Override
   public void start(Stage primaryStage) throws Exception {
     primaryStage.setTitle("FxPlayer");
     FXMLLoader loader = new FXMLLoader();
@@ -33,11 +38,12 @@ public final class FxPlayer extends Application {
     primaryStage.show();
   }
 
-  @Override
-  public void stop() {
-    LOG.info("shutting down application...");
+  //The JavaFx "stop" method won't handle SIGINT
+  private void shutdown() {
+    LOG.info("executing shutdown hook...");
     ExecutorService executorService = injector.getInstance(ExecutorService.class);
     LOG.info("shutting down executorService");
     executorService.shutdownNow();
   }
+
 }

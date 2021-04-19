@@ -72,15 +72,20 @@ public class MainWindowController implements Initializable {
     FileChooser fileChooser = new FileChooser();
     fileChooser.getExtensionFilters().add(supportedFilesExtensionFilter);
     var selectedFile = fileChooser.showOpenDialog(new Popup());
-    MetadataUtils.getTrackMetaData(selectedFile)
-        .ifPresent(playlist::add);
+    if (selectedFile != null) {
+      MetadataUtils.getTrackMetaData(selectedFile)
+          .ifPresent(playlist::add);
+    }
   }
 
   public void addDirectory() {
     var directoryChooser = new DirectoryChooser();
     var selectedDirectory = directoryChooser.showDialog(new Popup());
-    CompletableFuture.supplyAsync(new DirectoryTracksProvider(selectedDirectory), executorService)
-        .thenAccept(playlist::addAll);
+    if (selectedDirectory != null) {
+      CompletableFuture
+          .supplyAsync(new DirectoryTracksProvider(selectedDirectory), executorService)
+          .thenAccept(playlist::addAll);
+    }
   }
 
   public void clearPlaylist() {
