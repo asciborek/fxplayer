@@ -1,5 +1,6 @@
 package com.github.asciborek.player;
 
+import com.github.asciborek.util.DurationUtils;
 import java.nio.file.Path;
 import java.time.Duration;
 
@@ -54,7 +55,7 @@ public final class Track {
   }
 
   public String getLength() {
-    return String.format("%02d:%02d", duration.toMinutes(), duration.toSeconds());
+    return DurationUtils.format(duration);
   }
 
   public String getFileName() {
