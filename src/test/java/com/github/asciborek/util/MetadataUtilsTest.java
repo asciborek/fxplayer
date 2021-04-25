@@ -1,5 +1,6 @@
-package com.github.asciborek.player;
+package com.github.asciborek.util;
 
+import com.github.asciborek.player.Track;
 import com.google.common.io.Resources;
 import java.io.File;
 import org.junit.jupiter.api.Assertions;
@@ -7,7 +8,7 @@ import org.junit.jupiter.api.Test;
 
 public class MetadataUtilsTest {
 
-  private static final String TEST_AUDIO_FILENAME = "audio/1_test_audio.mp3";
+  private static final String TEST_AUDIO_FILENAME = "data/audio/1_test_audio.mp3";
 
   @Test
   void shouldReadMetaData() throws Exception {
@@ -17,7 +18,7 @@ public class MetadataUtilsTest {
     Assertions.assertEquals("fxplayer", track.getAlbum());
     Assertions.assertEquals("asciborek", track.getArtist());
     Assertions.assertEquals("00:30", track.getLength());
-    Assertions.assertEquals("test_audio.mp3", track.getFileName());
+    Assertions.assertEquals("1_test_audio.mp3", track.getFileName());
   }
 
 }

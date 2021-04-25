@@ -2,10 +2,9 @@ package com.github.asciborek.player;
 
 import com.google.inject.Inject;
 import java.net.URL;
+import java.util.Collection;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -33,7 +32,7 @@ public class MainWindowController implements Initializable {
   private static final String CLEAR_PLAYLIST_COMBINATION = "Ctrl + Shift + Q";
   private final ExtensionFilter supportedFilesExtensionFilter = new ExtensionFilter("audio files", fileChooserExtensions());
 
-  private final ExecutorService executorService;
+  private final PlaylistService playlistService;
   private final ObservableList<Track> playlist;
 
 
@@ -57,8 +56,8 @@ public class MainWindowController implements Initializable {
   private TableColumn<Track, String> filenameColumn;
 
   @Inject
-  public MainWindowController(ExecutorService executorService, ObservableList<Track> playlist) {
-    this.executorService = executorService;
+  public MainWindowController(PlaylistService playlistService, ObservableList<Track> playlist) {
+    this.playlistService = playlistService;
     this.playlist = playlist;
   }
 
@@ -73,7 +72,7 @@ public class MainWindowController implements Initializable {
     fileChooser.getExtensionFilters().add(supportedFilesExtensionFilter);
     var selectedFile = fileChooser.showOpenDialog(new Popup());
     if (selectedFile != null) {
-      MetadataUtils.getTrackMetaData(selectedFile)
+      playlistService.getTrack(selectedFile)
           .ifPresent(playlist::add);
     }
   }
@@ -82,9 +81,8 @@ public class MainWindowController implements Initializable {
     var directoryChooser = new DirectoryChooser();
     var selectedDirectory = directoryChooser.showDialog(new Popup());
     if (selectedDirectory != null) {
-      CompletableFuture
-          .supplyAsync(new DirectoryTracksProvider(selectedDirectory), executorService)
-          .thenAccept(playlist::addAll);
+      playlistService.getDirectoryTracks(selectedDirectory)
+          .thenAccept(this::addTracksToPlaylist);
     }
   }
 
@@ -135,6 +133,14 @@ public class MainWindowController implements Initializable {
     return FileExtension.getSupportedExtensions().stream()
         .map(ext -> EXTENSION_PREFIX + ext)
         .collect(Collectors.toUnmodifiableList());
+  }
+
+  private void addTracksToPlaylist(Collection<Track> tracks) {
+    Platform.runLater(() ->{
+      playlist.addAll(tracks);
+      playlistView.refresh();
+    });
+
   }
 
 }
