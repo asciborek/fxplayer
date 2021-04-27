@@ -1,5 +1,7 @@
 package com.github.asciborek.player;
 
+import com.github.asciborek.player.event.TrackSelectedEvent;
+import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import java.net.URL;
 import java.util.Collection;
@@ -17,6 +19,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableView;
 import javafx.scene.input.KeyCombination;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
@@ -24,6 +27,7 @@ import javafx.stage.Popup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@SuppressWarnings("UnstableApiUsage")//Guava EventBus
 public class MainWindowController implements Initializable {
 
   private static final Logger LOG = LoggerFactory.getLogger(MainWindowController.class);
@@ -32,6 +36,7 @@ public class MainWindowController implements Initializable {
   private static final String CLEAR_PLAYLIST_COMBINATION = "Ctrl + Shift + Q";
   private final ExtensionFilter supportedFilesExtensionFilter = new ExtensionFilter("audio files", fileChooserExtensions());
 
+  private final EventBus eventBus;
   private final PlaylistService playlistService;
   private final ObservableList<Track> playlist;
 
@@ -56,9 +61,11 @@ public class MainWindowController implements Initializable {
   private TableColumn<Track, String> filenameColumn;
 
   @Inject
-  public MainWindowController(PlaylistService playlistService, ObservableList<Track> playlist) {
+  public MainWindowController(PlaylistService playlistService, EventBus eventBus, ObservableList<Track> playlist) {
     this.playlistService = playlistService;
+    this.eventBus = eventBus;
     this.playlist = playlist;
+    eventBus.register(this);
   }
 
   public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -94,6 +101,13 @@ public class MainWindowController implements Initializable {
   public void quit() {
     LOG.info("MenuItem quit event");
     Platform.exit();
+  }
+
+  public void onTrackClicked(MouseEvent mouseEvent) {
+    if (mouseEvent.getClickCount() == 2) {
+      Track selectedTrack = playlistView.getSelectionModel().getSelectedItem();
+      eventBus.post(new TrackSelectedEvent(selectedTrack));
+    }
   }
 
   private void setCellValueFactories() {
@@ -142,5 +156,6 @@ public class MainWindowController implements Initializable {
     });
 
   }
+
 
 }
