@@ -24,7 +24,7 @@
   </top>
 
   <center>
-    <TableView fx:id="playlistView" onMouseClicked="#onTrackClicked">
+    <TableView fx:id="playlistView" onMouseClicked="#onPlaylistMouseClicked" onKeyPressed="#onPlaylistKeyClicked">
       <columns>
         <TableColumn fx:id="titleColumn" text="Title" minWidth="200" sortable="false"/>
         <TableColumn fx:id="albumColumn" text="Album" minWidth="200" sortable="false"/>

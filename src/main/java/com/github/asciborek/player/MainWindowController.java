@@ -1,6 +1,6 @@
 package com.github.asciborek.player;
 
-import com.github.asciborek.player.event.TrackSelectedEvent;
+import com.github.asciborek.player.event.PlayOrPauseTrackCommand;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import java.net.URL;
@@ -18,7 +18,9 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
@@ -100,14 +102,23 @@ public class MainWindowController implements Initializable {
 
   public void quit() {
     LOG.info("MenuItem quit event");
-    Platform.exit();
+    System.exit(0);
   }
 
-  public void onTrackClicked(MouseEvent mouseEvent) {
+  public void onPlaylistMouseClicked(MouseEvent mouseEvent) {
     if (mouseEvent.getClickCount() == 2) {
-      Track selectedTrack = playlistView.getSelectionModel().getSelectedItem();
-      eventBus.post(new TrackSelectedEvent(selectedTrack));
+      eventBus.post(new PlayOrPauseTrackCommand(getSelectedTrack()));
     }
+  }
+
+  public void onPlaylistKeyClicked(KeyEvent keyEvent) {
+    if (keyEvent.getCode() == KeyCode.SPACE) {
+      eventBus.post(new PlayOrPauseTrackCommand(getSelectedTrack()));
+    }
+  }
+
+  private Track getSelectedTrack() {
+    return playlistView.getSelectionModel().getSelectedItem();
   }
 
   private void setCellValueFactories() {
@@ -156,6 +167,5 @@ public class MainWindowController implements Initializable {
     });
 
   }
-
 
 }

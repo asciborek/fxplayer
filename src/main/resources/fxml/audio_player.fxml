@@ -43,7 +43,7 @@
         <ImageView>
           <Image url="@../icons/volume.png"/>
         </ImageView>
-        <Slider fx:id="volumeSlider" minWidth="200" value="100" onMouseReleased="#changeVolume"/>
+        <Slider fx:id="volumeSlider" minWidth="200" max="1"/>
         <Label fx:id="volumeLabel" text=" 100%"/>
       </HBox>
     </HBox>
