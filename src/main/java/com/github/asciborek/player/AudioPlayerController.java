@@ -1,6 +1,11 @@
 package com.github.asciborek.player;
 
 import com.github.asciborek.player.event.PlayOrPauseTrackCommand;
+import com.github.asciborek.player.event.StartPlayingTrackEvent;
+import com.github.asciborek.player.queue.NextTrackSelector;
+import com.github.asciborek.player.queue.OrderedPlaylistNextTrackSelector;
+import com.github.asciborek.player.queue.OrderedPlaylistPreviousTrackSelector;
+import com.github.asciborek.player.queue.PreviousTrackSelector;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
@@ -32,6 +37,8 @@ public class AudioPlayerController implements Initializable {
   private PlayerState playerState = PlayerState.READY;
   private Track currentTrack;
   private MediaPlayer mediaPlayer;
+  private NextTrackSelector nextTrackSelector;
+  private PreviousTrackSelector previousTrackSelector;
   private final DoubleProperty volumeProperty = new SimpleDoubleProperty(1);
   // UI Fields
   @FXML
@@ -45,6 +52,8 @@ public class AudioPlayerController implements Initializable {
   public AudioPlayerController(EventBus eventBus, ObservableList<Track> tracks) {
     this.eventBus = eventBus;
     this.tracks = tracks;
+    this.nextTrackSelector = new OrderedPlaylistNextTrackSelector(tracks);
+    this.previousTrackSelector = new OrderedPlaylistPreviousTrackSelector(tracks);
     eventBus.register(this);
   }
 
@@ -58,17 +67,28 @@ public class AudioPlayerController implements Initializable {
   @Subscribe
   @SuppressWarnings("unused")
   public void onPlayOrPauseCommand(PlayOrPauseTrackCommand playOrPauseTrackCommand) {
-    currentTrack = playOrPauseTrackCommand.getTrack();
-    LOG.info("play or pause track {}", currentTrack);
+    Track newTrack = playOrPauseTrackCommand.getTrack();
+    LOG.info("play or pause track {}", newTrack);
     switch (playerState) {
       case READY:
-        startPlayingTrack();
+        currentTrack = newTrack;
+        startPlayingNewTrack();
         break;
       case PAUSED:
-        resumePlayingTrack();
+        if (newTrack.equals(currentTrack)) {
+          resumePlayingTrack();
+        } else {
+          currentTrack = newTrack;
+          startPlayingNewTrack();
+        }
         break;
       case PLAYING:
-        pauseTrack();
+        if (newTrack.equals(currentTrack)) {
+          pauseTrack();
+        } else {
+          currentTrack = newTrack;
+          startPlayingNewTrack();
+        }
         break;
     }
   }
@@ -92,13 +112,47 @@ public class AudioPlayerController implements Initializable {
     trackProgress.setProgress(progress);
   }
 
-  private void startPlayingTrack() {
+  public void onPlayOrPauseButtonClicked() {
+    if (playerState == PlayerState.READY && !tracks.isEmpty()) {
+      currentTrack = tracks.get(0);
+      startPlayingNewTrack();
+    } else if(playerState == PlayerState.PAUSED) {
+      resumePlayingTrack();
+    } else if (playerState == PlayerState.PLAYING) {
+      pauseTrack();
+    }
+  }
+
+  public void onNextTrackButtonClicked() {
+    if (playerState != PlayerState.READY) {
+      nextTrackSelector.getNextTrack(currentTrack)
+          .ifPresent(this::startPlayingNewTrack);
+    }
+  }
+
+  public void onPreviousTrackButtonClicked() {
+    if (playerState != PlayerState.READY) {
+      previousTrackSelector.getPreviousTrack(currentTrack)
+          .ifPresent(this::startPlayingNewTrack);
+    }
+  }
+
+  private void startPlayingNewTrack(Track nextTrack) {
+    currentTrack = nextTrack;
+    startPlayingNewTrack();
+  }
+
+  private void startPlayingNewTrack() {
+    if (playerState != PlayerState.READY) {
+      mediaPlayer.stop();
+    }
     Media media = new Media(currentTrack.getFilePath().toUri().toString());
     mediaPlayer = new MediaPlayer(media);
     mediaPlayer.volumeProperty().bind(volumeProperty);
     mediaPlayer.currentTimeProperty().addListener(this::onCurrentTimeListener);
     mediaPlayer.play();
     playerState = PlayerState.PLAYING;
+    eventBus.post(new StartPlayingTrackEvent(currentTrack));
   }
 
   private void resumePlayingTrack() {

@@ -17,21 +17,21 @@
   <VBox style="-fx-border-radius: 1;  -fx-border-color:black;">
     <HBox minHeight="60" spacing="30">
       <HBox>
-        <Button style="-fx-background-color: white;">
+        <Button style="-fx-background-color: white;" onMousePressed="#onPreviousTrackButtonClicked">
           <graphic>
             <ImageView>
-              <Image url="@../icons/previous.png"/>
+              <Image url="@../icons/previous.png" />
             </ImageView>
           </graphic>
         </Button>
-        <Button style="-fx-background-color: white;">
+        <Button style="-fx-background-color: white;" onMousePressed="#onPlayOrPauseButtonClicked">
           <graphic>
             <ImageView>
               <Image url="@../icons/play_stop.png" />
             </ImageView>
           </graphic>
         </Button>
-        <Button style="-fx-background-color: white;">
+        <Button style="-fx-background-color: white;" onMousePressed="#onNextTrackButtonClicked">
           <graphic>
             <ImageView>
               <Image url="@../icons/next.png"/>

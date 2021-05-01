@@ -1,7 +1,9 @@
 package com.github.asciborek.player;
 
 import com.github.asciborek.player.event.PlayOrPauseTrackCommand;
+import com.github.asciborek.player.event.StartPlayingTrackEvent;
 import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import java.net.URL;
 import java.util.Collection;
@@ -14,6 +16,7 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellDataFeatures;
@@ -41,7 +44,6 @@ public class MainWindowController implements Initializable {
   private final EventBus eventBus;
   private final PlaylistService playlistService;
   private final ObservableList<Track> playlist;
-
 
   // UI Fields
   @FXML
@@ -107,7 +109,9 @@ public class MainWindowController implements Initializable {
 
   public void onPlaylistMouseClicked(MouseEvent mouseEvent) {
     if (mouseEvent.getClickCount() == 2) {
-      eventBus.post(new PlayOrPauseTrackCommand(getSelectedTrack()));
+      var selectedTrack = getSelectedTrack();
+      LOG.info("onPlaylistMouseClicked selectedTrack: {}", selectedTrack);
+      eventBus.post(new PlayOrPauseTrackCommand(selectedTrack));
     }
   }
 
@@ -115,6 +119,12 @@ public class MainWindowController implements Initializable {
     if (keyEvent.getCode() == KeyCode.SPACE) {
       eventBus.post(new PlayOrPauseTrackCommand(getSelectedTrack()));
     }
+  }
+
+  @Subscribe
+  @SuppressWarnings("unused")
+  public void onStartPlayingTrackEvent(StartPlayingTrackEvent event) {
+    playlistView.getSelectionModel().select(event.getTrack());
   }
 
   private Track getSelectedTrack() {
@@ -165,7 +175,6 @@ public class MainWindowController implements Initializable {
       playlist.addAll(tracks);
       playlistView.refresh();
     });
-
   }
 
 }

@@ -6,6 +6,7 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.control.Label?>
 <BorderPane xmlns="http://javafx.com/javafx"
   xmlns:fx="http://javafx.com/fxml"
   fx:controller="com.github.asciborek.player.MainWindowController"
@@ -25,6 +26,9 @@
 
   <center>
     <TableView fx:id="playlistView" onMouseClicked="#onPlaylistMouseClicked" onKeyPressed="#onPlaylistKeyClicked">
+      <placeholder>
+        <Label/>
+      </placeholder>
       <columns>
         <TableColumn fx:id="titleColumn" text="Title" minWidth="200" sortable="false"/>
         <TableColumn fx:id="albumColumn" text="Album" minWidth="200" sortable="false"/>
