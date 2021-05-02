@@ -50,7 +50,9 @@
   </VBox>
   <VBox style="-fx-border-radius: 1;  -fx-border-color:black;">
     <HBox alignment="CENTER" minHeight="50">
+      <Label fx:id="currentTimeLabel" />
       <ProgressBar fx:id="trackProgress" prefWidth="1200" onMouseReleased="#seek"/>
+      <Label fx:id="totalTimeLabel" />
     </HBox>
   </VBox>
 </VBox>

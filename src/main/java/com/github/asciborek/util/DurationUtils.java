@@ -13,4 +13,8 @@ public final class DurationUtils {
     return String.format("%02d:%02d", duration.toMinutesPart(), duration.toSecondsPart());
   }
 
+  public static String formatTimeInSeconds(int seconds) {
+    return format(Duration.ofSeconds(seconds));
+  }
+
 }

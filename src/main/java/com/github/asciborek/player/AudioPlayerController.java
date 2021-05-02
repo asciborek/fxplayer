@@ -6,6 +6,7 @@ import com.github.asciborek.player.queue.NextTrackSelector;
 import com.github.asciborek.player.queue.OrderedPlaylistNextTrackSelector;
 import com.github.asciborek.player.queue.OrderedPlaylistPreviousTrackSelector;
 import com.github.asciborek.player.queue.PreviousTrackSelector;
+import com.github.asciborek.util.DurationUtils;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
@@ -45,6 +46,10 @@ public class AudioPlayerController implements Initializable {
   private Label volumeLabel;
   @FXML
   private Slider volumeSlider;
+  @FXML
+  private Label currentTimeLabel;
+  @FXML
+  private Label totalTimeLabel;
   @FXML
   private ProgressBar trackProgress;
 
@@ -109,6 +114,7 @@ public class AudioPlayerController implements Initializable {
 
   private void onCurrentTimeListener(ObservableValue<? extends Duration> observableValue, Duration oldDuration, Duration newDuration) {
     double progress = newDuration.toSeconds()/mediaPlayer.getTotalDuration().toSeconds();
+    currentTimeLabel.setText(DurationUtils.formatTimeInSeconds((int)newDuration.toSeconds()));
     trackProgress.setProgress(progress);
   }
 
@@ -150,6 +156,7 @@ public class AudioPlayerController implements Initializable {
     mediaPlayer = new MediaPlayer(media);
     mediaPlayer.volumeProperty().bind(volumeProperty);
     mediaPlayer.currentTimeProperty().addListener(this::onCurrentTimeListener);
+    totalTimeLabel.setText(DurationUtils.format(currentTrack.getDuration()));
     mediaPlayer.play();
     playerState = PlayerState.PLAYING;
     eventBus.post(new StartPlayingTrackEvent(currentTrack));
