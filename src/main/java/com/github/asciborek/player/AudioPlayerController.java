@@ -131,8 +131,7 @@ public class AudioPlayerController implements Initializable {
 
   public void onNextTrackButtonClicked() {
     if (playerState != PlayerState.READY) {
-      nextTrackSelector.getNextTrack(currentTrack)
-          .ifPresent(this::startPlayingNewTrack);
+      nextTrack();
     }
   }
 
@@ -141,6 +140,11 @@ public class AudioPlayerController implements Initializable {
       previousTrackSelector.getPreviousTrack(currentTrack)
           .ifPresent(this::startPlayingNewTrack);
     }
+  }
+
+  private void nextTrack() {
+    nextTrackSelector.getNextTrack(currentTrack)
+        .ifPresentOrElse(this::startPlayingNewTrack, this::onPlaylistFinished);
   }
 
   private void startPlayingNewTrack(Track nextTrack) {
@@ -152,14 +156,19 @@ public class AudioPlayerController implements Initializable {
     if (playerState != PlayerState.READY) {
       mediaPlayer.stop();
     }
+    initMediaPlayerForNewTrack();
+    totalTimeLabel.setText(DurationUtils.format(currentTrack.getDuration()));
+    playerState = PlayerState.PLAYING;
+    eventBus.post(new StartPlayingTrackEvent(currentTrack));
+  }
+
+  private void initMediaPlayerForNewTrack() {
     Media media = new Media(currentTrack.getFilePath().toUri().toString());
     mediaPlayer = new MediaPlayer(media);
     mediaPlayer.volumeProperty().bind(volumeProperty);
     mediaPlayer.currentTimeProperty().addListener(this::onCurrentTimeListener);
-    totalTimeLabel.setText(DurationUtils.format(currentTrack.getDuration()));
     mediaPlayer.play();
-    playerState = PlayerState.PLAYING;
-    eventBus.post(new StartPlayingTrackEvent(currentTrack));
+    mediaPlayer.setOnEndOfMedia(this::nextTrack);
   }
 
   private void resumePlayingTrack() {
@@ -170,6 +179,13 @@ public class AudioPlayerController implements Initializable {
   private void pauseTrack() {
     mediaPlayer.pause();
     playerState = PlayerState.PAUSED;
+  }
+
+  private void onPlaylistFinished() {
+    trackProgress.setProgress(0);
+    totalTimeLabel.setText("");
+    currentTimeLabel.setText("");
+    LOG.info("playlist finished");
   }
 
   private enum PlayerState {
