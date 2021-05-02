@@ -19,6 +19,10 @@ public final class FxPlayer extends Application {
   private static final Logger LOG = LoggerFactory.getLogger(FxPlayer.class);
   private final Injector injector = Guice.createInjector(new ApplicationModule(), new PlayerModule());
 
+  public static void main(String[] args) {
+    launch(args);
+  }
+
   @Override
   public void init() throws Exception {
     Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown));
