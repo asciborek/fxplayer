@@ -8,4 +8,8 @@ open module fxplayer {
   requires com.google.common;
   requires com.google.guice;
   requires jaudiotagger;
+  requires com.fasterxml.jackson.annotation;
+  requires com.fasterxml.jackson.core;
+  requires com.fasterxml.jackson.databind;
+  requires com.fasterxml.jackson.datatype.jdk8;
 }

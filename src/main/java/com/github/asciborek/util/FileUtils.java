@@ -9,6 +9,8 @@ import java.util.stream.Stream;
 
 public final class FileUtils {
 
+  private static final String USER_HOME = "user.home";
+
   private FileUtils() {
   }
 
@@ -22,7 +24,27 @@ public final class FileUtils {
         .filter(file -> hasSupportedExtension(file, extensions));
   }
 
-  public static boolean hasSupportedExtension(Path file, Iterable<String> extensions) {
+  public static void createDirectory(Path path) {
+    try {
+      Files.createDirectory(path);
+    } catch (IOException e) {
+      throw new RuntimeException();
+    }
+  }
+
+  public static void createFile(Path path) {
+    try {
+      Files.createFile(path);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  public static Path getApplicationDataDirectory() {
+    return Path.of(System.getProperty(USER_HOME), ".fxplayer");
+  }
+
+  private static boolean hasSupportedExtension(Path file, Iterable<String> extensions) {
     for (String extension : extensions) {
       if (file.toString().endsWith(extension)) {
         return true;

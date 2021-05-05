@@ -6,6 +6,7 @@ import com.github.asciborek.player.queue.NextTrackSelector;
 import com.github.asciborek.player.queue.OrderedPlaylistNextTrackSelector;
 import com.github.asciborek.player.queue.OrderedPlaylistPreviousTrackSelector;
 import com.github.asciborek.player.queue.PreviousTrackSelector;
+import com.github.asciborek.settings.SettingsService;
 import com.github.asciborek.util.DurationUtils;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -34,6 +35,7 @@ public class AudioPlayerController implements Initializable {
   private static final Logger LOG = LoggerFactory.getLogger(AudioPlayerController.class);
 
   private final EventBus eventBus;
+  private final SettingsService settingsService;
   private final ObservableList<Track> tracks;
   private PlayerState playerState = PlayerState.READY;
   private Track currentTrack;
@@ -54,8 +56,9 @@ public class AudioPlayerController implements Initializable {
   private ProgressBar trackProgress;
 
   @Inject
-  public AudioPlayerController(EventBus eventBus, ObservableList<Track> tracks) {
+  public AudioPlayerController(EventBus eventBus, SettingsService settingsService, ObservableList<Track> tracks) {
     this.eventBus = eventBus;
+    this.settingsService = settingsService;
     this.tracks = tracks;
     this.nextTrackSelector = new OrderedPlaylistNextTrackSelector(tracks);
     this.previousTrackSelector = new OrderedPlaylistPreviousTrackSelector(tracks);
@@ -67,6 +70,7 @@ public class AudioPlayerController implements Initializable {
     trackProgress.setProgress(0);
     volumeSlider.valueProperty().bindBidirectional(volumeProperty);
     volumeProperty.addListener(this::onVolumeChange);
+    volumeProperty.set(settingsService.getVolume());
   }
 
   @Subscribe
@@ -109,6 +113,7 @@ public class AudioPlayerController implements Initializable {
 
   private void onVolumeChange(ObservableValue<? extends Number> property, Number oldValue, Number newValue) {
     volumeLabel.setText(" " + (int)(newValue.doubleValue() * 100) + "%");
+    settingsService.setVolume(newValue.doubleValue());
     LOG.info("the old volume value: {}, the new volume value: {}", oldValue.doubleValue(), newValue.doubleValue());
   }
 
