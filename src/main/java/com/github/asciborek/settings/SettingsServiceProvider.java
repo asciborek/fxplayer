@@ -25,7 +25,7 @@ public final class SettingsServiceProvider implements Provider<SettingsService> 
 
   @Override
   public SettingsService get() {
-    LOG.info("Create SettingsService");
+    LOG.info("creating SettingsService...");
     var settingsStorage = new JsonFileSettingsStorage(objectMapper(), settingsFilePath());
     return new SettingsService(settingsStorage);
   }

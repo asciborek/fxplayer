@@ -7,7 +7,7 @@ import java.util.concurrent.ExecutorService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-public class PlayerModule extends AbstractModule {
+public final class PlayerModule extends AbstractModule {
 
   @Provides
   @Singleton

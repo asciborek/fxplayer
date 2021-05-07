@@ -2,7 +2,7 @@ package com.github.asciborek.player.event;
 
 import com.github.asciborek.player.Track;
 
-public class PlayOrPauseTrackCommand {
+public final class PlayOrPauseTrackCommand {
 
   private final Track track;
 

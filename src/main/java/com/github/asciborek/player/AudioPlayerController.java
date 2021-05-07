@@ -30,7 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("UnstableApiUsage")//Guava EventBus
-public class AudioPlayerController implements Initializable {
+public final class AudioPlayerController implements Initializable {
 
   private static final Logger LOG = LoggerFactory.getLogger(AudioPlayerController.class);
 

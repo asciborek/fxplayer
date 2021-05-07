@@ -14,6 +14,14 @@ public final class FileUtils {
   private FileUtils() {
   }
 
+  public static String getUserHome() {
+    return System.getProperty(USER_HOME);
+  }
+
+  public static Path getApplicationDataDirectory() {
+    return Path.of(getUserHome(), ".fxplayer");
+  }
+
   public static Stream<Path> getDirectoryFilesWithSupportedExtensions(Path directoryPath,
       Iterable<String> extensions) throws IOException {
     if (!Files.isDirectory(directoryPath)) {
@@ -40,9 +48,7 @@ public final class FileUtils {
     }
   }
 
-  public static Path getApplicationDataDirectory() {
-    return Path.of(System.getProperty(USER_HOME), ".fxplayer");
-  }
+
 
   private static boolean hasSupportedExtension(Path file, Iterable<String> extensions) {
     for (String extension : extensions) {

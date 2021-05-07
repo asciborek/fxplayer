@@ -1,5 +1,8 @@
 package com.github.asciborek.settings;
 
+import com.github.asciborek.util.FileUtils;
+import java.io.File;
+
 public final class SettingsService {
 
   private static final double MIN_VOLUME_LEVEL = 0;
@@ -24,4 +27,31 @@ public final class SettingsService {
   public double getVolume() {
     return settings.getVolumeLevel().orElse(MAX_VOLUME_LEVEL);
   }
+
+  public void setAddTrackInitPath(File selectTrackSuggestion) {
+    settings.setAddTrackInitPath(selectTrackSuggestion.getPath());
+    settingsStorage.save(settings);
+  }
+
+  public File getAddTrackInitPath() {
+    return settings.getAddTrackInitPath()
+        .map(File::new)
+        .orElseGet(this::getUserHome);
+  }
+
+  public void setAddDirectoryInitPath(File selectDirectorySuggestion) {
+    settings.setAddDirectoryInitPath(selectDirectorySuggestion.getPath());
+    settingsStorage.save(settings);
+  }
+
+  public File getAddDirectoryInitPath() {
+    return settings.getAddDirectoryInitPath()
+        .map(File::new)
+        .orElseGet(this::getUserHome);
+  }
+
+  private File getUserHome() {
+    return new File(FileUtils.getUserHome());
+  }
+
 }

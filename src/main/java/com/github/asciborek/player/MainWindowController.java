@@ -2,6 +2,7 @@ package com.github.asciborek.player;
 
 import com.github.asciborek.player.event.PlayOrPauseTrackCommand;
 import com.github.asciborek.player.event.StartPlayingTrackEvent;
+import com.github.asciborek.settings.SettingsService;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
@@ -16,7 +17,6 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellDataFeatures;
@@ -33,7 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("UnstableApiUsage")//Guava EventBus
-public class MainWindowController implements Initializable {
+public final class MainWindowController implements Initializable {
 
   private static final Logger LOG = LoggerFactory.getLogger(MainWindowController.class);
   private static final String EXTENSION_PREFIX = "*";
@@ -43,6 +43,7 @@ public class MainWindowController implements Initializable {
 
   private final EventBus eventBus;
   private final PlaylistService playlistService;
+  private final SettingsService settingsService;
   private final ObservableList<Track> playlist;
 
   // UI Fields
@@ -65,9 +66,10 @@ public class MainWindowController implements Initializable {
   private TableColumn<Track, String> filenameColumn;
 
   @Inject
-  public MainWindowController(PlaylistService playlistService, EventBus eventBus, ObservableList<Track> playlist) {
+  public MainWindowController(EventBus eventBus, PlaylistService playlistService, SettingsService settingsService,  ObservableList<Track> playlist) {
     this.playlistService = playlistService;
     this.eventBus = eventBus;
+    this.settingsService = settingsService;
     this.playlist = playlist;
     eventBus.register(this);
   }
@@ -81,8 +83,10 @@ public class MainWindowController implements Initializable {
   public void addTrack() {
     FileChooser fileChooser = new FileChooser();
     fileChooser.getExtensionFilters().add(supportedFilesExtensionFilter);
+    fileChooser.setInitialDirectory(settingsService.getAddTrackInitPath());
     var selectedFile = fileChooser.showOpenDialog(new Popup());
     if (selectedFile != null) {
+      settingsService.setAddTrackInitPath(selectedFile.getParentFile());
       playlistService.getTrack(selectedFile)
           .ifPresent(playlist::add);
     }
@@ -90,8 +94,10 @@ public class MainWindowController implements Initializable {
 
   public void addDirectory() {
     var directoryChooser = new DirectoryChooser();
+    directoryChooser.setInitialDirectory(settingsService.getAddDirectoryInitPath());
     var selectedDirectory = directoryChooser.showDialog(new Popup());
     if (selectedDirectory != null) {
+      settingsService.setAddDirectoryInitPath(selectedDirectory.getParentFile());
       playlistService.getDirectoryTracks(selectedDirectory)
           .thenAccept(this::addTracksToPlaylist);
     }

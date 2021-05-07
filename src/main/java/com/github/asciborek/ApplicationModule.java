@@ -12,7 +12,7 @@ import java.util.concurrent.Executors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ApplicationModule extends AbstractModule {
+public final class ApplicationModule extends AbstractModule {
 
   private static final Logger LOG = LoggerFactory.getLogger(ApplicationModule.class);
   private static final int AVAILABLE_PROCESSORS = Runtime.getRuntime().availableProcessors();

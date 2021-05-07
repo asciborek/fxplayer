@@ -16,7 +16,7 @@ import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class PlaylistService {
+public final class PlaylistService {
 
   private static final Logger LOG = LoggerFactory.getLogger(PlaylistService.class);
   private final ExecutorService executorService;
