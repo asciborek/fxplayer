@@ -1,6 +1,7 @@
 package com.github.asciborek.player;
 
-import com.github.asciborek.player.event.PlayOrPauseTrackCommand;
+import com.github.asciborek.player.command.OpenTrackFileCommand;
+import com.github.asciborek.player.command.PlayOrPauseTrackCommand;
 import com.github.asciborek.player.event.StartPlayingTrackEvent;
 import com.github.asciborek.player.queue.NextTrackSelector;
 import com.github.asciborek.player.queue.OrderedPlaylistNextTrackSelector;
@@ -71,6 +72,14 @@ public final class AudioPlayerController implements Initializable {
     volumeSlider.valueProperty().bindBidirectional(volumeProperty);
     volumeProperty.addListener(this::onVolumeChange);
     volumeProperty.set(settingsService.getVolume());
+  }
+
+  @Subscribe
+  @SuppressWarnings("unused")
+  public void onOpenTrackFileCommand(OpenTrackFileCommand openTrackFileCommand) {
+    currentTrack = openTrackFileCommand.getTrack();
+    LOG.info("onOpenTrackFileCommand {}", currentTrack);
+    startPlayingNewTrack();
   }
 
   @Subscribe

@@ -21,28 +21,32 @@ public class SettingsServiceTest {
 
     //default volume value is max
     Assertions.assertEquals(SettingsService.MAX_VOLUME_LEVEL, settingsService.getVolume());
-
-    Assertions.assertEquals(new File(FileUtils.getUserHome()), settingsService.getAddTrackChoicePath());
-    Assertions.assertEquals(new File(FileUtils.getUserHome()), settingsService.getAddDirectoryChoicePath());
+    //default directory should be home directory
+    Assertions.assertEquals(new File(FileUtils.getUserHome()), settingsService.getAddTrackFileChooserInitDirectory());
+    Assertions.assertEquals(new File(FileUtils.getUserHome()), settingsService.getDirectoryDirectoryChooserInitDirectory());
+    Assertions.assertEquals(new File(FileUtils.getUserHome()), settingsService.getOpenFileFileChooserInitDirectory());
   }
 
   @Test
   @DisplayName("should  save and read settings")
   void shouldSaveAndReadSettings() {
     var expectedVolumeValue = 0.3;
-    var expectedAddTrackInitPath = new File(FileUtils.getUserHome() + "/Music/Haken/Affinity");
-    var expectedAddDirectoryInitPath = new File(FileUtils.getUserHome() + "/Music/Haken/Virus");
+    var expectedAddTrackFileChooserDirectory = new File(FileUtils.getUserHome() + "/Music/Haken/Affinity");
+    var expectedAddDirectoryDirectoryChooserDirectory = new File(FileUtils.getUserHome() + "/Music/Haken/Virus");
+    var expectedOpenFileFileChooserDirectory = new File(FileUtils.getUserHome() + "/Music/Haken/Vector");
 
     var tempFile= getTempFile();
     var settingsService = new SettingsService(settingsStorage(tempFile));
     settingsService.setVolume(expectedVolumeValue);
-    settingsService.setAddTrackChoicePath(expectedAddTrackInitPath);
-    settingsService.setAddDirectoryChoicePath(expectedAddDirectoryInitPath);
+    settingsService.setAddTrackFileChooserInitDirectory(expectedAddTrackFileChooserDirectory);
+    settingsService.setAddDirectoryDirectoryChooserInitDirectory(expectedAddDirectoryDirectoryChooserDirectory);
+    settingsService.setOpenFileFileChooserInitDirectory(expectedOpenFileFileChooserDirectory);
 
     var newSettingsService = new SettingsService(settingsStorage(tempFile));
     Assertions.assertEquals(expectedVolumeValue, newSettingsService.getVolume());
-    Assertions.assertEquals(expectedAddDirectoryInitPath, newSettingsService.getAddDirectoryChoicePath());
-    Assertions.assertEquals(expectedAddTrackInitPath, newSettingsService.getAddTrackChoicePath());
+    Assertions.assertEquals(expectedAddDirectoryDirectoryChooserDirectory, newSettingsService.getDirectoryDirectoryChooserInitDirectory());
+    Assertions.assertEquals(expectedAddTrackFileChooserDirectory, newSettingsService.getAddTrackFileChooserInitDirectory());
+    Assertions.assertEquals(expectedOpenFileFileChooserDirectory, newSettingsService.getOpenFileFileChooserInitDirectory());
   }
 
   private SettingsStorage settingsStorage(Path tempFile) {

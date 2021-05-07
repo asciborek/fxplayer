@@ -7,9 +7,11 @@ final class Settings {
 
   private Double volumeLevel;
 
-  private String addDirectoryChoicePath;
+  private String addDirectoryDirectoryChooserInitDirectory;
 
-  private String addTrackChoicePath;
+  private String addTrackFileChooserInitDirectory;
+
+  private String openFileFileChooserInitDirectory;
 
   public Settings() {}
 
@@ -21,21 +23,30 @@ final class Settings {
     this.volumeLevel = volumeLevel;
   }
 
-  public void setAddDirectoryChoicePath(String addDirectoryChoicePath) {
-    this.addDirectoryChoicePath = addDirectoryChoicePath;
+  public void setAddDirectoryDirectoryChooserInitDirectory(String addDirectoryDirectoryChooserInitDirectory) {
+    this.addDirectoryDirectoryChooserInitDirectory = addDirectoryDirectoryChooserInitDirectory;
   }
 
-  public Optional<String> getAddDirectoryChoicePath() {
-    return Strings.isNullOrEmpty(addDirectoryChoicePath) ? Optional.empty() : Optional.of(
-        addDirectoryChoicePath);
+  public Optional<String> getAddDirectoryDirectoryChooserInitDirectory() {
+    return Strings.isNullOrEmpty(addDirectoryDirectoryChooserInitDirectory) ? Optional.empty() : Optional.of(
+        addDirectoryDirectoryChooserInitDirectory);
   }
 
-  public void setAddTrackChoicePath(String addTrackChoicePath) {
-    this.addTrackChoicePath = addTrackChoicePath;
+  public void setAddTrackFileChooserInitDirectory(String addTrackFileChooserInitDirectory) {
+    this.addTrackFileChooserInitDirectory = addTrackFileChooserInitDirectory;
   }
 
-  public Optional<String> getAddTrackChoicePath() {
-    return Strings.isNullOrEmpty(addTrackChoicePath) ? Optional.empty() : Optional.of(
-        addTrackChoicePath);
+  public Optional<String> getAddTrackFileChooserInitDirectory() {
+    return Strings.isNullOrEmpty(addTrackFileChooserInitDirectory) ? Optional.empty() : Optional.of(
+        addTrackFileChooserInitDirectory);
+  }
+
+  public void setOpenFileFileChooserInitDirectory(String openFileFileChooserInitDirectory) {
+    this.openFileFileChooserInitDirectory = openFileFileChooserInitDirectory;
+  }
+
+  public Optional<String> getOpenFileFileChooserInitDirectory() {
+    return Strings.isNullOrEmpty(openFileFileChooserInitDirectory) ? Optional.empty() : Optional.of(
+        openFileFileChooserInitDirectory);
   }
 }

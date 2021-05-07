@@ -1,12 +1,12 @@
-package com.github.asciborek.player.event;
+package com.github.asciborek.player.command;
 
 import com.github.asciborek.player.Track;
 
-public final class PlayOrPauseTrackCommand {
+public final class OpenTrackFileCommand {
 
   private final Track track;
 
-  public PlayOrPauseTrackCommand(Track track) {
+  public OpenTrackFileCommand(Track track) {
     this.track = track;
   }
 

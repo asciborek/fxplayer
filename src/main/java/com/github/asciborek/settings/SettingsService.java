@@ -28,24 +28,35 @@ public final class SettingsService {
     return settings.getVolumeLevel().orElse(MAX_VOLUME_LEVEL);
   }
 
-  public void setAddTrackChoicePath(File selectTrackSuggestion) {
-    settings.setAddTrackChoicePath(selectTrackSuggestion.getPath());
+  public void setAddTrackFileChooserInitDirectory(File selectTrackSuggestion) {
+    settings.setAddTrackFileChooserInitDirectory(selectTrackSuggestion.getPath());
     settingsStorage.save(settings);
   }
 
-  public File getAddTrackChoicePath() {
-    return settings.getAddTrackChoicePath()
+  public File getAddTrackFileChooserInitDirectory() {
+    return settings.getAddTrackFileChooserInitDirectory()
         .map(File::new)
         .orElseGet(this::getUserHome);
   }
 
-  public void setAddDirectoryChoicePath(File selectDirectorySuggestion) {
-    settings.setAddDirectoryChoicePath(selectDirectorySuggestion.getPath());
+  public void setAddDirectoryDirectoryChooserInitDirectory(File selectDirectorySuggestion) {
+    settings.setAddDirectoryDirectoryChooserInitDirectory(selectDirectorySuggestion.getPath());
     settingsStorage.save(settings);
   }
 
-  public File getAddDirectoryChoicePath() {
-    return settings.getAddDirectoryChoicePath()
+  public File getDirectoryDirectoryChooserInitDirectory() {
+    return settings.getAddDirectoryDirectoryChooserInitDirectory()
+        .map(File::new)
+        .orElseGet(this::getUserHome);
+  }
+
+  public void setOpenFileFileChooserInitDirectory(File openTrackDirectory) {
+    settings.setOpenFileFileChooserInitDirectory(openTrackDirectory.getPath());
+    settingsStorage.save(settings);
+  }
+
+  public File getOpenFileFileChooserInitDirectory() {
+    return settings.getOpenFileFileChooserInitDirectory()
         .map(File::new)
         .orElseGet(this::getUserHome);
   }

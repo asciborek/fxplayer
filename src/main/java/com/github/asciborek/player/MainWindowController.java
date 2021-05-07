@@ -1,8 +1,10 @@
 package com.github.asciborek.player;
 
-import com.github.asciborek.player.event.PlayOrPauseTrackCommand;
+import com.github.asciborek.player.command.OpenTrackFileCommand;
+import com.github.asciborek.player.command.PlayOrPauseTrackCommand;
 import com.github.asciborek.player.event.StartPlayingTrackEvent;
 import com.github.asciborek.settings.SettingsService;
+import com.github.asciborek.util.MetadataUtils;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
@@ -80,13 +82,30 @@ public final class MainWindowController implements Initializable {
     registerKeyCombinations();
   }
 
+  public void openFile() {
+    FileChooser fileChooser = new FileChooser();
+    fileChooser.getExtensionFilters().add(supportedFilesExtensionFilter);
+    fileChooser.setInitialDirectory(settingsService.getOpenFileFileChooserInitDirectory());
+    var selectedFile = fileChooser.showOpenDialog(new Popup());
+    if (selectedFile != null) {
+      MetadataUtils.getTrackMetaData(selectedFile)
+          .ifPresent(this::onOpenFile);
+    }
+  }
+
+  private void onOpenFile(Track track) {
+    playlist.clear();
+    playlist.add(track);
+    eventBus.post(new OpenTrackFileCommand(track));
+  }
+
   public void addTrack() {
     FileChooser fileChooser = new FileChooser();
     fileChooser.getExtensionFilters().add(supportedFilesExtensionFilter);
-    fileChooser.setInitialDirectory(settingsService.getAddTrackChoicePath());
+    fileChooser.setInitialDirectory(settingsService.getAddTrackFileChooserInitDirectory());
     var selectedFile = fileChooser.showOpenDialog(new Popup());
     if (selectedFile != null) {
-      settingsService.setAddTrackChoicePath(selectedFile.getParentFile());
+      settingsService.setAddTrackFileChooserInitDirectory(selectedFile.getParentFile());
       playlistService.getTrack(selectedFile)
           .ifPresent(playlist::add);
     }
@@ -94,10 +113,10 @@ public final class MainWindowController implements Initializable {
 
   public void addDirectory() {
     var directoryChooser = new DirectoryChooser();
-    directoryChooser.setInitialDirectory(settingsService.getAddDirectoryChoicePath());
+    directoryChooser.setInitialDirectory(settingsService.getDirectoryDirectoryChooserInitDirectory());
     var selectedDirectory = directoryChooser.showDialog(new Popup());
     if (selectedDirectory != null) {
-      settingsService.setAddDirectoryChoicePath(selectedDirectory.getParentFile());
+      settingsService.setAddDirectoryDirectoryChooserInitDirectory(selectedDirectory.getParentFile());
       playlistService.getDirectoryTracks(selectedDirectory)
           .thenAccept(this::addTracksToPlaylist);
     }
@@ -182,5 +201,6 @@ public final class MainWindowController implements Initializable {
       playlistView.refresh();
     });
   }
+
 
 }
