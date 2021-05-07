@@ -5,8 +5,8 @@ import java.io.File;
 
 public final class SettingsService {
 
-  private static final double MIN_VOLUME_LEVEL = 0;
-  private static final double MAX_VOLUME_LEVEL = 1;
+  static final double MIN_VOLUME_LEVEL = 0;
+  static final double MAX_VOLUME_LEVEL = 1;
   private final SettingsStorage settingsStorage;
   private final Settings settings;
 
@@ -28,24 +28,24 @@ public final class SettingsService {
     return settings.getVolumeLevel().orElse(MAX_VOLUME_LEVEL);
   }
 
-  public void setAddTrackInitPath(File selectTrackSuggestion) {
-    settings.setAddTrackInitPath(selectTrackSuggestion.getPath());
+  public void setAddTrackChoicePath(File selectTrackSuggestion) {
+    settings.setAddTrackChoicePath(selectTrackSuggestion.getPath());
     settingsStorage.save(settings);
   }
 
-  public File getAddTrackInitPath() {
-    return settings.getAddTrackInitPath()
+  public File getAddTrackChoicePath() {
+    return settings.getAddTrackChoicePath()
         .map(File::new)
         .orElseGet(this::getUserHome);
   }
 
-  public void setAddDirectoryInitPath(File selectDirectorySuggestion) {
-    settings.setAddDirectoryInitPath(selectDirectorySuggestion.getPath());
+  public void setAddDirectoryChoicePath(File selectDirectorySuggestion) {
+    settings.setAddDirectoryChoicePath(selectDirectorySuggestion.getPath());
     settingsStorage.save(settings);
   }
 
-  public File getAddDirectoryInitPath() {
-    return settings.getAddDirectoryInitPath()
+  public File getAddDirectoryChoicePath() {
+    return settings.getAddDirectoryChoicePath()
         .map(File::new)
         .orElseGet(this::getUserHome);
   }

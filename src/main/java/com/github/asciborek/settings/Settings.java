@@ -7,9 +7,9 @@ final class Settings {
 
   private Double volumeLevel;
 
-  private String addDirectoryInitPath;
+  private String addDirectoryChoicePath;
 
-  private String addTrackInitPath;
+  private String addTrackChoicePath;
 
   public Settings() {}
 
@@ -21,21 +21,21 @@ final class Settings {
     this.volumeLevel = volumeLevel;
   }
 
-  public void setAddDirectoryInitPath(String addDirectoryInitPath) {
-    this.addDirectoryInitPath = addDirectoryInitPath;
+  public void setAddDirectoryChoicePath(String addDirectoryChoicePath) {
+    this.addDirectoryChoicePath = addDirectoryChoicePath;
   }
 
-  public Optional<String> getAddDirectoryInitPath() {
-    return Strings.isNullOrEmpty(addDirectoryInitPath) ? Optional.empty() : Optional.of(
-        addDirectoryInitPath);
+  public Optional<String> getAddDirectoryChoicePath() {
+    return Strings.isNullOrEmpty(addDirectoryChoicePath) ? Optional.empty() : Optional.of(
+        addDirectoryChoicePath);
   }
 
-  public void setAddTrackInitPath(String addTrackInitPath) {
-    this.addTrackInitPath = addTrackInitPath;
+  public void setAddTrackChoicePath(String addTrackChoicePath) {
+    this.addTrackChoicePath = addTrackChoicePath;
   }
 
-  public Optional<String> getAddTrackInitPath() {
-    return Strings.isNullOrEmpty(addTrackInitPath) ? Optional.empty() : Optional.of(
-        addTrackInitPath);
+  public Optional<String> getAddTrackChoicePath() {
+    return Strings.isNullOrEmpty(addTrackChoicePath) ? Optional.empty() : Optional.of(
+        addTrackChoicePath);
   }
 }

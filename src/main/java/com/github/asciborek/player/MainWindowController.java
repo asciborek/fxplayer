@@ -83,10 +83,10 @@ public final class MainWindowController implements Initializable {
   public void addTrack() {
     FileChooser fileChooser = new FileChooser();
     fileChooser.getExtensionFilters().add(supportedFilesExtensionFilter);
-    fileChooser.setInitialDirectory(settingsService.getAddTrackInitPath());
+    fileChooser.setInitialDirectory(settingsService.getAddTrackChoicePath());
     var selectedFile = fileChooser.showOpenDialog(new Popup());
     if (selectedFile != null) {
-      settingsService.setAddTrackInitPath(selectedFile.getParentFile());
+      settingsService.setAddTrackChoicePath(selectedFile.getParentFile());
       playlistService.getTrack(selectedFile)
           .ifPresent(playlist::add);
     }
@@ -94,10 +94,10 @@ public final class MainWindowController implements Initializable {
 
   public void addDirectory() {
     var directoryChooser = new DirectoryChooser();
-    directoryChooser.setInitialDirectory(settingsService.getAddDirectoryInitPath());
+    directoryChooser.setInitialDirectory(settingsService.getAddDirectoryChoicePath());
     var selectedDirectory = directoryChooser.showDialog(new Popup());
     if (selectedDirectory != null) {
-      settingsService.setAddDirectoryInitPath(selectedDirectory.getParentFile());
+      settingsService.setAddDirectoryChoicePath(selectedDirectory.getParentFile());
       playlistService.getDirectoryTracks(selectedDirectory)
           .thenAccept(this::addTracksToPlaylist);
     }

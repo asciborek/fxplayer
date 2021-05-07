@@ -10,12 +10,17 @@ import java.util.stream.Stream;
 public final class FileUtils {
 
   private static final String USER_HOME = "user.home";
+  private static final String TEMP_DIRECTORY = "java.io.tmpdir";
 
   private FileUtils() {
   }
 
   public static String getUserHome() {
     return System.getProperty(USER_HOME);
+  }
+
+  public static String getTempDirectory() {
+    return System.getProperty(TEMP_DIRECTORY);
   }
 
   public static Path getApplicationDataDirectory() {
