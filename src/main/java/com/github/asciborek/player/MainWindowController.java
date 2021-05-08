@@ -1,5 +1,7 @@
 package com.github.asciborek.player;
 
+import static javafx.scene.input.KeyCombination.keyCombination;
+
 import com.github.asciborek.player.command.OpenTrackFileCommand;
 import com.github.asciborek.player.command.PlayOrPauseTrackCommand;
 import com.github.asciborek.player.event.StartPlayingTrackEvent;
@@ -23,7 +25,6 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableView;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.DirectoryChooser;
@@ -37,22 +38,30 @@ import org.slf4j.LoggerFactory;
 public final class MainWindowController implements Initializable {
 
   private static final Logger LOG = LoggerFactory.getLogger(MainWindowController.class);
+  private static final List<String> AUDIO_FILE_EXTENSIONS = List.of("*.mp3");
   private static final String EXTENSION_PREFIX = "*";
-  private static final String ADD_SONG_KEY_COMBINATION = "Ctrl + Shift + A";
+  private static final String OPEN_FILE_KEY_COMBINATION = "Ctrl + O";
+  private static final String ADD_TRACK_KEY_COMBINATION = "Ctrl + Shift + A";
+  private static final String ADD_DIRECTORY_KEY_COMBINATION = "Ctrl + Shift + D";
   private static final String CLEAR_PLAYLIST_COMBINATION = "Ctrl + Shift + Q";
-  private final ExtensionFilter supportedFilesExtensionFilter = new ExtensionFilter("audio files", fileChooserExtensions());
 
   private final EventBus eventBus;
   private final PlaylistService playlistService;
   private final SettingsService settingsService;
   private final ObservableList<Track> playlist;
 
-  // UI Fields
+  //Music Menu
+  @FXML
+  private MenuItem openFileMenuItem;
+
+  // Playlist Menu
   @FXML
   private MenuItem addTrackMenuItem;
   @FXML
+  private MenuItem addDirectoryMenuItem;
+  @FXML
   private MenuItem clearPlaylistMenuItem;
-
+  //Playlist UI
   @FXML
   private TableView<Track> playlistView;
   @FXML
@@ -83,10 +92,11 @@ public final class MainWindowController implements Initializable {
 
   public void openFile() {
     FileChooser fileChooser = new FileChooser();
-    fileChooser.getExtensionFilters().add(supportedFilesExtensionFilter);
+    fileChooser.getExtensionFilters().add(new ExtensionFilter("audio files", AUDIO_FILE_EXTENSIONS));
     fileChooser.setInitialDirectory(settingsService.getOpenFileFileChooserInitDirectory());
     var selectedFile = fileChooser.showOpenDialog(new Popup());
     if (selectedFile != null) {
+      settingsService.setOpenFileFileChooserInitDirectory(selectedFile.getParentFile());
       MetadataUtils.getTrackMetaData(selectedFile)
           .ifPresent(this::onOpenFile);
     }
@@ -100,7 +110,7 @@ public final class MainWindowController implements Initializable {
 
   public void addTrack() {
     FileChooser fileChooser = new FileChooser();
-    fileChooser.getExtensionFilters().add(supportedFilesExtensionFilter);
+    fileChooser.getExtensionFilters().add(new ExtensionFilter("audio files", AUDIO_FILE_EXTENSIONS));
     fileChooser.setInitialDirectory(settingsService.getAddTrackFileChooserInitDirectory());
     var selectedFile = fileChooser.showOpenDialog(new Popup());
     if (selectedFile != null) {
@@ -164,8 +174,10 @@ public final class MainWindowController implements Initializable {
   }
 
   private void registerKeyCombinations() {
-    addTrackMenuItem.setAccelerator(KeyCombination.keyCombination(ADD_SONG_KEY_COMBINATION));
-    clearPlaylistMenuItem.setAccelerator(KeyCombination.keyCombination(CLEAR_PLAYLIST_COMBINATION));
+    openFileMenuItem.setAccelerator(keyCombination(OPEN_FILE_KEY_COMBINATION));
+    addTrackMenuItem.setAccelerator(keyCombination(ADD_TRACK_KEY_COMBINATION));
+    addDirectoryMenuItem.setAccelerator(keyCombination(ADD_DIRECTORY_KEY_COMBINATION));
+    clearPlaylistMenuItem.setAccelerator(keyCombination(CLEAR_PLAYLIST_COMBINATION));
   }
 
   private StringProperty getTitleProperty(CellDataFeatures<Track, String> cellData) {
@@ -186,12 +198,6 @@ public final class MainWindowController implements Initializable {
 
   private StringProperty getFileNameProperty(CellDataFeatures<Track, String> cellData) {
     return new SimpleStringProperty(cellData.getValue().fileName());
-  }
-
-  private List<String> fileChooserExtensions() {
-    return FileExtension.getSupportedExtensions().stream()
-        .map(ext -> EXTENSION_PREFIX + ext)
-        .toList();
   }
 
   private void addTracksToPlaylist(Collection<Track> tracks) {

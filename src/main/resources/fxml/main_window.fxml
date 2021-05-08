@@ -15,12 +15,12 @@
   <top>
     <MenuBar>
       <Menu text="Music">
-        <MenuItem text="Open a File" onAction="#openFile"/>
+        <MenuItem fx:id="openFileMenuItem" text="Open a File" onAction="#openFile"/>
         <MenuItem text="Quit" onAction="#quit"/>
       </Menu>
       <Menu text="Playlist">
         <MenuItem fx:id="addTrackMenuItem" text="Add a Track" onAction="#addTrack"/>
-        <MenuItem fx:id="addDirectory" text="Add a Directory" onAction="#addDirectory"/>
+        <MenuItem fx:id="addDirectoryMenuItem" text="Add a Directory" onAction="#addDirectory"/>
         <MenuItem fx:id="clearPlaylistMenuItem" text="Clear the Playlist" onAction="#clearPlaylist"/>
       </Menu>
     </MenuBar>
