@@ -77,7 +77,7 @@ public final class AudioPlayerController implements Initializable {
   @Subscribe
   @SuppressWarnings("unused")
   public void onOpenTrackFileCommand(OpenTrackFileCommand openTrackFileCommand) {
-    currentTrack = openTrackFileCommand.getTrack();
+    currentTrack = openTrackFileCommand.track();
     LOG.info("onOpenTrackFileCommand {}", currentTrack);
     startPlayingNewTrack();
   }
@@ -85,29 +85,29 @@ public final class AudioPlayerController implements Initializable {
   @Subscribe
   @SuppressWarnings("unused")
   public void onPlayOrPauseCommand(PlayOrPauseTrackCommand playOrPauseTrackCommand) {
-    Track newTrack = playOrPauseTrackCommand.getTrack();
+    Track newTrack = playOrPauseTrackCommand.track();
     LOG.info("play or pause track {}", newTrack);
     switch (playerState) {
-      case READY:
+      case READY -> {
         currentTrack = newTrack;
         startPlayingNewTrack();
-        break;
-      case PAUSED:
+      }
+      case PAUSED -> {
         if (newTrack.equals(currentTrack)) {
           resumePlayingTrack();
         } else {
           currentTrack = newTrack;
           startPlayingNewTrack();
         }
-        break;
-      case PLAYING:
+      }
+      case PLAYING -> {
         if (newTrack.equals(currentTrack)) {
           pauseTrack();
         } else {
           currentTrack = newTrack;
           startPlayingNewTrack();
         }
-        break;
+      }
     }
   }
 
@@ -171,13 +171,13 @@ public final class AudioPlayerController implements Initializable {
       mediaPlayer.stop();
     }
     initMediaPlayerForNewTrack();
-    totalTimeLabel.setText(DurationUtils.format(currentTrack.getDuration()));
+    totalTimeLabel.setText(DurationUtils.format(currentTrack.duration()));
     playerState = PlayerState.PLAYING;
     eventBus.post(new StartPlayingTrackEvent(currentTrack));
   }
 
   private void initMediaPlayerForNewTrack() {
-    Media media = new Media(currentTrack.getFilePath().toUri().toString());
+    Media media = new Media(currentTrack.filePath().toUri().toString());
     mediaPlayer = new MediaPlayer(media);
     mediaPlayer.volumeProperty().bind(volumeProperty);
     mediaPlayer.currentTimeProperty().addListener(this::onCurrentTimeListener);

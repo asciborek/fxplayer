@@ -38,11 +38,11 @@ public final class PlaylistService {
   private List<Track> loadTracks(File directoryFile) {
     var stopWatch = Stopwatch.createStarted();
     try (Stream<Path> pathStream = FileUtils.getDirectoryFilesWithSupportedExtensions(directoryFile.toPath(), supportedExtensions)) {
-      var resultList =  pathStream.map(MetadataUtils::getTrackMetaData)
+      var resultList = pathStream.map(MetadataUtils::getTrackMetaData)
           .filter(Optional::isPresent)
           .map(Optional::get)
-          .sorted(Comparator.comparing(Track::getFilePath))
-          .collect(Collectors.toUnmodifiableList());
+          .sorted(Comparator.comparing(Track::filePath))
+          .toList();
       var elapsed = stopWatch.stop().elapsed(TimeUnit.MICROSECONDS);
       LOG.info("loaded {} tracks from directory {}, elapsed time: {} ms", resultList.size(), directoryFile, elapsed);
       return resultList;

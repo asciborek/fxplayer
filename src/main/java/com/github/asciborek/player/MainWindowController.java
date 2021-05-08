@@ -12,7 +12,6 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -149,7 +148,7 @@ public final class MainWindowController implements Initializable {
   @Subscribe
   @SuppressWarnings("unused")
   public void onStartPlayingTrackEvent(StartPlayingTrackEvent event) {
-    playlistView.getSelectionModel().select(event.getTrack());
+    playlistView.getSelectionModel().select(event.track());
   }
 
   private Track getSelectedTrack() {
@@ -170,29 +169,29 @@ public final class MainWindowController implements Initializable {
   }
 
   private StringProperty getTitleProperty(CellDataFeatures<Track, String> cellData) {
-    return new SimpleStringProperty(cellData.getValue().getTitle());
+    return new SimpleStringProperty(cellData.getValue().title());
   }
 
   private StringProperty getAlbumProperty(CellDataFeatures<Track, String> cellData) {
-    return new SimpleStringProperty(cellData.getValue().getAlbum());
+    return new SimpleStringProperty(cellData.getValue().album());
   }
 
   private StringProperty getArtistProperty(CellDataFeatures<Track, String> cellData) {
-    return new SimpleStringProperty(cellData.getValue().getArtist());
+    return new SimpleStringProperty(cellData.getValue().artist());
   }
 
   private StringProperty getLengthProperty(CellDataFeatures<Track, String> cellData) {
-    return new SimpleStringProperty(cellData.getValue().getLength());
+    return new SimpleStringProperty(cellData.getValue().length());
   }
 
   private StringProperty getFileNameProperty(CellDataFeatures<Track, String> cellData) {
-    return new SimpleStringProperty(cellData.getValue().getFileName());
+    return new SimpleStringProperty(cellData.getValue().fileName());
   }
 
   private List<String> fileChooserExtensions() {
     return FileExtension.getSupportedExtensions().stream()
         .map(ext -> EXTENSION_PREFIX + ext)
-        .collect(Collectors.toUnmodifiableList());
+        .toList();
   }
 
   private void addTracksToPlaylist(Collection<Track> tracks) {
