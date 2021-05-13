@@ -1,10 +1,15 @@
 package com.github.asciborek.settings;
 
+import com.github.asciborek.FxPlayer.CloseApplicationEvent;
 import com.github.asciborek.util.FileUtils;
+import com.google.common.eventbus.Subscribe;
 import java.io.File;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class SettingsService {
 
+  private static final Logger LOG = LoggerFactory.getLogger(SettingsService.class);
   static final double MIN_VOLUME_LEVEL = 0;
   static final double MAX_VOLUME_LEVEL = 1;
   private final SettingsStorage settingsStorage;
@@ -16,12 +21,18 @@ public final class SettingsService {
         .orElseGet(Settings::new);
   }
 
+  @Subscribe
+  @SuppressWarnings("unused")
+  public void onCloseApplicationEvent(CloseApplicationEvent closeApplicationEvent) {
+    LOG.info("save the application settings");
+    settingsStorage.save(settings);
+  }
+
   public void setVolume(double volumeLevel) {
     if (volumeLevel < MIN_VOLUME_LEVEL || volumeLevel > MAX_VOLUME_LEVEL) {
       throw new IllegalArgumentException();
     }
     settings.setVolumeLevel(volumeLevel);
-    settingsStorage.save(settings);
   }
 
   public double getVolume() {
@@ -30,7 +41,6 @@ public final class SettingsService {
 
   public void setAddTrackFileChooserInitDirectory(File selectTrackSuggestion) {
     settings.setAddTrackFileChooserInitDirectory(selectTrackSuggestion.getPath());
-    settingsStorage.save(settings);
   }
 
   public File getAddTrackFileChooserInitDirectory() {
@@ -41,7 +51,6 @@ public final class SettingsService {
 
   public void setAddDirectoryDirectoryChooserInitDirectory(File selectDirectorySuggestion) {
     settings.setAddDirectoryDirectoryChooserInitDirectory(selectDirectorySuggestion.getPath());
-    settingsStorage.save(settings);
   }
 
   public File getDirectoryDirectoryChooserInitDirectory() {
@@ -52,7 +61,6 @@ public final class SettingsService {
 
   public void setOpenFileFileChooserInitDirectory(File openTrackDirectory) {
     settings.setOpenFileFileChooserInitDirectory(openTrackDirectory.getPath());
-    settingsStorage.save(settings);
   }
 
   public File getOpenFileFileChooserInitDirectory() {

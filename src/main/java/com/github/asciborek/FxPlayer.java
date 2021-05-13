@@ -3,9 +3,11 @@ package com.github.asciborek;
 import static com.google.common.io.Resources.getResource;
 
 import com.github.asciborek.player.PlayerModule;
+import com.google.common.eventbus.EventBus;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -14,10 +16,12 @@ import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@SuppressWarnings("UnstableApiUsage")
 public final class FxPlayer extends Application {
 
   private static final Logger LOG = LoggerFactory.getLogger(FxPlayer.class);
   private final Injector injector = Guice.createInjector(new ApplicationModule(), new PlayerModule());
+  private final EventBus eventBus = injector.getInstance(EventBus.class);
 
   public static void main(String[] args) {
     launch(args);
@@ -25,7 +29,8 @@ public final class FxPlayer extends Application {
 
   @Override
   public void init() throws Exception {
-    Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown));
+    //The JavaFx "stop" method won't handle SIGINT
+    Runtime.getRuntime().addShutdownHook(new Thread(this::shutdownExecutor));
   }
 
   @Override
@@ -42,12 +47,30 @@ public final class FxPlayer extends Application {
     primaryStage.show();
   }
 
-  //The JavaFx "stop" method won't handle SIGINT
-  private void shutdown() {
-    LOG.info("executing shutdown hook...");
-    ExecutorService executorService = injector.getInstance(ExecutorService.class);
-    LOG.info("shutting down executorService");
-    executorService.shutdownNow();
+  @Override
+  public void stop() throws Exception {
+    LOG.info("Application Exit");
+    eventBus.post(new CloseApplicationEvent());
+    new Thread(this::shutdownExecutor).start(); //to prevent frozen UI
   }
+
+  private void shutdownExecutor() {
+    ExecutorService executorService = injector.getInstance(ExecutorService.class);
+    if (!executorService.isTerminated()) {
+      LOG.info("start terminating executorService");
+      try {
+        if (!executorService.awaitTermination(3, TimeUnit.SECONDS)){
+          LOG.info("awaitTermination didn't terminated executorService, calling executorService.shutdownNow()");
+          executorService.shutdownNow();
+        }
+      } catch (InterruptedException e) {
+        LOG.error("InterruptedException during awaitTermination calling executorService.shutdownNow()", e);
+        executorService.shutdownNow();
+      }
+
+    }
+  }
+
+  public static record CloseApplicationEvent() {}
 
 }

@@ -138,7 +138,7 @@ public final class MainWindowController implements Initializable {
 
   public void quit() {
     LOG.info("MenuItem quit event");
-    System.exit(0);
+    Platform.exit();
   }
 
   public void onPlaylistMouseClicked(MouseEvent mouseEvent) {

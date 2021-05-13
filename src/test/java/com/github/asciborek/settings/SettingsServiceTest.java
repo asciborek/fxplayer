@@ -2,6 +2,8 @@ package com.github.asciborek.settings;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.github.asciborek.FxPlayer;
+import com.github.asciborek.FxPlayer.CloseApplicationEvent;
 import com.github.asciborek.util.FileUtils;
 import java.io.File;
 import java.nio.file.Path;
@@ -41,7 +43,7 @@ public class SettingsServiceTest {
     settingsService.setAddTrackFileChooserInitDirectory(expectedAddTrackFileChooserDirectory);
     settingsService.setAddDirectoryDirectoryChooserInitDirectory(expectedAddDirectoryDirectoryChooserDirectory);
     settingsService.setOpenFileFileChooserInitDirectory(expectedOpenFileFileChooserDirectory);
-
+    settingsService.onCloseApplicationEvent(new CloseApplicationEvent());
     var newSettingsService = new SettingsService(settingsStorage(tempFile));
     Assertions.assertEquals(expectedVolumeValue, newSettingsService.getVolume());
     Assertions.assertEquals(expectedAddDirectoryDirectoryChooserDirectory, newSettingsService.getDirectoryDirectoryChooserInitDirectory());
