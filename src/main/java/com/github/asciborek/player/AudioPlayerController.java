@@ -17,6 +17,7 @@ import java.util.ResourceBundle;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -50,6 +51,8 @@ public final class AudioPlayerController implements Initializable {
   @FXML
   private Slider volumeSlider;
   @FXML
+  private Label playlistTotalTimeLabel;
+  @FXML
   private Label currentTimeLabel;
   @FXML
   private Label totalTimeLabel;
@@ -72,6 +75,7 @@ public final class AudioPlayerController implements Initializable {
     volumeSlider.valueProperty().bindBidirectional(volumeProperty);
     volumeProperty.addListener(this::onVolumeChange);
     volumeProperty.set(settingsService.getVolume());
+    tracks.addListener(this::onPlaylistChange);
   }
 
   @Subscribe
@@ -130,6 +134,33 @@ public final class AudioPlayerController implements Initializable {
     double progress = newDuration.toSeconds()/mediaPlayer.getTotalDuration().toSeconds();
     currentTimeLabel.setText(DurationUtils.formatTimeInSeconds((int)newDuration.toSeconds()));
     trackProgress.setProgress(progress);
+  }
+
+  private void onPlaylistChange(Change<? extends Track> change) {
+    int playlistSize = tracks.size();
+    switch (playlistSize) {
+      case 0 -> playlistTotalTimeLabel.setText("");
+      case 1 -> formatPlaylistTotalTimeLabelForSingleTrack();
+      default -> formatPlaylistTotalTimeLabelForMultiplyTracks(playlistSize);
+    }
+  }
+
+  private void formatPlaylistTotalTimeLabelForSingleTrack() {
+    playlistTotalTimeLabel.setText("1 track - [" + DurationUtils.format(tracks.get(0).duration()) + "] ");
+  }
+
+  private void formatPlaylistTotalTimeLabelForMultiplyTracks(int totalTracks) {
+    var totalDuration = getTotalPlaylistDuration();
+    var playlistTotalTimeText = " " + totalTracks + " tracks - ["
+        + DurationUtils.format(totalDuration) + "] ";
+    playlistTotalTimeLabel.setText(playlistTotalTimeText);
+  }
+
+  private java.time.Duration getTotalPlaylistDuration() {
+    return tracks.stream()
+        .map(Track::duration)
+        .reduce(java.time.Duration::plus)
+        .orElse(java.time.Duration.ZERO);
   }
 
   public void onPlayOrPauseButtonClicked() {
