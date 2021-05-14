@@ -150,8 +150,9 @@ public final class MainWindowController implements Initializable {
   }
 
   public void onPlaylistKeyClicked(KeyEvent keyEvent) {
-    if (keyEvent.getCode() == KeyCode.SPACE) {
-      eventBus.post(new PlayOrPauseTrackCommand(getSelectedTrack()));
+    switch (keyEvent.getCode()) {
+      case SPACE -> playOrPauseSelectedTrack();
+      case DELETE -> removeSelectedTrack();
     }
   }
 
@@ -163,6 +164,14 @@ public final class MainWindowController implements Initializable {
 
   private Track getSelectedTrack() {
     return playlistView.getSelectionModel().getSelectedItem();
+  }
+
+  private void playOrPauseSelectedTrack() {
+    eventBus.post(new PlayOrPauseTrackCommand(getSelectedTrack()));
+  }
+
+  private void removeSelectedTrack(){
+    playlist.remove(getSelectedTrack());
   }
 
   private void setCellValueFactories() {
