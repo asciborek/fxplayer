@@ -24,7 +24,6 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableView;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.DirectoryChooser;
@@ -39,7 +38,6 @@ public final class MainWindowController implements Initializable {
 
   private static final Logger LOG = LoggerFactory.getLogger(MainWindowController.class);
   private static final List<String> AUDIO_FILE_EXTENSIONS = List.of("*.mp3");
-  private static final String EXTENSION_PREFIX = "*";
   private static final String OPEN_FILE_KEY_COMBINATION = "Ctrl + O";
   private static final String ADD_TRACK_KEY_COMBINATION = "Ctrl + Shift + A";
   private static final String ADD_DIRECTORY_KEY_COMBINATION = "Ctrl + Shift + D";
