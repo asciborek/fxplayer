@@ -1,6 +1,6 @@
 package com.github.asciborek.util;
 
-import com.github.asciborek.player.Track;
+import com.github.asciborek.playlist.Track;
 import com.google.common.io.Resources;
 import java.io.File;
 import org.junit.jupiter.api.Assertions;

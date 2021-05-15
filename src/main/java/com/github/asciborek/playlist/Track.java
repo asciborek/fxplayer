@@ -1,4 +1,4 @@
-package com.github.asciborek.player;
+package com.github.asciborek.playlist;
 
 import com.github.asciborek.util.DurationUtils;
 import java.nio.file.Path;

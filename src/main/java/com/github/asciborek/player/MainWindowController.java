@@ -5,6 +5,8 @@ import static javafx.scene.input.KeyCombination.keyCombination;
 import com.github.asciborek.player.command.OpenTrackFileCommand;
 import com.github.asciborek.player.command.PlayOrPauseTrackCommand;
 import com.github.asciborek.player.event.StartPlayingTrackEvent;
+import com.github.asciborek.playlist.PlaylistService;
+import com.github.asciborek.playlist.Track;
 import com.github.asciborek.settings.SettingsService;
 import com.github.asciborek.util.MetadataUtils;
 import com.google.common.eventbus.EventBus;

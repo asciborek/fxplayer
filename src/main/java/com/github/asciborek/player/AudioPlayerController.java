@@ -7,6 +7,7 @@ import com.github.asciborek.player.queue.NextTrackSelector;
 import com.github.asciborek.player.queue.OrderedPlaylistNextTrackSelector;
 import com.github.asciborek.player.queue.OrderedPlaylistPreviousTrackSelector;
 import com.github.asciborek.player.queue.PreviousTrackSelector;
+import com.github.asciborek.playlist.Track;
 import com.github.asciborek.settings.SettingsService;
 import com.github.asciborek.util.DurationUtils;
 import com.google.common.eventbus.EventBus;

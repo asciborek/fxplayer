@@ -1,6 +1,6 @@
 package com.github.asciborek.player.queue;
 
-import com.github.asciborek.player.Track;
+import com.github.asciborek.playlist.Track;
 import java.util.Optional;
 
 public interface PreviousTrackSelector {

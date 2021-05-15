@@ -1,5 +1,5 @@
 package com.github.asciborek.player.command;
 
-import com.github.asciborek.player.Track;
+import com.github.asciborek.playlist.Track;
 
 public record PlayOrPauseTrackCommand(Track track) {}

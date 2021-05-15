@@ -1,6 +1,6 @@
 package com.github.asciborek.util;
 
-import com.github.asciborek.player.Track;
+import com.github.asciborek.playlist.Track;
 import java.io.File;
 import java.nio.file.Path;
 import java.time.Duration;
