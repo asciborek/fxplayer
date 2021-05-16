@@ -1,5 +1,9 @@
 package com.github.asciborek.playlist;
 
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import java.util.List;
@@ -17,6 +21,14 @@ public final class PlaylistServiceProvider implements Provider<PlaylistService> 
 
   @Override
   public PlaylistService get() {
-    return new PlaylistService(executorService, SUPPORTED_AUDIO_FILES_EXTENSIONS);
+    return new PlaylistService(executorService, playlistStorage(), SUPPORTED_AUDIO_FILES_EXTENSIONS);
+  }
+
+  private PlaylistStorage playlistStorage() {
+    var mapper = new XmlMapper();
+    mapper.registerModules(new Jdk8Module());
+    mapper.registerModules(new JavaTimeModule());
+    mapper.enable(SerializationFeature.INDENT_OUTPUT);
+    return new XmlPlaylistStorage(mapper);
   }
 }

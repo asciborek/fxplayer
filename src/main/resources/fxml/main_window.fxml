@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.control.Label?>
 <BorderPane xmlns="http://javafx.com/javafx"
   xmlns:fx="http://javafx.com/fxml"
   fx:controller="com.github.asciborek.player.MainWindowController"
@@ -22,6 +22,8 @@
         <MenuItem fx:id="addTrackMenuItem" text="Add a Track" onAction="#addTrack"/>
         <MenuItem fx:id="addDirectoryMenuItem" text="Add a Directory" onAction="#addDirectory"/>
         <MenuItem fx:id="clearPlaylistMenuItem" text="Clear the Playlist" onAction="#clearPlaylist"/>
+        <MenuItem text="Save the current Playlist" onAction="#savePlaylist"/>
+        <MenuItem text="Load a Playlist" onAction="#loadPlaylist"/>
       </Menu>
     </MenuBar>
   </top>

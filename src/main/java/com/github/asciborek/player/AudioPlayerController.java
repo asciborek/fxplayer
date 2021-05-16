@@ -91,7 +91,7 @@ public final class AudioPlayerController implements Initializable {
   @SuppressWarnings("unused")
   public void onPlayOrPauseCommand(PlayOrPauseTrackCommand playOrPauseTrackCommand) {
     Track newTrack = playOrPauseTrackCommand.track();
-    LOG.info("play or pause track {}", newTrack);
+    LOG.info("play or pause tracks {}", newTrack);
     switch (playerState) {
       case READY -> {
         currentTrack = newTrack;
@@ -120,7 +120,7 @@ public final class AudioPlayerController implements Initializable {
     if (playerState == PlayerState.PAUSED || playerState == PlayerState.PLAYING) {
       double selectedValue = (mouseEvent.getX()/ trackProgress.getWidth());
       double newCurrentTime = selectedValue * mediaPlayer.getTotalDuration().toSeconds();
-      LOG.info("the track progress bar clicked, the selected value {}, the new current time: {} (s)", selectedValue, newCurrentTime);
+      LOG.info("the tracks progress bar clicked, the selected value {}, the new current time: {} (s)", selectedValue, newCurrentTime);
       mediaPlayer.seek(Duration.seconds(newCurrentTime));
     }
   }
@@ -147,7 +147,7 @@ public final class AudioPlayerController implements Initializable {
   }
 
   private void formatPlaylistTotalTimeLabelForSingleTrack() {
-    playlistTotalTimeLabel.setText("1 track - [" + DurationUtils.format(tracks.get(0).duration()) + "] ");
+    playlistTotalTimeLabel.setText("1 tracks - [" + DurationUtils.format(tracks.get(0).duration()) + "] ");
   }
 
   private void formatPlaylistTotalTimeLabelForMultiplyTracks(int totalTracks) {

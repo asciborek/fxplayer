@@ -8,10 +8,13 @@ import com.github.asciborek.player.event.StartPlayingTrackEvent;
 import com.github.asciborek.playlist.PlaylistService;
 import com.github.asciborek.playlist.Track;
 import com.github.asciborek.settings.SettingsService;
+import com.github.asciborek.util.FileUtils;
 import com.github.asciborek.util.MetadataUtils;
+import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
+import java.io.File;
 import java.net.URL;
 import java.util.Collection;
 import java.util.List;
@@ -44,6 +47,9 @@ public final class MainWindowController implements Initializable {
   private static final String ADD_TRACK_KEY_COMBINATION = "Ctrl + Shift + A";
   private static final String ADD_DIRECTORY_KEY_COMBINATION = "Ctrl + Shift + D";
   private static final String CLEAR_PLAYLIST_COMBINATION = "Ctrl + Shift + Q";
+  private static final ExtensionFilter PLAYLIST_EXTENSION_FILTER =
+      new ExtensionFilter("playlist files (*.plst)", "*.plst" );
+
 
   private final EventBus eventBus;
   private final PlaylistService playlistService;
@@ -134,6 +140,25 @@ public final class MainWindowController implements Initializable {
   public void clearPlaylist() {
     LOG.info("Clear playlist. Removed items size: {}", playlist.size());
     playlist.clear();
+  }
+
+  public void savePlaylist() {
+    var playlistToSave = ImmutableList.copyOf(playlist);
+    var fileChooser = new FileChooser();
+    fileChooser.setInitialDirectory(new File(FileUtils.getUserHome()));
+    fileChooser.getExtensionFilters().add(PLAYLIST_EXTENSION_FILTER);
+    var playlistFile = fileChooser.showSaveDialog(new Popup());
+    playlistService.savePlaylist(playlistFile, playlistToSave);
+  }
+
+  public void loadPlaylist() {
+    var fileChooser = new FileChooser();
+    fileChooser.setInitialDirectory(new File(FileUtils.getUserHome()));
+    fileChooser.getExtensionFilters().add(PLAYLIST_EXTENSION_FILTER);
+    var playlistFile = fileChooser.showOpenDialog(new Popup());
+    if (playlistFile.exists()) {
+      playlistService.loadPlaylistWithExistingFiles(playlistFile).thenAccept(this::addTracksToPlaylist);
+    }
   }
 
   public void quit() {

@@ -29,7 +29,7 @@ class OrderedPlaylistPreviousTrackSelectorTest {
   }
 
   @Test
-  @DisplayName("it should select the previous track from the list")
+  @DisplayName("it should select the previous tracks from the list")
   void itShouldSelectPreviousTrackFromTheList() {
     final List<Track> playlist = List.of(firstTrack, secondTrack, thirdTrack, fourthTrack,
         fifthTrack, sixthTrack);
@@ -39,7 +39,7 @@ class OrderedPlaylistPreviousTrackSelectorTest {
   }
 
   @Test
-  @DisplayName("it should return the empty optional for the first track")
+  @DisplayName("it should return the empty optional for the first tracks")
   void itShouldReturnTheEmptyOptionalForTheFirstTrack() {
     final List<Track> playlist = List.of(firstTrack, secondTrack, thirdTrack, fourthTrack,
         fifthTrack, sixthTrack);
@@ -57,7 +57,7 @@ class OrderedPlaylistPreviousTrackSelectorTest {
   }
 
   @Test
-  @DisplayName("if the playlist does not contain the track then the empty optional should be returned")
+  @DisplayName("if the playlist does not contain the tracks then the empty optional should be returned")
   void ifPlaylistDoesNotContainTrackThenEmptyOptionalShouldBeReturned() {
     final PreviousTrackSelector previousTrackSelector = new OrderedPlaylistPreviousTrackSelector(List.of(secondTrack, thirdTrack));
     var previousTrack = previousTrackSelector.getPreviousTrack(fourthTrack);

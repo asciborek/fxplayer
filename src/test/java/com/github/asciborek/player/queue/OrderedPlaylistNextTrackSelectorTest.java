@@ -29,7 +29,7 @@ class OrderedPlaylistNextTrackSelectorTest {
   }
 
   @Test
-  @DisplayName("it should select the next track on the playlist")
+  @DisplayName("it should select the next tracks on the playlist")
   void itShouldSelectNextTrackOnThePlaylist() {
     final List<Track> playlist = List.of(firstTrack, secondTrack, thirdTrack, fourthTrack,
         fifthTrack, sixthTrack);
@@ -39,7 +39,7 @@ class OrderedPlaylistNextTrackSelectorTest {
   }
 
   @Test
-  @DisplayName("after the last track the empty optional should be returned")
+  @DisplayName("after the last tracks the empty optional should be returned")
   void afterLastTrackEmptyOptionalShouldBeReturned() {
     final List<Track> playlist = List.of(firstTrack, secondTrack, thirdTrack, fourthTrack,
         fifthTrack, sixthTrack);
@@ -57,7 +57,7 @@ class OrderedPlaylistNextTrackSelectorTest {
   }
 
   @Test
-  @DisplayName("if the playlist does not contain the track then the empty optional should be returned")
+  @DisplayName("if the playlist does not contain the tracks then the empty optional should be returned")
   void ifPlaylistDoesNotContainTrackThenEmptyOptionalShouldBeReturned() {
     final NextTrackSelector nextTrackSelector = new OrderedPlaylistNextTrackSelector(List.of(thirdTrack, fourthTrack));
     var nextTrack = nextTrackSelector.getNextTrack(firstTrack);
