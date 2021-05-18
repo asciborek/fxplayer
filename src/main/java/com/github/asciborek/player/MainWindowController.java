@@ -2,6 +2,7 @@ package com.github.asciborek.player;
 
 import static javafx.scene.input.KeyCombination.keyCombination;
 
+import com.github.asciborek.FxPlayer.CloseApplicationEvent;
 import com.github.asciborek.player.command.OpenTrackFileCommand;
 import com.github.asciborek.player.command.PlayOrPauseTrackCommand;
 import com.github.asciborek.player.event.StartPlayingTrackEvent;
@@ -42,6 +43,7 @@ import org.slf4j.LoggerFactory;
 public final class MainWindowController implements Initializable {
 
   private static final Logger LOG = LoggerFactory.getLogger(MainWindowController.class);
+  private static final String PLAYLIST_AUTO_SAVE_FILENAME = "playlist_auto_save.plst";
   private static final List<String> AUDIO_FILE_EXTENSIONS = List.of("*.mp3");
   private static final String OPEN_FILE_KEY_COMBINATION = "Ctrl + O";
   private static final String ADD_TRACK_KEY_COMBINATION = "Ctrl + Shift + A";
@@ -49,7 +51,6 @@ public final class MainWindowController implements Initializable {
   private static final String CLEAR_PLAYLIST_COMBINATION = "Ctrl + Shift + Q";
   private static final ExtensionFilter PLAYLIST_EXTENSION_FILTER =
       new ExtensionFilter("playlist files (*.plst)", "*.plst" );
-
 
   private final EventBus eventBus;
   private final PlaylistService playlistService;
@@ -91,9 +92,18 @@ public final class MainWindowController implements Initializable {
   }
 
   public void initialize(URL url, ResourceBundle resourceBundle) {
+    playlistService.loadPlaylistWithExistingFiles(playlistAutoSaveFile()).
+        thenAccept(this::addTracksToPlaylist);
     playlistView.setItems(playlist);
     setCellValueFactories();
     registerKeyCombinations();
+  }
+
+  @Subscribe
+  @SuppressWarnings("unused")
+  public void onCloseExit(CloseApplicationEvent closeApplicationEvent) {
+    LOG.info("save {} track(s) to the auto-save playlist", playlist.size());
+    playlistService.savePlaylist(playlistAutoSaveFile(), ImmutableList.copyOf(playlist));
   }
 
   public void openFile() {
@@ -241,5 +251,8 @@ public final class MainWindowController implements Initializable {
     });
   }
 
+  private File playlistAutoSaveFile() {
+    return FileUtils.getApplicationDataDirectory().resolve(PLAYLIST_AUTO_SAVE_FILENAME).toFile();
+  }
 
 }

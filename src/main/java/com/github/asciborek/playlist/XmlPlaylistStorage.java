@@ -30,6 +30,10 @@ final class XmlPlaylistStorage implements PlaylistStorage {
 
   @Override
   public List<Track> loadPlaylist(Path playlistFilePath) {
+    if (!Files.exists(playlistFilePath)) {
+      LOG.info("playlist file {} does not exist, return an empty playlist", playlistFilePath);
+      return List.of();
+    }
     try (var reader = Files.newBufferedReader(playlistFilePath)) {
       return xmlMapper.readValue(reader, Playlist.class).tracks()
           .stream()
