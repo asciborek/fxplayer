@@ -5,6 +5,7 @@ import static javafx.scene.input.KeyCombination.keyCombination;
 import com.github.asciborek.FxPlayer.CloseApplicationEvent;
 import com.github.asciborek.player.command.OpenTrackFileCommand;
 import com.github.asciborek.player.command.PlayOrPauseTrackCommand;
+import com.github.asciborek.player.event.PlaylistOpenedEvent;
 import com.github.asciborek.player.event.StartPlayingTrackEvent;
 import com.github.asciborek.playlist.PlaylistService;
 import com.github.asciborek.playlist.Track;
@@ -44,13 +45,16 @@ public final class MainWindowController implements Initializable {
 
   private static final Logger LOG = LoggerFactory.getLogger(MainWindowController.class);
   private static final String PLAYLIST_AUTO_SAVE_FILENAME = "playlist_auto_save.plst";
+  private static final String PLAYLIST_FILE_EXTENSION = ".plst";
   private static final List<String> AUDIO_FILE_EXTENSIONS = List.of("*.mp3");
   private static final String OPEN_FILE_KEY_COMBINATION = "Ctrl + O";
   private static final String ADD_TRACK_KEY_COMBINATION = "Ctrl + Shift + A";
   private static final String ADD_DIRECTORY_KEY_COMBINATION = "Ctrl + Shift + D";
   private static final String CLEAR_PLAYLIST_COMBINATION = "Ctrl + Shift + Q";
+  private static final ExtensionFilter MUSIC_FILTER = new ExtensionFilter("Music",
+      List.of("*.mp3", "*.plst"));
   private static final ExtensionFilter PLAYLIST_EXTENSION_FILTER =
-      new ExtensionFilter("playlist files (*.plst)", "*.plst" );
+      new ExtensionFilter("playlist files (*.plst)", "*.plst");
 
   private final EventBus eventBus;
   private final PlaylistService playlistService;
@@ -83,7 +87,8 @@ public final class MainWindowController implements Initializable {
   private TableColumn<Track, String> filenameColumn;
 
   @Inject
-  public MainWindowController(EventBus eventBus, PlaylistService playlistService, SettingsService settingsService,  ObservableList<Track> playlist) {
+  public MainWindowController(EventBus eventBus, PlaylistService playlistService,
+      SettingsService settingsService, ObservableList<Track> playlist) {
     this.playlistService = playlistService;
     this.eventBus = eventBus;
     this.settingsService = settingsService;
@@ -108,17 +113,39 @@ public final class MainWindowController implements Initializable {
 
   public void openFile() {
     FileChooser fileChooser = new FileChooser();
-    fileChooser.getExtensionFilters().add(new ExtensionFilter("audio files", AUDIO_FILE_EXTENSIONS));
+    fileChooser.getExtensionFilters().add(MUSIC_FILTER);
     fileChooser.setInitialDirectory(settingsService.getOpenFileFileChooserInitDirectory());
     var selectedFile = fileChooser.showOpenDialog(new Popup());
     if (selectedFile != null) {
       settingsService.setOpenFileFileChooserInitDirectory(selectedFile.getParentFile());
-      MetadataUtils.getTrackMetaData(selectedFile)
-          .ifPresent(this::onOpenFile);
+      onOpenFile(selectedFile);
     }
   }
 
-  private void onOpenFile(Track track) {
+  private void onOpenFile(File file) {
+    if (file.getPath().endsWith(PLAYLIST_FILE_EXTENSION)) {
+      playlistService.loadPlaylistWithExistingFiles(file)
+          .thenAccept(this::onOpenPlaylist);
+    } else if (FileUtils.isSupportedAudioFile(file.getPath())) {
+      MetadataUtils.getTrackMetaData(file)
+          .ifPresent(this::onOpenAudioFile);
+    } else {
+      LOG.info("a not supported file extensions for the file: {}", file.getPath());
+    }
+  }
+
+  private void onOpenPlaylist(List<Track> loadedPlaylist) {
+    Platform.runLater(() -> {
+      playlist.clear();
+      if (!loadedPlaylist.isEmpty()) {
+        playlist.addAll(loadedPlaylist);
+        playlistView.refresh();
+        eventBus.post(new PlaylistOpenedEvent());
+      }
+    });
+  }
+
+  private void onOpenAudioFile(Track track) {
     playlist.clear();
     playlist.add(track);
     eventBus.post(new OpenTrackFileCommand(track));
@@ -126,7 +153,8 @@ public final class MainWindowController implements Initializable {
 
   public void addTrack() {
     FileChooser fileChooser = new FileChooser();
-    fileChooser.getExtensionFilters().add(new ExtensionFilter("audio files", AUDIO_FILE_EXTENSIONS));
+    fileChooser.getExtensionFilters()
+        .add(new ExtensionFilter("audio files", AUDIO_FILE_EXTENSIONS));
     fileChooser.setInitialDirectory(settingsService.getAddTrackFileChooserInitDirectory());
     var selectedFile = fileChooser.showOpenDialog(new Popup());
     if (selectedFile != null) {
@@ -138,10 +166,12 @@ public final class MainWindowController implements Initializable {
 
   public void addDirectory() {
     var directoryChooser = new DirectoryChooser();
-    directoryChooser.setInitialDirectory(settingsService.getDirectoryDirectoryChooserInitDirectory());
+    directoryChooser
+        .setInitialDirectory(settingsService.getDirectoryDirectoryChooserInitDirectory());
     var selectedDirectory = directoryChooser.showDialog(new Popup());
     if (selectedDirectory != null) {
-      settingsService.setAddDirectoryDirectoryChooserInitDirectory(selectedDirectory.getParentFile());
+      settingsService
+          .setAddDirectoryDirectoryChooserInitDirectory(selectedDirectory.getParentFile());
       playlistService.getDirectoryTracks(selectedDirectory)
           .thenAccept(this::addTracksToPlaylist);
     }
@@ -167,7 +197,8 @@ public final class MainWindowController implements Initializable {
     fileChooser.getExtensionFilters().add(PLAYLIST_EXTENSION_FILTER);
     var playlistFile = fileChooser.showOpenDialog(new Popup());
     if (playlistFile.exists()) {
-      playlistService.loadPlaylistWithExistingFiles(playlistFile).thenAccept(this::addTracksToPlaylist);
+      playlistService.loadPlaylistWithExistingFiles(playlistFile)
+          .thenAccept(this::addTracksToPlaylist);
     }
   }
 
@@ -205,7 +236,7 @@ public final class MainWindowController implements Initializable {
     eventBus.post(new PlayOrPauseTrackCommand(getSelectedTrack()));
   }
 
-  private void removeSelectedTrack(){
+  private void removeSelectedTrack() {
     playlist.remove(getSelectedTrack());
   }
 
@@ -245,7 +276,7 @@ public final class MainWindowController implements Initializable {
   }
 
   private void addTracksToPlaylist(Collection<Track> tracks) {
-    Platform.runLater(() ->{
+    Platform.runLater(() -> {
       playlist.addAll(tracks);
       playlistView.refresh();
     });

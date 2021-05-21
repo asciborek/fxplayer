@@ -2,6 +2,7 @@ package com.github.asciborek.player;
 
 import com.github.asciborek.player.command.OpenTrackFileCommand;
 import com.github.asciborek.player.command.PlayOrPauseTrackCommand;
+import com.github.asciborek.player.event.PlaylistOpenedEvent;
 import com.github.asciborek.player.event.StartPlayingTrackEvent;
 import com.github.asciborek.player.queue.NextTrackSelector;
 import com.github.asciborek.player.queue.OrderedPlaylistNextTrackSelector;
@@ -113,6 +114,14 @@ public final class AudioPlayerController implements Initializable {
           startPlayingNewTrack();
         }
       }
+    }
+  }
+
+  @Subscribe
+  @SuppressWarnings("unused")
+  public void onPlaylistOpenedEvent(PlaylistOpenedEvent event) {
+    if (!tracks.isEmpty()) {
+      startPlayingNewTrack(tracks.get(0));
     }
   }
 
