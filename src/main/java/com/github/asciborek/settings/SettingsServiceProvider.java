@@ -1,6 +1,7 @@
 package com.github.asciborek.settings;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.github.asciborek.util.FileUtils;
 import com.google.common.eventbus.EventBus;
@@ -24,9 +25,10 @@ public final class SettingsServiceProvider implements Provider<SettingsService> 
   }
 
   private ObjectMapper objectMapper() {
-    var objectMapper = new ObjectMapper();
-    objectMapper.registerModule(new Jdk8Module());
-    return  objectMapper;
+    var mapper = new ObjectMapper();
+    mapper.registerModule(new Jdk8Module());
+    mapper.enable(SerializationFeature.INDENT_OUTPUT);
+    return  mapper;
   }
 
   private Path settingsFilePath() {
