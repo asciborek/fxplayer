@@ -2,6 +2,7 @@ package com.github.asciborek.player;
 
 import com.github.asciborek.player.command.OpenTrackFileCommand;
 import com.github.asciborek.player.command.PlayOrPauseTrackCommand;
+import com.github.asciborek.player.event.PlaylistFinishedEvent;
 import com.github.asciborek.player.event.PlaylistOpenedEvent;
 import com.github.asciborek.player.event.StartPlayingTrackEvent;
 import com.github.asciborek.player.queue.NextTrackSelector;
@@ -241,6 +242,7 @@ public final class AudioPlayerController implements Initializable {
     totalTimeLabel.setText("");
     currentTimeLabel.setText("");
     LOG.info("playlist finished");
+    eventBus.post(new PlaylistFinishedEvent());
   }
 
   private enum PlayerState {

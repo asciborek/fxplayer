@@ -12,15 +12,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("UnstableApiUsage")
-public final class SettingsServiceProvider implements Provider<SettingsService> {
+public final class SettingsServiceFactory implements Provider<SettingsService> {
 
-  private static final Logger LOG = LoggerFactory.getLogger(SettingsServiceProvider.class);
+  private static final Logger LOG = LoggerFactory.getLogger(SettingsServiceFactory.class);
   private static final String SETTINGS_FILENAME = "settings.json";
 
   private final EventBus eventBus;
 
   @Inject
-  public SettingsServiceProvider(EventBus eventBus) {
+  public SettingsServiceFactory(EventBus eventBus) {
     this.eventBus = eventBus;
   }
 

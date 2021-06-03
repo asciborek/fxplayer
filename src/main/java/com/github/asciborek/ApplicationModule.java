@@ -1,7 +1,9 @@
 package com.github.asciborek;
 
+import com.github.asciborek.artist_info.ArtistInfoProvider;
+import com.github.asciborek.artist_info.ArtistInfoProviderFactory;
 import com.github.asciborek.settings.SettingsService;
-import com.github.asciborek.settings.SettingsServiceProvider;
+import com.github.asciborek.settings.SettingsServiceFactory;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
@@ -20,7 +22,8 @@ public final class ApplicationModule extends AbstractModule {
   protected void configure() {
     bind(EventBus.class).toInstance(new EventBus());
     bind(ExecutorService.class).toProvider(this::executorService).in(Scopes.SINGLETON);
-    bind(SettingsService.class).toProvider(SettingsServiceProvider.class).in(Scopes.SINGLETON);
+    bind(SettingsService.class).toProvider(SettingsServiceFactory.class).in(Scopes.SINGLETON);
+    bind(ArtistInfoProvider.class).toProvider(ArtistInfoProviderFactory.class).in(Scopes.SINGLETON);
   }
 
   private ExecutorService executorService() {

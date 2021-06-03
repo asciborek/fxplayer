@@ -28,6 +28,10 @@
     </MenuBar>
   </top>
 
+  <left>
+    <fx:include source="artist_info.fxml"/>
+  </left>
+
   <center>
     <TableView fx:id="playlistView" onMouseClicked="#onPlaylistMouseClicked" onKeyPressed="#onPlaylistKeyClicked">
       <placeholder>
