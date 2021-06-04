@@ -30,7 +30,8 @@ public final class ArtistInfoProviderFactory implements Provider<ArtistInfoProvi
 
   @Override
   public ArtistInfoProvider get() {
-    return new LastFmArtistInfoProvider(httpClient, lastFmApiKey);
+    var lastFmArtistInfoProvider = new LastFmArtistInfoProvider(httpClient, lastFmApiKey);
+    return new CachingArtistInfoProvider(lastFmArtistInfoProvider);
   }
 
   private Properties openProperties() {

@@ -9,6 +9,7 @@ open module fxplayer {
   requires com.google.common;
   requires com.google.guice;
   requires com.google.gson;
+  requires com.github.benmanes.caffeine;
   requires jaudiotagger;
   requires com.fasterxml.jackson.annotation;
   requires com.fasterxml.jackson.core;

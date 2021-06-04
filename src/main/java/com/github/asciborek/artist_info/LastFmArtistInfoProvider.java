@@ -1,12 +1,8 @@
 package com.github.asciborek.artist_info;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonToken;
 import com.google.common.collect.ImmutableList;
-import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import java.io.UncheckedIOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -28,12 +24,11 @@ final class LastFmArtistInfoProvider implements ArtistInfoProvider {
   private final String apiURI;
   private final String apiKey;
 
-  public LastFmArtistInfoProvider(HttpClient httpClient, String apiKey) {
+  LastFmArtistInfoProvider(HttpClient httpClient, String apiKey) {
     this(httpClient,  apiKey, LAST_FM_REQUEST_TEMPLATE);
   }
 
-  public LastFmArtistInfoProvider(HttpClient httpClient, String apiKey,
-      String requestUriFormat) {
+  LastFmArtistInfoProvider(HttpClient httpClient, String apiKey, String requestUriFormat) {
     this.httpClient = httpClient;
     this.apiURI = requestUriFormat;
     this.apiKey = apiKey;
@@ -47,7 +42,7 @@ final class LastFmArtistInfoProvider implements ArtistInfoProvider {
   }
 
   private HttpRequest createRequest(String artistName) {
-    var requestUri = String.format(apiURI, artistName, apiKey);
+    var requestUri = String.format(apiURI, artistName.replace(" ", "+"), apiKey);
     return HttpRequest.newBuilder()
         .uri(URI.create(requestUri))
         .GET()

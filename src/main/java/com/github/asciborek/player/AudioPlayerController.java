@@ -2,6 +2,7 @@ package com.github.asciborek.player;
 
 import com.github.asciborek.player.command.OpenTrackFileCommand;
 import com.github.asciborek.player.command.PlayOrPauseTrackCommand;
+import com.github.asciborek.player.event.PlaylistClearedEvent;
 import com.github.asciborek.player.event.PlaylistFinishedEvent;
 import com.github.asciborek.player.event.PlaylistOpenedEvent;
 import com.github.asciborek.player.event.StartPlayingTrackEvent;
@@ -150,10 +151,15 @@ public final class AudioPlayerController implements Initializable {
   private void onPlaylistChange(Change<? extends Track> change) {
     int playlistSize = tracks.size();
     switch (playlistSize) {
-      case 0 -> playlistTotalTimeLabel.setText("");
+      case 0 -> onEmptyPlaylist();
       case 1 -> formatPlaylistTotalTimeLabelForSingleTrack();
       default -> formatPlaylistTotalTimeLabelForMultiplyTracks(playlistSize);
     }
+  }
+
+  private void onEmptyPlaylist() {
+    playlistTotalTimeLabel.setText("");
+    eventBus.post(new PlaylistClearedEvent());
   }
 
   private void formatPlaylistTotalTimeLabelForSingleTrack() {

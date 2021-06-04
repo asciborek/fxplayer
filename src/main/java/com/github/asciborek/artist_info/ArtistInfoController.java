@@ -1,5 +1,6 @@
 package com.github.asciborek.artist_info;
 
+import com.github.asciborek.player.event.PlaylistClearedEvent;
 import com.github.asciborek.player.event.PlaylistFinishedEvent;
 import com.github.asciborek.player.event.StartPlayingTrackEvent;
 import com.google.common.eventbus.EventBus;
@@ -50,6 +51,17 @@ public class ArtistInfoController {
   @SuppressWarnings("unused")
   public void onPlaylistFinished(PlaylistFinishedEvent event) {
     LOG.info("received PlaylistFinishedEvent");
+    clearArtistInfo();
+  }
+
+  @Subscribe
+  @SuppressWarnings("unused")
+  public void onPlaylistCleared(PlaylistClearedEvent event) {
+    LOG.info("received PlaylistClearedEvent");
+    clearArtistInfo();
+  }
+
+  private void clearArtistInfo() {
     artistDescription.setText("");
     similarArtists.setText("");
   }
