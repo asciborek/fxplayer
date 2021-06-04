@@ -1,4 +1,5 @@
 open module fxplayer {
+  requires java.net.http;
   requires javafx.controls;
   requires javafx.graphics;
   requires javafx.fxml;
@@ -7,6 +8,7 @@ open module fxplayer {
   requires org.slf4j;
   requires com.google.common;
   requires com.google.guice;
+  requires com.google.gson;
   requires jaudiotagger;
   requires com.fasterxml.jackson.annotation;
   requires com.fasterxml.jackson.core;

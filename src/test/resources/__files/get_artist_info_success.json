@@ -1,0 +1,213 @@
+{
+  "artist": {
+    "name": "Haken",
+    "mbid": "dfsdfdsmf-3423432",
+    "url": "https://localhost/music/Haken",
+    "image": [
+      {
+        "#text": "https://localhost/i/u/1985.png",
+        "size": "small"
+      },
+      {
+        "#text": "https://localhost/i/u/1985.png",
+        "size": "medium"
+      },
+      {
+        "#text": "https://localhost/i/u/1985.png",
+        "size": "large"
+      },
+      {
+        "#text": "https://localhost/i/u/1985.png",
+        "size": "extralarge"
+      },
+      {
+        "#text": "https://localhost/i/u/1985.png",
+        "size": "mega"
+      },
+      {
+        "#text": "https://localhost/i/u/1985.png",
+        "size": ""
+      }
+    ],
+    "streamable": "0",
+    "ontour": "0",
+    "stats": {
+      "listeners": "100000",
+      "playcount": "6503300"
+    },
+    "similar": {
+      "artist": [
+        {
+          "name": "Caligula's Horse",
+          "url": "https://localhost/music/Caligula%27s+Horse",
+          "image": [
+            {
+              "#text": "https://localhost/i/u/1985.png",
+              "size": "small"
+            },
+            {
+              "#text": "https://localhost/i/u/1985.png",
+              "size": "medium"
+            },
+            {
+              "#text": "https://localhost/i/u/1985.png",
+              "size": "large"
+            },
+            {
+              "#text": "https://localhost/i/u/1985.png",
+              "size": "extralarge"
+            },
+            {
+              "#text": "https://localhost/i/u/1985.png",
+              "size": "mega"
+            },
+            {
+              "#text": "https://localhost/i/u/1985.png",
+              "size": ""
+            }
+          ]
+        },
+        {
+          "name": "Leprous",
+          "url": "https://localhost/music/Leprous",
+          "image": [
+            {
+              "#text": "https://localhost/i/u/1985.png",
+              "size": "small"
+            },
+            {
+              "#text": "https://localhost/i/u/1985.png",
+              "size": "medium"
+            },
+            {
+              "#text": "https://localhost/i/u/1985.png",
+              "size": "large"
+            },
+            {
+              "#text": "https://localhost/i/u/1985.png",
+              "size": "extralarge"
+            },
+            {
+              "#text": "https://localhost/i/u/1985.png",
+              "size": "mega"
+            },
+            {
+              "#text": "https://localhost/i/u/1985.png",
+              "size": ""
+            }
+          ]
+        },
+        {
+          "name": "Between the Buried and Me",
+          "url": "https://localhost/music/Between+the+Buried+and+Me",
+          "image": [
+            {
+              "#text": "https://localhost/i/u/1985.png",
+              "size": "small"
+            },
+            {
+              "#text": "https://localhost/i/u/1985.png",
+              "size": "medium"
+            },
+            {
+              "#text": "https://localhost/i/u/1985.png",
+              "size": "large"
+            },
+            {
+              "#text": "https://localhost/i/u/1985.png",
+              "size": "extralarge"
+            },
+            {
+              "#text": "https://localhost/i/u/1985.png",
+              "size": "mega"
+            },
+            {
+              "#text": "https://localhost/i/u/1985.png",
+              "size": ""
+            }
+          ]
+        },
+        {
+          "name": "Novena",
+          "url": "https://localhost/music/Novena",
+          "image": [
+            {
+              "#text": "https://localhost/i/u/1985.png",
+              "size": "small"
+            },
+            {
+              "#text": "https://localhost/i/u/1985.png",
+              "size": "medium"
+            },
+            {
+              "#text": "https://localhost/i/u/1985.png",
+              "size": "large"
+            },
+            {
+              "#text": "https://localhost/i/u/1985.png",
+              "size": "extralarge"
+            },
+            {
+              "#text": "https://localhost/i/u/1985.png",
+              "size": "mega"
+            },
+            {
+              "#text": "https://localhost/i/u/1985.png",
+              "size": ""
+            }
+          ]
+        },
+        {
+          "name": "Thank You Scientist",
+          "url": "https://localhost/music/Thank+You+Scientist",
+          "image": [
+            {
+              "#text": "https://localhost/i/u/1985.png",
+              "size": "small"
+            },
+            {
+              "#text": "https://localhost/i/u/1985.png",
+              "size": "medium"
+            },
+            {
+              "#text": "https://localhost/i/u/1985.png",
+              "size": "large"
+            },
+            {
+              "#text": "https://localhost/i/u/1985.png",
+              "size": "extralarge"
+            },
+            {
+              "#text": "https://localhost/i/u/1985.png",
+              "size": "mega"
+            },
+            {
+              "#text": "https://localhost/i/u/1985.png",
+              "size": ""
+            }
+          ]
+        }
+      ]
+    },
+    "tags": {
+      "tag": [
+        {
+          "name": "Prog",
+          "url": "https://localhost/tag/Prog"
+        }
+      ]
+    },
+    "bio": {
+      "links": {
+        "link": {
+          "#text": "",
+          "rel": "original",
+          "href": "https://localhost/music/Haken/+wiki"
+        }
+      },
+      "published": "05 Jun 2021, 20:00",
+      "summary": "Haken are English progressive metal band",
+      "content": "Haken are English progressive metal band"
+    }
+  }
+}
