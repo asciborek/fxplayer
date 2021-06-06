@@ -2,12 +2,14 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.control.ProgressBar?>
 <VBox xmlns="http://javafx.com/javafx"
   xmlns:fx="http://javafx.com/fxml"
   fx:controller="com.github.asciborek.player.AudioPlayerController"
@@ -20,14 +22,14 @@
         <Button style="-fx-background-color: white;" onMousePressed="#onPreviousTrackButtonClicked">
           <graphic>
             <ImageView>
-              <Image url="@../icons/previous.png" />
+              <Image url="@../icons/previous.png"/>
             </ImageView>
           </graphic>
         </Button>
         <Button style="-fx-background-color: white;" onMousePressed="#onPlayOrPauseButtonClicked">
           <graphic>
             <ImageView>
-              <Image url="@../icons/play_stop.png" />
+              <Image url="@../icons/play_stop.png"/>
             </ImageView>
           </graphic>
         </Button>
@@ -46,14 +48,30 @@
         <Slider fx:id="volumeSlider" minWidth="200" max="1"/>
         <Label fx:id="volumeLabel" text=" 100%"/>
       </HBox>
+      <HBox>
+        <ToggleButton fx:id="repeatButton" style="-fx-background-color: white;">
+          <graphic>
+            <ImageView>
+              <Image url="@../icons/repeat.png"/>
+            </ImageView>
+          </graphic>
+        </ToggleButton>
+        <ToggleButton fx:id="repeatTrackButton" style="-fx-background-color: white;">
+          <graphic>
+            <ImageView>
+              <Image url="@../icons/repeat_once.png"/>
+            </ImageView>
+          </graphic>
+        </ToggleButton>
+      </HBox>
     </HBox>
   </VBox>
   <VBox style="-fx-border-radius: 1;  -fx-border-color:black;">
     <HBox alignment="CENTER" minHeight="50">
       <Label fx:id="playlistTotalTimeLabel"/>
-      <Label fx:id="currentTimeLabel" />
+      <Label fx:id="currentTimeLabel"/>
       <ProgressBar fx:id="trackProgress" prefWidth="1200" onMouseReleased="#seek"/>
-      <Label fx:id="totalTimeLabel" />
+      <Label fx:id="totalTimeLabel"/>
     </HBox>
   </VBox>
 </VBox>

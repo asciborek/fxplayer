@@ -20,7 +20,9 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -28,6 +30,9 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Slider;
+import javafx.scene.control.Toggle;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -63,6 +68,12 @@ public final class AudioPlayerController implements Initializable {
   @FXML
   private ProgressBar trackProgress;
 
+  private ToggleGroup playlistToggleGroup;
+  @FXML
+  private ToggleButton repeatButton;
+  @FXML
+  private ToggleButton repeatTrackButton;
+
   @Inject
   public AudioPlayerController(EventBus eventBus, SettingsService settingsService, ObservableList<Track> tracks) {
     this.eventBus = eventBus;
@@ -80,6 +91,9 @@ public final class AudioPlayerController implements Initializable {
     volumeProperty.addListener(this::onVolumeChange);
     volumeProperty.set(settingsService.getVolume());
     tracks.addListener(this::onPlaylistChange);
+    playlistToggleGroup = new ToggleGroup();
+    playlistToggleGroup.getToggles().addAll(repeatButton, repeatTrackButton);
+    playlistToggleGroup.selectedToggleProperty().addListener(this::onPlaylistToggleGroupChanged);
   }
 
   @Subscribe
@@ -155,6 +169,11 @@ public final class AudioPlayerController implements Initializable {
       case 1 -> formatPlaylistTotalTimeLabelForSingleTrack();
       default -> formatPlaylistTotalTimeLabelForMultiplyTracks(playlistSize);
     }
+  }
+
+  private void onPlaylistToggleGroupChanged(ObservableValue<? extends Toggle> change,
+      Toggle oldSelectedButton, Toggle newSelectedButton) {
+    LOG.info("onPlaylistToggleGroupChanged {}, {}", oldSelectedButton, newSelectedButton);
   }
 
   private void onEmptyPlaylist() {
