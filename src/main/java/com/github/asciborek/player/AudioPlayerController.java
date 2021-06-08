@@ -6,10 +6,6 @@ import com.github.asciborek.player.event.PlaylistClearedEvent;
 import com.github.asciborek.player.event.PlaylistFinishedEvent;
 import com.github.asciborek.player.event.PlaylistOpenedEvent;
 import com.github.asciborek.player.event.StartPlayingTrackEvent;
-import com.github.asciborek.player.queue.NextTrackSelector;
-import com.github.asciborek.player.queue.OrderedPlaylistNextTrackSelector;
-import com.github.asciborek.player.queue.OrderedPlaylistPreviousTrackSelector;
-import com.github.asciborek.player.queue.PreviousTrackSelector;
 import com.github.asciborek.playlist.Track;
 import com.github.asciborek.settings.SettingsService;
 import com.github.asciborek.util.DurationUtils;
@@ -20,9 +16,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -51,8 +45,7 @@ public final class AudioPlayerController implements Initializable {
   private PlayerState playerState = PlayerState.READY;
   private Track currentTrack;
   private MediaPlayer mediaPlayer;
-  private NextTrackSelector nextTrackSelector;
-  private PreviousTrackSelector previousTrackSelector;
+  private QueueManager queueManager;
   private final DoubleProperty volumeProperty = new SimpleDoubleProperty(1);
   // UI Fields
   @FXML
@@ -79,8 +72,7 @@ public final class AudioPlayerController implements Initializable {
     this.eventBus = eventBus;
     this.settingsService = settingsService;
     this.tracks = tracks;
-    this.nextTrackSelector = new OrderedPlaylistNextTrackSelector(tracks);
-    this.previousTrackSelector = new OrderedPlaylistPreviousTrackSelector(tracks);
+    this.queueManager = new OrderedPlaylistQueueManager(tracks);
     eventBus.register(this);
   }
 
@@ -218,13 +210,13 @@ public final class AudioPlayerController implements Initializable {
 
   public void onPreviousTrackButtonClicked() {
     if (playerState != PlayerState.READY) {
-      previousTrackSelector.getPreviousTrack(currentTrack)
+      queueManager.getPreviousTrack(currentTrack)
           .ifPresent(this::startPlayingNewTrack);
     }
   }
 
   private void nextTrack() {
-    nextTrackSelector.getNextTrack(currentTrack)
+    queueManager.getNextTrack(currentTrack)
         .ifPresentOrElse(this::startPlayingNewTrack, this::onPlaylistFinished);
   }
 
