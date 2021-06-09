@@ -8,7 +8,7 @@ final class RepeatTrackQueueManager  implements QueueManager{
 
   private final List<Track> playlist;
 
-  public RepeatTrackQueueManager(List<Track> playlist) {
+  RepeatTrackQueueManager(List<Track> playlist) {
     this.playlist = playlist;
   }
 
