@@ -1,7 +1,7 @@
 package com.github.asciborek.player;
 
 import com.github.asciborek.playlist.PlaylistService;
-import com.github.asciborek.playlist.PlaylistServiceProvider;
+import com.github.asciborek.playlist.PlaylistServiceFactory;
 import com.github.asciborek.playlist.Track;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
@@ -14,7 +14,7 @@ public final class PlayerModule extends AbstractModule {
 
   @Override
   protected void configure() {
-    bind(PlaylistService.class).toProvider(PlaylistServiceProvider.class).in(Scopes.SINGLETON);
+    bind(PlaylistService.class).toProvider(PlaylistServiceFactory.class).in(Scopes.SINGLETON);
   }
 
   @Provides

@@ -9,13 +9,13 @@ import com.google.inject.Provider;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
-public final class PlaylistServiceProvider implements Provider<PlaylistService> {
+public final class PlaylistServiceFactory implements Provider<PlaylistService> {
 
   private static final List<String> SUPPORTED_AUDIO_FILES_EXTENSIONS = List.of(".mp3");
   private final ExecutorService executorService;
 
   @Inject
-  public PlaylistServiceProvider(ExecutorService executorService) {
+  public PlaylistServiceFactory(ExecutorService executorService) {
     this.executorService = executorService;
   }
 
