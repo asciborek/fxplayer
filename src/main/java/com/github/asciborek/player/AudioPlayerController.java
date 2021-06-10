@@ -6,10 +6,6 @@ import com.github.asciborek.player.event.PlaylistClearedEvent;
 import com.github.asciborek.player.event.PlaylistFinishedEvent;
 import com.github.asciborek.player.event.PlaylistOpenedEvent;
 import com.github.asciborek.player.event.StartPlayingTrackEvent;
-import com.github.asciborek.player.queue.NextTrackSelector;
-import com.github.asciborek.player.queue.OrderedPlaylistNextTrackSelector;
-import com.github.asciborek.player.queue.OrderedPlaylistPreviousTrackSelector;
-import com.github.asciborek.player.queue.PreviousTrackSelector;
 import com.github.asciborek.playlist.Track;
 import com.github.asciborek.settings.SettingsService;
 import com.github.asciborek.util.DurationUtils;
@@ -28,6 +24,9 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Slider;
+import javafx.scene.control.Toggle;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -46,8 +45,7 @@ public final class AudioPlayerController implements Initializable {
   private PlayerState playerState = PlayerState.READY;
   private Track currentTrack;
   private MediaPlayer mediaPlayer;
-  private NextTrackSelector nextTrackSelector;
-  private PreviousTrackSelector previousTrackSelector;
+  private QueueManager queueManager;
   private final DoubleProperty volumeProperty = new SimpleDoubleProperty(1);
   // UI Fields
   @FXML
@@ -63,13 +61,17 @@ public final class AudioPlayerController implements Initializable {
   @FXML
   private ProgressBar trackProgress;
 
+  @FXML
+  private ToggleButton repeatPlaylistButton;
+  @FXML
+  private ToggleButton repeatTrackButton;
+
   @Inject
   public AudioPlayerController(EventBus eventBus, SettingsService settingsService, ObservableList<Track> tracks) {
     this.eventBus = eventBus;
     this.settingsService = settingsService;
     this.tracks = tracks;
-    this.nextTrackSelector = new OrderedPlaylistNextTrackSelector(tracks);
-    this.previousTrackSelector = new OrderedPlaylistPreviousTrackSelector(tracks);
+    this.queueManager = new OrderedPlaylistQueueManager(tracks);
     eventBus.register(this);
   }
 
@@ -80,6 +82,9 @@ public final class AudioPlayerController implements Initializable {
     volumeProperty.addListener(this::onVolumeChange);
     volumeProperty.set(settingsService.getVolume());
     tracks.addListener(this::onPlaylistChange);
+    var playlistToggleGroup = new ToggleGroup();
+    playlistToggleGroup.getToggles().addAll(repeatPlaylistButton, repeatTrackButton);
+    playlistToggleGroup.selectedToggleProperty().addListener(this::onPlaylistToggleGroupChanged);
   }
 
   @Subscribe
@@ -157,6 +162,18 @@ public final class AudioPlayerController implements Initializable {
     }
   }
 
+  private void onPlaylistToggleGroupChanged(ObservableValue<? extends Toggle> change,
+      Toggle oldSelectedButton, Toggle newSelectedButton) {
+    LOG.info("onPlaylistToggleGroupChanged newSelectedButton: {}", newSelectedButton);
+    if (newSelectedButton == repeatTrackButton) {
+      queueManager = new RepeatTrackQueueManager(tracks);
+    } else if (newSelectedButton == repeatPlaylistButton) {
+      queueManager = new RepeatPlaylistQueueManager(tracks);
+    } else {
+      queueManager = new OrderedPlaylistQueueManager(tracks);
+    }
+  }
+
   private void onEmptyPlaylist() {
     playlistTotalTimeLabel.setText("");
     eventBus.post(new PlaylistClearedEvent());
@@ -199,13 +216,13 @@ public final class AudioPlayerController implements Initializable {
 
   public void onPreviousTrackButtonClicked() {
     if (playerState != PlayerState.READY) {
-      previousTrackSelector.getPreviousTrack(currentTrack)
+      queueManager.getPreviousTrack(currentTrack)
           .ifPresent(this::startPlayingNewTrack);
     }
   }
 
   private void nextTrack() {
-    nextTrackSelector.getNextTrack(currentTrack)
+    queueManager.getNextTrack(currentTrack)
         .ifPresentOrElse(this::startPlayingNewTrack, this::onPlaylistFinished);
   }
 
