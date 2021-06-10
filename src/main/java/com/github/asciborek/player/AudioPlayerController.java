@@ -61,9 +61,8 @@ public final class AudioPlayerController implements Initializable {
   @FXML
   private ProgressBar trackProgress;
 
-  private ToggleGroup playlistToggleGroup;
   @FXML
-  private ToggleButton repeatButton;
+  private ToggleButton repeatPlaylistButton;
   @FXML
   private ToggleButton repeatTrackButton;
 
@@ -83,8 +82,8 @@ public final class AudioPlayerController implements Initializable {
     volumeProperty.addListener(this::onVolumeChange);
     volumeProperty.set(settingsService.getVolume());
     tracks.addListener(this::onPlaylistChange);
-    playlistToggleGroup = new ToggleGroup();
-    playlistToggleGroup.getToggles().addAll(repeatButton, repeatTrackButton);
+    var playlistToggleGroup = new ToggleGroup();
+    playlistToggleGroup.getToggles().addAll(repeatPlaylistButton, repeatTrackButton);
     playlistToggleGroup.selectedToggleProperty().addListener(this::onPlaylistToggleGroupChanged);
   }
 
@@ -165,7 +164,14 @@ public final class AudioPlayerController implements Initializable {
 
   private void onPlaylistToggleGroupChanged(ObservableValue<? extends Toggle> change,
       Toggle oldSelectedButton, Toggle newSelectedButton) {
-    LOG.info("onPlaylistToggleGroupChanged {}, {}", oldSelectedButton, newSelectedButton);
+    LOG.info("onPlaylistToggleGroupChanged newSelectedButton: {}", newSelectedButton);
+    if (newSelectedButton == repeatTrackButton) {
+      queueManager = new RepeatTrackQueueManager(tracks);
+    } else if (newSelectedButton == repeatPlaylistButton) {
+      queueManager = new RepeatPlaylistQueueManager(tracks);
+    } else {
+      queueManager = new OrderedPlaylistQueueManager(tracks);
+    }
   }
 
   private void onEmptyPlaylist() {

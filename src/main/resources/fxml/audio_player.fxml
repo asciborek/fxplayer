@@ -5,7 +5,6 @@
 <?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.Slider?>
 <?import javafx.scene.control.ToggleButton?>
-<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
@@ -49,7 +48,7 @@
         <Label fx:id="volumeLabel" text=" 100%"/>
       </HBox>
       <HBox>
-        <ToggleButton fx:id="repeatButton" style="-fx-background-color: white;">
+        <ToggleButton style="-fx-background-color: white;" fx:id="repeatPlaylistButton">
           <graphic>
             <ImageView>
               <Image url="@../icons/repeat.png"/>
