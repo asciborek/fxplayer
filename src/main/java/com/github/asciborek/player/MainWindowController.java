@@ -3,10 +3,10 @@ package com.github.asciborek.player;
 import static javafx.scene.input.KeyCombination.keyCombination;
 
 import com.github.asciborek.FxPlayer.CloseApplicationEvent;
-import com.github.asciborek.player.command.OpenTrackFileCommand;
-import com.github.asciborek.player.command.PlayOrPauseTrackCommand;
-import com.github.asciborek.player.event.PlaylistOpenedEvent;
-import com.github.asciborek.player.event.StartPlayingTrackEvent;
+import com.github.asciborek.player.PlayerCommands.OpenTrackFileCommand;
+import com.github.asciborek.player.PlayerCommands.PlayOrPauseTrackCommand;
+import com.github.asciborek.player.PlayerEvents.PlaylistOpenedEvent;
+import com.github.asciborek.player.PlayerEvents.StartPlayingTrackEvent;
 import com.github.asciborek.playlist.PlaylistService;
 import com.github.asciborek.playlist.Track;
 import com.github.asciborek.settings.SettingsService;

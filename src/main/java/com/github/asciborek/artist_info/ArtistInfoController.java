@@ -1,8 +1,8 @@
 package com.github.asciborek.artist_info;
 
-import com.github.asciborek.player.event.PlaylistClearedEvent;
-import com.github.asciborek.player.event.PlaylistFinishedEvent;
-import com.github.asciborek.player.event.StartPlayingTrackEvent;
+import com.github.asciborek.player.PlayerEvents.PlaylistClearedEvent;
+import com.github.asciborek.player.PlayerEvents.PlaylistFinishedEvent;
+import com.github.asciborek.player.PlayerEvents.StartPlayingTrackEvent;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
