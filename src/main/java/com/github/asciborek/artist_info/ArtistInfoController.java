@@ -43,6 +43,7 @@ public class ArtistInfoController {
       currentArtist = newArtist;
       artistInfoProvider
           .getArtistInfo(currentArtist)
+          .exceptionally(ex -> ArtistInfo.UNREACHABLE)
           .thenAccept(this::loadArtistInfo);
     }
   }

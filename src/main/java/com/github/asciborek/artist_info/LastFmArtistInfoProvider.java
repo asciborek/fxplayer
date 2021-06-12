@@ -51,7 +51,7 @@ final class LastFmArtistInfoProvider implements ArtistInfoProvider {
 
   private ArtistInfo parseResponse(HttpResponse<String> response) {
     if (response.statusCode() != HTTP_OK) {
-      return ArtistInfo.UNREACHABLE;
+      throw new FetchLastFmArtistInfoException(response.statusCode());
     }
     return parseResponse(response.body());
   }
@@ -84,5 +84,11 @@ final class LastFmArtistInfoProvider implements ArtistInfoProvider {
     return similarArtistsBuilder.build();
   }
 
+
+  static final class FetchLastFmArtistInfoException extends RuntimeException{
+    FetchLastFmArtistInfoException(int statusCode) {
+      super("Could not fetch last.fm artist info, the response status: " + statusCode);
+    }
+  }
 
 }
