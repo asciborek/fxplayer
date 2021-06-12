@@ -43,6 +43,7 @@ final class LastFmArtistInfoProvider implements ArtistInfoProvider {
 
   private HttpRequest createRequest(String artistName) {
     var requestUri = String.format(apiURI, artistName.replace(" ", "+"), apiKey);
+    LOG.info("artist info request URI: {}", requestUri);
     return HttpRequest.newBuilder()
         .uri(URI.create(requestUri))
         .GET()
