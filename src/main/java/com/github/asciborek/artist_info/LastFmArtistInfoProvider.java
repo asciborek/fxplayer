@@ -1,5 +1,6 @@
 package com.github.asciborek.artist_info;
 
+import com.google.common.base.Stopwatch;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -10,6 +11,7 @@ import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,13 +39,19 @@ final class LastFmArtistInfoProvider implements ArtistInfoProvider {
   @Override
   public CompletableFuture<ArtistInfo> getArtistInfo(String artistName) {
     LOG.info("send request for artist {} info", artistName);
+    var stopWatch = Stopwatch.createStarted();
     return httpClient.sendAsync(createRequest(artistName), BodyHandlers.ofString())
+        .whenComplete(((response, throwable) -> logTime(artistName, stopWatch)))
         .thenApply(this::parseResponse);
+  }
+
+  private void logTime(String artistName, Stopwatch stopwatch) {
+    var elapsedTime = stopwatch.stop().elapsed(TimeUnit.MILLISECONDS);
+    LOG.info("get artist info request for {} complete, execution time: {} (ms) ", artistName, elapsedTime);
   }
 
   private HttpRequest createRequest(String artistName) {
     var requestUri = String.format(apiURI, artistName.replace(" ", "+"), apiKey);
-    LOG.info("artist info request URI: {}", requestUri);
     return HttpRequest.newBuilder()
         .uri(URI.create(requestUri))
         .GET()
