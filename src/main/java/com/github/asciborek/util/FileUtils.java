@@ -1,5 +1,7 @@
 package com.github.asciborek.util;
 
+import static com.google.common.io.Files.getFileExtension;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -10,7 +12,7 @@ public final class FileUtils {
 
   private static final String USER_HOME = "user.home";
   private static final String TEMP_DIRECTORY = "java.io.tmpdir";
-  private static final List<String> SUPPORTED_AUDIO_FILES_EXTENSIONS = List.of(".mp3");
+  private static final List<String> SUPPORTED_AUDIO_FILES_EXTENSIONS = List.of("mp3", "mp4", "wav");
 
   private FileUtils() {
   }
@@ -62,8 +64,9 @@ public final class FileUtils {
   }
 
   private static boolean hasSupportedExtension(String file, Iterable<String> extensions) {
+    var fileExtension = getFileExtension(file);
     for (String extension : extensions) {
-      if (file.endsWith(extension)) {
+      if (extension.equals(fileExtension)) {
         return true;
       }
     }

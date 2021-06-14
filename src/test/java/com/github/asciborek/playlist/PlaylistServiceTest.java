@@ -22,7 +22,7 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 
 @TestInstance(Lifecycle.PER_CLASS)
 class PlaylistServiceTest {
-  private final List<String> supportedAudioExtensions = List.of(".mp3");
+  private final List<String> supportedAudioExtensions = List.of("mp3", "mp4", "wav");
   private final ExecutorService executorService = Executors.newSingleThreadExecutor();
   private final PlaylistService playlistService = getPlaylistService();
 
@@ -36,9 +36,10 @@ class PlaylistServiceTest {
   void itShouldLoadAllAudioFilesFromDirectory() throws Exception {
     var future = playlistService.getDirectoryTracks(getPathFromResource().toFile());
     var result = future.get(5, TimeUnit.SECONDS);
-    Assertions.assertEquals(2, result.size());
+    Assertions.assertEquals(3, result.size());
     Assertions.assertEquals("1_test_audio.mp3", result.get(0).fileName());
-    Assertions.assertEquals("2_test_audio.mp3", result.get(1).fileName());
+    Assertions.assertEquals("2_test_audio.mp4", result.get(1).fileName());
+    Assertions.assertEquals("3_test_audio.wav", result.get(2).fileName());
   }
 
   @Test
@@ -46,7 +47,7 @@ class PlaylistServiceTest {
   void itShouldWriteAndLoadTracksFromPlaylistFile() throws Exception {
     //Prepare Data
     var firstExistingFilePath = getAudioFilePath("1_test_audio.mp3");
-    var secondExistingFilePath = getAudioFilePath("2_test_audio.mp3");
+    var secondExistingFilePath = getAudioFilePath("2_test_audio.mp4");
     var notExistingFilePath = getAudioFilePath("404.mp3");
     var playlistToSave = List.of(testTrack(firstExistingFilePath),
         testTrack(secondExistingFilePath), testTrack(notExistingFilePath));

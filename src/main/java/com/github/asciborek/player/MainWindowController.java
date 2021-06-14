@@ -44,17 +44,21 @@ import org.slf4j.LoggerFactory;
 public final class MainWindowController implements Initializable {
 
   private static final Logger LOG = LoggerFactory.getLogger(MainWindowController.class);
+
   private static final String PLAYLIST_AUTO_SAVE_FILENAME = "playlist_auto_save.plst";
   private static final String PLAYLIST_FILE_EXTENSION = ".plst";
-  private static final List<String> AUDIO_FILE_EXTENSIONS = List.of("*.mp3");
+
   private static final String OPEN_FILE_KEY_COMBINATION = "Ctrl + O";
   private static final String ADD_TRACK_KEY_COMBINATION = "Ctrl + Shift + A";
   private static final String ADD_DIRECTORY_KEY_COMBINATION = "Ctrl + Shift + D";
   private static final String CLEAR_PLAYLIST_COMBINATION = "Ctrl + Shift + Q";
-  private static final ExtensionFilter MUSIC_FILTER = new ExtensionFilter("Music",
-      List.of("*.mp3", "*.plst"));
-  private static final ExtensionFilter PLAYLIST_EXTENSION_FILTER =
-      new ExtensionFilter("playlist files (*.plst)", "*.plst");
+
+  private static final ExtensionFilter AUDIO_FILES_FILTER = new ExtensionFilter(
+      "audio files (mp3, mp4, wav", List.of("*.mp3", "*.wav", "*.mp4"));
+  private static final ExtensionFilter MUSIC_FILTER = new ExtensionFilter(
+      "Music", List.of("*.mp3", "*.wav", "*.mp4", "*.plst"));
+  private static final ExtensionFilter PLAYLIST_EXTENSION_FILTER = new ExtensionFilter(
+      "playlist files (*.plst)", "*.plst");
 
   private final EventBus eventBus;
   private final PlaylistService playlistService;
@@ -153,8 +157,7 @@ public final class MainWindowController implements Initializable {
 
   public void addTrack() {
     FileChooser fileChooser = new FileChooser();
-    fileChooser.getExtensionFilters()
-        .add(new ExtensionFilter("audio files", AUDIO_FILE_EXTENSIONS));
+    fileChooser.getExtensionFilters().add(AUDIO_FILES_FILTER);
     fileChooser.setInitialDirectory(settingsService.getAddTrackFileChooserInitDirectory());
     var selectedFile = fileChooser.showOpenDialog(new Popup());
     if (selectedFile != null) {

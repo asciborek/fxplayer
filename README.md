@@ -1,5 +1,4 @@
-FxPlayer is my music player written for fun. Currently it handles
-only with mp3 files.
+FxPlayer is my music player written for fun. Currently it supports mp3, mp4 and wav files.
 
 ## How to build the application
 In order to build the application you need JDK 16, and
@@ -27,15 +26,15 @@ In order to ensure testability and loose coupling I use dependency injection imp
 component scanning. 
 
 ## Implemented features:
-- [x] Playing mp3 file.
+- [x] Playing mp3, mp4 or wav file.
+- [x] Displaying metadata (artist, album, title, track length).
 - [x] Loading single files and directories as well.
 - [x] Saving and loading playlist files. Load and save the last playlist.
 - [x] Storing and loading the last application settings(e.g: volume level).
 - [x] Fetching artist info from last.fm and displaying it.
-- [x] "repeat a track" and "repeat a playlist" options
+- [x] "repeat a track" and "repeat a playlist" options.
 
 ## Features to implement
 - Scrobbling played tracks to last.fm
 - Display the current track album cover
 - Shuffle playlist option
-- Add more supported file extensions(if it is possible)
