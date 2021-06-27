@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.VBox?>
 <VBox xmlns="http://javafx.com/javafx"
   xmlns:fx="http://javafx.com/fxml"
   fx:controller="com.github.asciborek.artist_info.ArtistInfoController"
   minHeight="600.0" minWidth="300.0">
 
-  <TextArea fx:id="artistDescription" wrapText="true" minHeight="400" editable="false"/>
-  <TextField fx:id="similarArtists" editable="false"/>
+  <TextArea fx:id="artistDescription" wrapText="true" minHeight="300" editable="false"/>
+  <TextArea fx:id="similarArtists" editable="false" minHeight="120" maxHeight="120"/>
 
 </VBox>

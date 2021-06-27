@@ -7,6 +7,7 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
 <BorderPane xmlns="http://javafx.com/javafx"
   xmlns:fx="http://javafx.com/fxml"
   fx:controller="com.github.asciborek.player.MainWindowController"
@@ -29,7 +30,10 @@
   </top>
 
   <left>
-    <fx:include source="artist_info.fxml"/>
+    <VBox maxWidth="300">
+      <fx:include source="album_cover.fxml"/>
+      <fx:include source="artist_info.fxml"/>
+    </VBox>
   </left>
 
   <center>

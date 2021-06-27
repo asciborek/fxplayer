@@ -3,7 +3,6 @@ package com.github.asciborek.artist_info;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 
-import com.fasterxml.jackson.core.JsonFactory;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import java.net.http.HttpClient;
@@ -28,7 +27,7 @@ public class LastFmArtistInfoProviderTest {
   private final ExecutorService executorService = Executors.newSingleThreadExecutor();
   private final HttpClient httpClient= httpClient();
   private final ArtistInfoProvider artistInfoProvider
-      = new LastFmArtistInfoProvider(httpClient, API_KEY, REQUEST_URI_TEMPLATE);
+      = new LastFmArtistInfoProvider(httpClient, executorService, API_KEY, REQUEST_URI_TEMPLATE);
   private final WireMockServer wireMockServer = new WireMockServer();
 
   @BeforeAll
@@ -71,8 +70,7 @@ public class LastFmArtistInfoProviderTest {
 
   private HttpClient httpClient() {
     return HttpClient.newBuilder()
-        .executor(executorService)
-        .connectTimeout(Duration.ofMinutes(10))
+        .connectTimeout(Duration.ofMinutes(1))
         .build();
   }
 }

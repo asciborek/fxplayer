@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.VBox?>
+<VBox xmlns="http://javafx.com/javafx"
+  xmlns:fx="http://javafx.com/fxml"
+  fx:controller="com.github.asciborek.album_cover.AlbumCoverController"
+  minHeight="300.0" minWidth="300.0">
+
+  <ImageView fx:id="albumCoverImageView"/>
+
+</VBox>

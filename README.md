@@ -33,8 +33,8 @@ component scanning.
 - [x] Storing and loading the last application settings(e.g: volume level).
 - [x] Fetching artist info from last.fm and displaying it.
 - [x] "repeat a track" and "repeat a playlist" options.
+- [x] Display the current track album cover
 
 ## Features to implement
 - Scrobbling played tracks to last.fm
-- Display the current track album cover
 - Shuffle playlist option

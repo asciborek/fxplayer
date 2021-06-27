@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,17 +21,17 @@ public class ArtistInfoController {
   private String currentArtist = NONE_ARTIST;
   private final ArtistInfoProvider artistInfoProvider;
 
+  @FXML
+  private TextArea artistDescription;
+
+  @FXML
+  private TextArea similarArtists;
+
   @Inject
   public ArtistInfoController(ArtistInfoProvider artistInfoProvider, EventBus eventBus) {
     this.artistInfoProvider = artistInfoProvider;
     eventBus.register(this);
   }
-
-  @FXML
-  private TextArea artistDescription;
-
-  @FXML
-  private TextField similarArtists;
 
   @Subscribe
   @SuppressWarnings("unused")
@@ -81,7 +80,7 @@ public class ArtistInfoController {
     } else {
       return "Similar artists: " + similarArtists.stream()
           .limit(5)
-          .collect(Collectors.joining(", "));
+          .collect(Collectors.joining("\n"));
     }
   }
 }

@@ -1,5 +1,7 @@
 package com.github.asciborek;
 
+import com.github.asciborek.album_cover.AlbumCoverProvider;
+import com.github.asciborek.album_cover.AlbumCoverProviderFactory;
 import com.github.asciborek.artist_info.ArtistInfoProvider;
 import com.github.asciborek.artist_info.ArtistInfoProviderFactory;
 import com.github.asciborek.settings.SettingsService;
@@ -35,6 +37,7 @@ public final class ApplicationModule extends AbstractModule {
     bind(ExecutorService.class).toProvider(this::executorService).in(Scopes.SINGLETON);
     bind(SettingsService.class).toProvider(SettingsServiceFactory.class).in(Scopes.SINGLETON);
     bind(ArtistInfoProvider.class).toProvider(ArtistInfoProviderFactory.class).in(Scopes.SINGLETON);
+    bind(AlbumCoverProvider.class).toProvider(AlbumCoverProviderFactory.class).in(Scopes.SINGLETON);
   }
 
   private ExecutorService executorService() {
@@ -50,13 +53,11 @@ public final class ApplicationModule extends AbstractModule {
 
   @Provides
   @Singleton
-  public HttpClient lastFmHttpClient(ExecutorService executorService) {
+  public HttpClient lastFmHttpClient() {
     return HttpClient.newBuilder()
         .connectTimeout(Duration.ofSeconds(10))
-        .executor(executorService)
         .build();
   }
-
 
   private Properties openProperties() {
     var properties = new Properties();
