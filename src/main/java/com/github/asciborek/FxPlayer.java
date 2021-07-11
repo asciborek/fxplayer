@@ -4,8 +4,13 @@ import static com.google.common.io.Resources.getResource;
 
 import com.github.asciborek.player.PlayerModule;
 import com.google.common.eventbus.EventBus;
+import com.google.common.io.Resources;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UncheckedIOException;
+import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import javafx.application.Application;
@@ -20,7 +25,10 @@ import org.slf4j.LoggerFactory;
 public final class FxPlayer extends Application {
 
   private static final Logger LOG = LoggerFactory.getLogger(FxPlayer.class);
-  private final Injector injector = Guice.createInjector(new ApplicationModule(), new PlayerModule());
+  private static final String API_KEYS_FILE_NAME =  "api_keys.properties";
+
+  private final Properties apiProperties = readApiProperties();
+  private final Injector injector = Guice.createInjector(new ApplicationModule(), new PlayerModule(), new IntegrationModule(apiProperties));
   private final EventBus eventBus = injector.getInstance(EventBus.class);
 
   public static void main(String[] args) {
@@ -52,6 +60,16 @@ public final class FxPlayer extends Application {
     LOG.info("Application Exit");
     eventBus.post(new CloseApplicationEvent());
     new Thread(this::shutdownExecutor).start(); //to prevent frozen UI
+  }
+
+  private Properties readApiProperties() {
+    var properties = new Properties();
+    try (InputStream inputStream = Resources.getResource(API_KEYS_FILE_NAME).openStream()) {
+      properties.load(inputStream);
+    } catch (IOException e) {
+      throw new UncheckedIOException(e);
+    }
+    return properties;
   }
 
   private void shutdownExecutor() {
