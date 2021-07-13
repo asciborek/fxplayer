@@ -11,7 +11,7 @@ that it will work on other operating systems.
 
 ## Application design
 ### Package structure
-Core package(subpackages of ```com.github.asciborek```) are seperated by features, not technical
+Core packages(subpackages of ```com.github.asciborek```) are seperated by features, not technical
 details (like data, services, controllers etc). This kind of design Robert C. Martin describes as
 [Screaming Architecture](https://blog.cleancoder.com/uncle-bob/2011/09/30/Screaming-Architecture.html).
 
@@ -34,7 +34,8 @@ component scanning.
 - [x] Fetching artist info from last.fm and displaying it.
 - [x] "repeat a track" and "repeat a playlist" options.
 - [x] Display the current track album cover
+- [x] Shuffling the  playlist 
 
 ## Features to implement
+- Editing tracks metadata
 - Scrobbling played tracks to last.fm
-- Shuffle playlist option

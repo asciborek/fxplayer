@@ -19,6 +19,7 @@ import com.google.inject.Inject;
 import java.io.File;
 import java.net.URL;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
@@ -183,6 +184,14 @@ public final class MainWindowController implements Initializable {
   public void clearPlaylist() {
     LOG.info("Clear playlist. Removed items size: {}", playlist.size());
     playlist.clear();
+  }
+
+  public void shufflePlaylist() {
+    if (!playlist.isEmpty()) {
+      var selectedTrack  = getSelectedTrack();
+      Collections.shuffle(playlist);
+      playlistView.getSelectionModel().select(selectedTrack);
+    }
   }
 
   public void savePlaylist() {
