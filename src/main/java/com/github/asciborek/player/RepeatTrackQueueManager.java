@@ -2,7 +2,7 @@ package com.github.asciborek.player;
 
 import com.github.asciborek.playlist.Track;
 import java.util.List;
-import java.util.Optional;
+import java.util.OptionalInt;
 
 final class RepeatTrackQueueManager  implements QueueManager{
 
@@ -13,12 +13,16 @@ final class RepeatTrackQueueManager  implements QueueManager{
   }
 
   @Override
-  public Optional<Track> getPreviousTrack(Track currentTrack) {
-    return playlist.contains(currentTrack) ? Optional.of(currentTrack) : Optional.empty();
+  public OptionalInt getPreviousTrack(int currentTrack) {
+    if (playlist.isEmpty() || currentTrack < 0 || currentTrack >= playlist.size()) {
+      return OptionalInt.empty();
+    }
+    return OptionalInt.of(currentTrack);
   }
 
   @Override
-  public Optional<Track> getNextTrack(Track currentTrack) {
-    return playlist.contains(currentTrack) ? Optional.of(currentTrack) : Optional.empty();
+  public OptionalInt getNextTrack(int currentTrack) {
+    return getPreviousTrack(currentTrack);
   }
+
 }

@@ -2,7 +2,7 @@ package com.github.asciborek.player;
 
 import com.github.asciborek.playlist.Track;
 import java.util.List;
-import java.util.Optional;
+import java.util.OptionalInt;
 
 final class RepeatPlaylistQueueManager implements QueueManager {
 
@@ -14,26 +14,29 @@ final class RepeatPlaylistQueueManager implements QueueManager {
   }
 
   @Override
-  public Optional<Track> getPreviousTrack(Track currentTrack) {
-    if (!playlist.contains(currentTrack) ) {
-      return Optional.empty();
+  public OptionalInt getPreviousTrack(int currentTrack) {
+    if (playlist.isEmpty() || hasInvalidIndex(currentTrack)) {
+      return OptionalInt.empty();
     }
-    int currentTrackIndex = playlist.indexOf(currentTrack);
-    if (currentTrackIndex == FIRST_ELEMENT_INDEX) {
-      return Optional.of(playlist.get(playlist.size() - 1));
+    if (currentTrack == 0) {
+      return OptionalInt.of(playlist.size() - 1);
     }
-    return Optional.ofNullable(playlist.get(currentTrackIndex - 1));
+    return OptionalInt.of(currentTrack - 1);
   }
 
   @Override
-  public Optional<Track> getNextTrack(Track currentTrack) {
-    if (!playlist.contains(currentTrack)) {
-      return Optional.empty();
+  public OptionalInt getNextTrack(int currentTrack) {
+    if (playlist.isEmpty() || hasInvalidIndex(currentTrack)) {
+      return OptionalInt.empty();
     }
-    int currentTrackIndex = playlist.indexOf(currentTrack);
-    if (currentTrackIndex == playlist.size() -1) {
-      return Optional.ofNullable(playlist.get(FIRST_ELEMENT_INDEX));
+    if (currentTrack == playlist.size() - 1) {
+      return OptionalInt.of(0);
     }
-    return Optional.ofNullable(playlist.get(currentTrackIndex + 1));
+    return OptionalInt.of(currentTrack + 1);
   }
+
+  private boolean hasInvalidIndex(int currentTrack) {
+    return currentTrack < 0 || currentTrack > playlist.size() - 1;
+  }
+
 }

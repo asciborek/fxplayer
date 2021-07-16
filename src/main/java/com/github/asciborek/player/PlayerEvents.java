@@ -14,4 +14,6 @@ public final class PlayerEvents {
 
   public static record StartPlayingTrackEvent(Track track) {}
 
+  static record PlaylistShuffledEvent() {}
+
 }

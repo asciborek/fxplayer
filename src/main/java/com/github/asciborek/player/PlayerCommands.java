@@ -8,6 +8,8 @@ public final class PlayerCommands {
 
   public static record OpenTrackFileCommand(Track track) {}
 
-  public static record PlayOrPauseTrackCommand(Track track) {}
+  public static record PlayOrPauseTrackCommand(Track track, int trackIndex) {}
+
+  public static record RemoveTrackCommand(int trackIndex) {}
 
 }

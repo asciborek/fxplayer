@@ -5,7 +5,9 @@ import static javafx.scene.input.KeyCombination.keyCombination;
 import com.github.asciborek.FxPlayer.CloseApplicationEvent;
 import com.github.asciborek.player.PlayerCommands.OpenTrackFileCommand;
 import com.github.asciborek.player.PlayerCommands.PlayOrPauseTrackCommand;
+import com.github.asciborek.player.PlayerCommands.RemoveTrackCommand;
 import com.github.asciborek.player.PlayerEvents.PlaylistOpenedEvent;
+import com.github.asciborek.player.PlayerEvents.PlaylistShuffledEvent;
 import com.github.asciborek.player.PlayerEvents.StartPlayingTrackEvent;
 import com.github.asciborek.playlist.PlaylistService;
 import com.github.asciborek.playlist.Track;
@@ -188,9 +190,8 @@ public final class MainWindowController implements Initializable {
 
   public void shufflePlaylist() {
     if (!playlist.isEmpty()) {
-      var selectedTrack  = getSelectedTrack();
       Collections.shuffle(playlist);
-      playlistView.getSelectionModel().select(selectedTrack);
+      eventBus.post(new PlaylistShuffledEvent());
     }
   }
 
@@ -221,11 +222,14 @@ public final class MainWindowController implements Initializable {
 
   public void onPlaylistMouseClicked(MouseEvent mouseEvent) {
     if (mouseEvent.getClickCount() == 2) {
+      var selectedTrackIndex = getSelectedTrackIndex();
       var selectedTrack = getSelectedTrack();
       LOG.info("onPlaylistMouseClicked selectedTrack: {}", selectedTrack);
-      eventBus.post(new PlayOrPauseTrackCommand(selectedTrack));
+      eventBus.post(new PlayOrPauseTrackCommand(selectedTrack, selectedTrackIndex));
     }
   }
+
+
 
   public void onPlaylistKeyClicked(KeyEvent keyEvent) {
     switch (keyEvent.getCode()) {
@@ -240,16 +244,23 @@ public final class MainWindowController implements Initializable {
     playlistView.getSelectionModel().select(event.track());
   }
 
+  private int getSelectedTrackIndex() {
+    return playlistView.getSelectionModel().getFocusedIndex();
+  }
+
   private Track getSelectedTrack() {
     return playlistView.getSelectionModel().getSelectedItem();
   }
 
   private void playOrPauseSelectedTrack() {
-    eventBus.post(new PlayOrPauseTrackCommand(getSelectedTrack()));
+    eventBus.post(new PlayOrPauseTrackCommand(getSelectedTrack(), getSelectedTrackIndex()));
   }
 
   private void removeSelectedTrack() {
-    playlist.remove(getSelectedTrack());
+    var trackIndex = getSelectedTrackIndex();
+    if (trackIndex >= 0) {
+      eventBus.post(new RemoveTrackCommand(trackIndex));
+    }
   }
 
   private void setCellValueFactories() {

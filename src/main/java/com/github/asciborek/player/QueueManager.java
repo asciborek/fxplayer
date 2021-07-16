@@ -1,12 +1,11 @@
 package com.github.asciborek.player;
 
-import com.github.asciborek.playlist.Track;
-import java.util.Optional;
+import java.util.OptionalInt;
 
 interface QueueManager {
 
-  Optional<Track> getPreviousTrack(Track currentTrack);
+  OptionalInt getPreviousTrack(int currentTrack);
 
-  Optional<Track> getNextTrack(Track currentTrack);
+  OptionalInt getNextTrack(int currentTrack);
 
 }

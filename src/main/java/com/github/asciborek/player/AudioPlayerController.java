@@ -2,9 +2,11 @@ package com.github.asciborek.player;
 
 import com.github.asciborek.player.PlayerCommands.OpenTrackFileCommand;
 import com.github.asciborek.player.PlayerCommands.PlayOrPauseTrackCommand;
+import com.github.asciborek.player.PlayerCommands.RemoveTrackCommand;
 import com.github.asciborek.player.PlayerEvents.PlaylistClearedEvent;
 import com.github.asciborek.player.PlayerEvents.PlaylistFinishedEvent;
 import com.github.asciborek.player.PlayerEvents.PlaylistOpenedEvent;
+import com.github.asciborek.player.PlayerEvents.PlaylistShuffledEvent;
 import com.github.asciborek.player.PlayerEvents.StartPlayingTrackEvent;
 import com.github.asciborek.playlist.Track;
 import com.github.asciborek.settings.SettingsService;
@@ -38,12 +40,14 @@ import org.slf4j.LoggerFactory;
 public final class AudioPlayerController implements Initializable {
 
   private static final Logger LOG = LoggerFactory.getLogger(AudioPlayerController.class);
+  private static final int NOT_PLAYING_TRACK_FLAG = -1;
 
   private final EventBus eventBus;
   private final SettingsService settingsService;
   private final ObservableList<Track> tracks;
   private PlayerState playerState = PlayerState.READY;
   private Track currentTrack;
+  private int currentTrackIndex = NOT_PLAYING_TRACK_FLAG;
   private MediaPlayer mediaPlayer;
   private QueueManager queueManager;
   private final DoubleProperty volumeProperty = new SimpleDoubleProperty(1);
@@ -91,6 +95,7 @@ public final class AudioPlayerController implements Initializable {
   @SuppressWarnings("unused")
   public void onOpenTrackFileCommand(OpenTrackFileCommand openTrackFileCommand) {
     currentTrack = openTrackFileCommand.track();
+    currentTrackIndex = 0;
     LOG.info("onOpenTrackFileCommand {}", currentTrack);
     startPlayingNewTrack();
   }
@@ -99,25 +104,29 @@ public final class AudioPlayerController implements Initializable {
   @SuppressWarnings("unused")
   public void onPlayOrPauseCommand(PlayOrPauseTrackCommand playOrPauseTrackCommand) {
     Track newTrack = playOrPauseTrackCommand.track();
-    LOG.info("play or pause tracks {}", newTrack);
+    int newTrackIndex = playOrPauseTrackCommand.trackIndex();
+    LOG.info("play or pause  track {}, index: {}", newTrack, newTrackIndex);
     switch (playerState) {
       case READY -> {
         currentTrack = newTrack;
+        currentTrackIndex = newTrackIndex;
         startPlayingNewTrack();
       }
       case PAUSED -> {
-        if (newTrack.equals(currentTrack)) {
+        if (newTrackIndex == currentTrackIndex) {
           resumePlayingTrack();
         } else {
           currentTrack = newTrack;
+          currentTrackIndex = newTrackIndex;
           startPlayingNewTrack();
         }
       }
       case PLAYING -> {
-        if (newTrack.equals(currentTrack)) {
+        if (newTrackIndex == currentTrackIndex) {
           pauseTrack();
         } else {
           currentTrack = newTrack;
+          currentTrackIndex = newTrackIndex;
           startPlayingNewTrack();
         }
       }
@@ -128,7 +137,43 @@ public final class AudioPlayerController implements Initializable {
   @SuppressWarnings("unused")
   public void onPlaylistOpenedEvent(PlaylistOpenedEvent event) {
     if (!tracks.isEmpty()) {
-      startPlayingNewTrack(tracks.get(0));
+      startPlayingNewTrack(0);
+    }
+  }
+
+  @Subscribe
+  @SuppressWarnings("unused")
+  public void onPlaylistShuffled(PlaylistShuffledEvent playlistShuffledEvent) {
+    if (currentTrack != null) {
+      currentTrackIndex = tracks.indexOf(currentTrack);
+      LOG.info("onPlaylistShuffled: a new track index {} for a track: {}", currentTrackIndex, currentTrack);
+    }
+  }
+
+  @Subscribe
+  @SuppressWarnings("unused")
+  public void onRemoveTrackCommand(RemoveTrackCommand removeTrackCommand) {
+    int removedTrackIndex = removeTrackCommand.trackIndex();
+    LOG.info("received RemoveTrackCommand, track index: {}", removedTrackIndex);
+    if (removedTrackIndex == currentTrackIndex) {
+      removeTheCurrentTrack(removedTrackIndex);
+    } else {
+      tracks.remove(removedTrackIndex);
+      if (removedTrackIndex < currentTrackIndex) {
+        currentTrackIndex--;
+      }
+    }
+  }
+
+  private void removeTheCurrentTrack(int removedTrackIndex) {
+    if (currentTrack != null) {
+      pauseTrack();
+    }
+    tracks.remove(removedTrackIndex);
+    if (currentTrackIndex < tracks.size() - 1) {
+      startPlayingNewTrack(currentTrackIndex);
+    } else {
+      onPlaylistFinished();
     }
   }
 
@@ -216,18 +261,19 @@ public final class AudioPlayerController implements Initializable {
 
   public void onPreviousTrackButtonClicked() {
     if (playerState != PlayerState.READY) {
-      queueManager.getPreviousTrack(currentTrack)
+      queueManager.getPreviousTrack(currentTrackIndex)
           .ifPresent(this::startPlayingNewTrack);
     }
   }
 
   private void nextTrack() {
-    queueManager.getNextTrack(currentTrack)
+    queueManager.getNextTrack(currentTrackIndex)
         .ifPresentOrElse(this::startPlayingNewTrack, this::onPlaylistFinished);
   }
 
-  private void startPlayingNewTrack(Track nextTrack) {
-    currentTrack = nextTrack;
+  private void startPlayingNewTrack(int nextTrack) {
+    currentTrackIndex = nextTrack;
+    currentTrack = tracks.get(nextTrack);
     startPlayingNewTrack();
   }
 

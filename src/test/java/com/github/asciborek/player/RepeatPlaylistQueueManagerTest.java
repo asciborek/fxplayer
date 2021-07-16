@@ -3,7 +3,7 @@ package com.github.asciborek.player;
 import com.github.asciborek.playlist.Track;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Optional;
+import java.util.OptionalInt;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -13,12 +13,12 @@ public class RepeatPlaylistQueueManagerTest {
 
   private static final String ARTIST = "Yes";
   private static final String ALBUM = "The Yes Album";
-  private final Track firstTrack = trackWithTitle("Yours Is no Disgrace");
-  private final Track secondTrack = trackWithTitle("Clap");
-  private final Track thirdTrack = trackWithTitle("Starship Trooper");
-  private final Track fourthTrack = trackWithTitle("I've Seen All Good People");
-  private final Track fifthTrack = trackWithTitle("A Venture");
-  private final Track sixthTrack = trackWithTitle("Perpetual Change");
+  private final Track zeroTrack = trackWithTitle("Yours Is no Disgrace");
+  private final Track firstTrack = trackWithTitle("Clap");
+  private final Track secondTrack = trackWithTitle("Starship Trooper");
+  private final Track thirdTrack = trackWithTitle("I've Seen All Good People");
+  private final Track fourthTrack = trackWithTitle("A Venture");
+  private final Track fifthTrack = trackWithTitle("Perpetual Change");
 
   private Track trackWithTitle(String title) {
     return Track.builder()
@@ -29,82 +29,82 @@ public class RepeatPlaylistQueueManagerTest {
         .build();
   }
 
-
   @Nested
   class GetPreviousTrack {
     @Test
     @DisplayName("it should select the previous tracks from the list")
     void itShouldSelectPreviousTrackFromTheList() {
-      final List<Track> playlist = List.of(firstTrack, secondTrack, thirdTrack, fourthTrack,
-          fifthTrack, sixthTrack);
+      final List<Track> playlist = List.of(zeroTrack, firstTrack, secondTrack, thirdTrack,
+          fourthTrack, fifthTrack);
       final QueueManager queueManager = new RepeatPlaylistQueueManager(playlist);
-      var previousTrack = queueManager.getPreviousTrack(thirdTrack);
-      Assertions.assertEquals(Optional.of(secondTrack), previousTrack);
+      var previousTrack = queueManager.getPreviousTrack(3);
+      Assertions.assertEquals(OptionalInt.of(2), previousTrack);
     }
 
     @Test
     @DisplayName("the previous track for the first track should be the last track")
     void itShouldReturnTheLastTrackForTheFirstTrack() {
-      final List<Track> playlist = List.of(firstTrack, secondTrack, thirdTrack, fourthTrack,
-          fifthTrack, sixthTrack);
+      final List<Track> playlist = List.of(zeroTrack, firstTrack, secondTrack, thirdTrack,
+          fourthTrack, fifthTrack);
       final QueueManager queueManager = new RepeatPlaylistQueueManager(playlist);
-      var previousTrack = queueManager.getPreviousTrack(firstTrack).get();
-      Assertions.assertEquals(sixthTrack, previousTrack);
+      var previousTrack = queueManager.getPreviousTrack(0);
+      Assertions.assertEquals(OptionalInt.of(5), previousTrack);
     }
 
     @Test
     @DisplayName("if the playlist is empty then the empty optional should be returned")
     void ifPlaylistIsEmptyThenEmptyOptionalShouldBeReturned() {
       final QueueManager queueManager = new RepeatPlaylistQueueManager(List.of());
-      var previousTrack = queueManager.getPreviousTrack(firstTrack);
-      Assertions.assertEquals(Optional.empty(), previousTrack);
+      var previousTrack = queueManager.getPreviousTrack(1);
+      Assertions.assertEquals(OptionalInt.empty(), previousTrack);
     }
 
     @Test
-    @DisplayName("if the playlist does not contain the tracks then the empty optional should be returned")
-    void ifPlaylistDoesNotContainTrackThenEmptyOptionalShouldBeReturned() {
-      final QueueManager queueManager = new RepeatPlaylistQueueManager(List.of(secondTrack, thirdTrack));
-      var previousTrack = queueManager.getPreviousTrack(fourthTrack);
-      Assertions.assertEquals(Optional.empty(), previousTrack);
+    @DisplayName("if the index argument is higher than the size of the list then the empty optional should be returned")
+    void ifTheIndexArgumentIsHigherThanTheSizeOfTheListThenTheEmptyOptionalShouldBeReturned() {
+      final QueueManager queueManager = new RepeatPlaylistQueueManager(List.of(zeroTrack, firstTrack));
+      var previousTrack = queueManager.getPreviousTrack(2);
+      Assertions.assertEquals(OptionalInt.empty(), previousTrack);
     }
   }
 
   @Nested
   class GetNextTrack {
+
     @Test
     @DisplayName("it should select the next tracks on the playlist")
     void itShouldSelectNextTrackOnThePlaylist() {
-      final List<Track> playlist = List.of(firstTrack, secondTrack, thirdTrack, fourthTrack,
-          fifthTrack, sixthTrack);
+      final List<Track> playlist = List.of(zeroTrack, firstTrack, secondTrack, thirdTrack,
+          fourthTrack, fifthTrack);
       final QueueManager queueManager = new RepeatPlaylistQueueManager(playlist);
-      var nextTrack = queueManager.getNextTrack(secondTrack);
-      Assertions.assertEquals(Optional.of(thirdTrack), nextTrack);
+      var nextTrack = queueManager.getNextTrack(2);
+      Assertions.assertEquals(OptionalInt.of(3), nextTrack);
     }
+
     @Test
     @DisplayName("after the last track the first track should be returned")
-    void afterLastTrackEmptyOptionalShouldBeReturned() {
-      final List<Track> playlist = List.of(firstTrack, secondTrack, thirdTrack, fourthTrack,
-          fifthTrack, sixthTrack);
+    void afterTheLastTrackTheFirstOptionalShouldBeReturned() {
+      final List<Track> playlist = List.of(zeroTrack, firstTrack, secondTrack, thirdTrack,
+          fourthTrack, fifthTrack);
       final QueueManager nextTrackSelector = new RepeatPlaylistQueueManager(playlist);
-      var nextTrack = nextTrackSelector.getNextTrack(sixthTrack).get();
-      Assertions.assertEquals(firstTrack, nextTrack);
+      var nextTrack = nextTrackSelector.getNextTrack(5);
+      Assertions.assertEquals(OptionalInt.of(0), nextTrack);
     }
 
     @Test
     @DisplayName("if the playlist is empty then the empty optional should be returned")
     void ifPlaylistIsEmptyThenEmptyOptionalShouldBeReturned() {
       final QueueManager queueManager = new RepeatPlaylistQueueManager(List.of());
-      var nextTrack = queueManager.getNextTrack(firstTrack);
-      Assertions.assertEquals(Optional.empty(), nextTrack);
+      var previousTrack = queueManager.getNextTrack(1);
+      Assertions.assertEquals(OptionalInt.empty(), previousTrack);
     }
 
     @Test
-    @DisplayName("if the playlist does not contain the tracks then the empty optional should be returned")
-    void ifPlaylistDoesNotContainTrackThenEmptyOptionalShouldBeReturned() {
-      final QueueManager queueManager = new RepeatPlaylistQueueManager(List.of(thirdTrack, fourthTrack));
-      var nextTrack = queueManager.getNextTrack(firstTrack);
-      Assertions.assertEquals(Optional.empty(), nextTrack);
+    @DisplayName("if the index argument is higher than the size of the list then the empty optional should be returned")
+    void ifTheIndexArgumentIsHigherThanTheSizeOfTheListThenTheEmptyOptionalShouldBeReturned() {
+      final QueueManager queueManager = new RepeatPlaylistQueueManager(List.of(zeroTrack, firstTrack));
+      var previousTrack = queueManager.getNextTrack(2);
+      Assertions.assertEquals(OptionalInt.empty(), previousTrack);
     }
   }
-
 }
