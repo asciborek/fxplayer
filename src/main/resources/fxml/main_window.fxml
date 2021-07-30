@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.ContextMenu?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
@@ -39,6 +40,14 @@
 
   <center>
     <TableView fx:id="playlistView" onMouseClicked="#onPlaylistMouseClicked" onKeyPressed="#onPlaylistKeyClicked">
+      <contextMenu>
+        <ContextMenu>
+          <items>
+            <MenuItem text="Edit track information" onAction="#onEditTrackInformationMenuItem"/>
+            <MenuItem text="Remove the track from the queue" onAction="#onRemoveTrackMenuItem"/>
+          </items>
+        </ContextMenu>
+      </contextMenu>
       <placeholder>
         <Label/>
       </placeholder>

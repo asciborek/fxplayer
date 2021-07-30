@@ -1,6 +1,6 @@
 package com.github.asciborek.player;
 
-import com.github.asciborek.playlist.Track;
+import com.github.asciborek.metadata.Track;
 
 public final class PlayerCommands {
 

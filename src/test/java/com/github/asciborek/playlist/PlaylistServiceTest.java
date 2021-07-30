@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.github.asciborek.metadata.Track;
+import com.github.asciborek.metadata.TrackMetadataProvider;
 import com.google.common.io.Resources;
 import java.io.File;
 import java.nio.file.Path;
@@ -81,7 +83,7 @@ class PlaylistServiceTest {
   }
 
   private PlaylistService getPlaylistService() {
-    return new PlaylistService(executorService, playlistStorage(), supportedAudioExtensions);
+    return new PlaylistService(executorService, new TrackMetadataProvider(), playlistStorage(), supportedAudioExtensions);
   }
 
   private PlaylistStorage playlistStorage() {

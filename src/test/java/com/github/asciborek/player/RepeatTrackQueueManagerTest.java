@@ -1,6 +1,6 @@
 package com.github.asciborek.player;
 
-import com.github.asciborek.playlist.Track;
+import com.github.asciborek.metadata.Track;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.OptionalInt;

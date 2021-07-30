@@ -1,7 +1,8 @@
 package com.github.asciborek.playlist;
 
+import com.github.asciborek.metadata.Track;
+import com.github.asciborek.metadata.TrackMetadataProvider;
 import com.github.asciborek.util.FileUtils;
-import com.github.asciborek.util.MetadataUtils;
 import com.google.common.base.Stopwatch;
 import java.nio.file.Path;
 import java.util.Collection;
@@ -18,10 +19,13 @@ final class DirectoryTracksLoader implements Supplier<List<Track>> {
 
   private static final Logger LOG = LoggerFactory.getLogger(DirectoryTracksLoader.class);
 
+  private final TrackMetadataProvider trackMetadataProvider;
   private final Path directoryPath;
   private final Collection<String> supportedAudioFilesExtensions;
 
-  public DirectoryTracksLoader(Path directoryPath, Collection<String> supportedAudioFilesExtensions) {
+  public DirectoryTracksLoader(TrackMetadataProvider trackMetadataProvider,
+      Path directoryPath, Collection<String> supportedAudioFilesExtensions) {
+    this.trackMetadataProvider = trackMetadataProvider;
     this.directoryPath = directoryPath;
     this.supportedAudioFilesExtensions = supportedAudioFilesExtensions;
   }
@@ -31,7 +35,7 @@ final class DirectoryTracksLoader implements Supplier<List<Track>> {
     var stopWatch = Stopwatch.createStarted();
     try (Stream<Path> pathStream = FileUtils.getDirectoryFilesWithSupportedExtensions(directoryPath,
         supportedAudioFilesExtensions)) {
-      var resultList = pathStream.map(MetadataUtils::getTrackMetaData)
+      var resultList = pathStream.map(trackMetadataProvider::getMetadata)
           .filter(Optional::isPresent)
           .map(Optional::get)
           .sorted(Comparator.comparing(Track::filePath))

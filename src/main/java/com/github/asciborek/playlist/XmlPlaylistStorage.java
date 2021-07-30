@@ -1,6 +1,7 @@
 package com.github.asciborek.playlist;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.github.asciborek.metadata.Track;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;

@@ -2,6 +2,8 @@ package com.github.asciborek.album_cover;
 
 import static com.google.common.io.Resources.getResource;
 
+import com.github.asciborek.metadata.Track;
+import com.github.asciborek.metadata.TrackMetadataUpdatedEvent;
 import com.github.asciborek.player.PlayerEvents.PlaylistFinishedEvent;
 import com.github.asciborek.player.PlayerEvents.StartPlayingTrackEvent;
 import com.google.common.eventbus.EventBus;
@@ -29,6 +31,7 @@ public class AlbumCoverController implements Initializable {
   @FXML
   private ImageView albumCoverImageView;
 
+  private Track currentTrack = null;
   private ArtistAlbum currentArtistAlbum = NONE;
 
   @Inject
@@ -46,14 +49,33 @@ public class AlbumCoverController implements Initializable {
   @SuppressWarnings("unused")
   public void onNewTrack(StartPlayingTrackEvent event) {
     LOG.info("received StartPlayingTrackEvent");
-    var track = event.track();
-    var newTrackArtistAlbum = new ArtistAlbum(track.artist(), track.album());
+    currentTrack = event.track();
+    var newTrackArtistAlbum = new ArtistAlbum(currentTrack.artist(), currentTrack.album());
     if (!Objects.equals(newTrackArtistAlbum, currentArtistAlbum)) {
       currentArtistAlbum = newTrackArtistAlbum;
-      albumCoverProvider.fetchAlbum(newTrackArtistAlbum)
-          .exceptionally(e -> EMPTY_CD_IMAGE)
-          .thenAccept(this::loadCover);
+      loadAlbumCover();
     }
+  }
+
+  @Subscribe
+  @SuppressWarnings("unused")
+  public void onTrackMetadataUpdatedEvent(TrackMetadataUpdatedEvent event) {
+    LOG.info("received TrackMetadataUpdatedEvent");
+    if (Objects.equals(currentTrack, event.oldTrack())) {
+      var oldTrackArtistAlbum = new ArtistAlbum(event.oldTrack().artist(), event.oldTrack().album());
+      var newTrackArtistAlbum = new ArtistAlbum(event.newTrack().artist(), event.newTrack().album());
+      currentTrack = event.newTrack();
+      if (!oldTrackArtistAlbum.equals(newTrackArtistAlbum)) {
+        currentArtistAlbum = newTrackArtistAlbum;
+        loadAlbumCover();
+      }
+    }
+  }
+
+  private void loadAlbumCover() {
+    albumCoverProvider.fetchAlbum(currentArtistAlbum)
+        .exceptionally(e -> EMPTY_CD_IMAGE)
+        .thenAccept(this::loadCover);
   }
 
   @Subscribe
@@ -61,6 +83,7 @@ public class AlbumCoverController implements Initializable {
   public void onPlaylistFinished(PlaylistFinishedEvent event) {
     LOG.info("received PlaylistFinishedEvent");
     albumCoverImageView.setImage(EMPTY_CD_IMAGE);
+    currentTrack = null;
   }
 
   private void loadCover(Image image) {

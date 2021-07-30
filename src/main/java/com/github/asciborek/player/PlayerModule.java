@@ -1,8 +1,8 @@
 package com.github.asciborek.player;
 
+import com.github.asciborek.metadata.Track;
 import com.github.asciborek.playlist.PlaylistService;
 import com.github.asciborek.playlist.PlaylistServiceFactory;
-import com.github.asciborek.playlist.Track;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Scopes;
@@ -19,7 +19,7 @@ public final class PlayerModule extends AbstractModule {
 
   @Provides
   @Singleton
-  public ObservableList<Track> playlist() {
+  public ObservableList<Track> tracksQueue() {
     return FXCollections.observableArrayList();
   }
 

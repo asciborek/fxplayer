@@ -1,13 +1,12 @@
-package com.github.asciborek.util;
+package com.github.asciborek.metadata;
 
-import com.github.asciborek.playlist.Track;
 import com.google.common.io.Resources;
 import java.io.File;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-public class MetadataUtilsTest {
+public class TrackMetadataProviderTest {
 
   private static final String EXPECTED_TITLE = "dummy";
   private static final String EXPECTED_ALBUM = "fxplayer";
@@ -18,11 +17,13 @@ public class MetadataUtilsTest {
   private static final String TEST_WAV_FILEPATH = "data/audio/3_test_audio.wav";
 
 
+  private final TrackMetadataProvider trackMetadataProvider = new TrackMetadataProvider();
+
   @Test
   @DisplayName("should read the mp3 file meta data")
   void shouldReadMp3MetaData() throws Exception {
-    File file =  new File(Resources.getResource(TEST_MP3_FILEPATH).toURI());
-    Track track = MetadataUtils.getTrackMetaData(file).orElseThrow();
+    File file = new File(Resources.getResource(TEST_MP3_FILEPATH).toURI());
+    Track track = trackMetadataProvider.getMetadata(file).orElseThrow();
     Assertions.assertEquals(EXPECTED_TITLE, track.title());
     Assertions.assertEquals(EXPECTED_ALBUM, track.album());
     Assertions.assertEquals(EXPECTED_ARTIST, track.artist());
@@ -33,8 +34,8 @@ public class MetadataUtilsTest {
   @Test
   @DisplayName("should read the mp4 file meta data")
   void shouldReadMp4MetaData() throws Exception {
-    File file =  new File(Resources.getResource(TEST_MP4_FILEPATH).toURI());
-    Track track = MetadataUtils.getTrackMetaData(file).orElseThrow();
+    File file = new File(Resources.getResource(TEST_MP4_FILEPATH).toURI());
+    Track track = trackMetadataProvider.getMetadata(file).orElseThrow();
     Assertions.assertEquals(EXPECTED_TITLE, track.title());
     Assertions.assertEquals(EXPECTED_ALBUM, track.album());
     Assertions.assertEquals(EXPECTED_ARTIST, track.artist());
@@ -46,8 +47,8 @@ public class MetadataUtilsTest {
   @Test
   @DisplayName("should read the wav file meta data")
   void shouldReadWavMetaData() throws Exception {
-    File file =  new File(Resources.getResource(TEST_WAV_FILEPATH).toURI());
-    Track track = MetadataUtils.getTrackMetaData(file).orElseThrow();
+    File file = new File(Resources.getResource(TEST_WAV_FILEPATH).toURI());
+    Track track = trackMetadataProvider.getMetadata(file).orElseThrow();
     Assertions.assertEquals(EXPECTED_TITLE, track.title());
     Assertions.assertEquals(EXPECTED_ALBUM, track.album());
     Assertions.assertEquals(EXPECTED_ARTIST, track.artist());

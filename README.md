@@ -35,7 +35,8 @@ component scanning.
 - [x] "repeat a track" and "repeat a playlist" options.
 - [x] Display the current track album cover
 - [x] Shuffling the  playlist 
+- [x] Editing tracks metadata
 
 ## Features to implement
-- Editing tracks metadata
+- Displaying the played track lyrics
 - Scrobbling played tracks to last.fm

@@ -1,4 +1,4 @@
-package com.github.asciborek.playlist;
+package com.github.asciborek.metadata;
 
 import com.github.asciborek.util.DurationUtils;
 import java.nio.file.Path;
@@ -18,6 +18,10 @@ public record Track (String title, String album, String artist, Duration duratio
     return filePath.getFileName().toString();
   }
 
+  TrackBuilder toBuilder() {
+    return new TrackBuilder(this);
+  }
+
   public static final class TrackBuilder {
 
     private String title = "";
@@ -27,6 +31,14 @@ public record Track (String title, String album, String artist, Duration duratio
     private Path filePath;
 
     private TrackBuilder() {}
+
+    private TrackBuilder(Track track) {
+      this.title = track.title();
+      this.album = track.album();
+      this.artist = track.artist();
+      this.duration = track.duration();
+      this.filePath = track.filePath();
+    }
 
     public static TrackBuilder builder() {
       return new TrackBuilder();

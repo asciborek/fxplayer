@@ -1,5 +1,6 @@
 package com.github.asciborek.player;
 
+import com.github.asciborek.metadata.Track;
 import com.github.asciborek.player.PlayerCommands.OpenTrackFileCommand;
 import com.github.asciborek.player.PlayerCommands.PlayOrPauseTrackCommand;
 import com.github.asciborek.player.PlayerCommands.RemoveTrackCommand;
@@ -8,7 +9,6 @@ import com.github.asciborek.player.PlayerEvents.PlaylistFinishedEvent;
 import com.github.asciborek.player.PlayerEvents.PlaylistOpenedEvent;
 import com.github.asciborek.player.PlayerEvents.PlaylistShuffledEvent;
 import com.github.asciborek.player.PlayerEvents.StartPlayingTrackEvent;
-import com.github.asciborek.playlist.Track;
 import com.github.asciborek.settings.SettingsService;
 import com.github.asciborek.util.DurationUtils;
 import com.google.common.eventbus.EventBus;
@@ -44,7 +44,7 @@ public final class AudioPlayerController implements Initializable {
 
   private final EventBus eventBus;
   private final SettingsService settingsService;
-  private final ObservableList<Track> tracks;
+  private final ObservableList<Track> tracksQueue;
   private PlayerState playerState = PlayerState.READY;
   private Track currentTrack;
   private int currentTrackIndex = NOT_PLAYING_TRACK_FLAG;
@@ -71,11 +71,11 @@ public final class AudioPlayerController implements Initializable {
   private ToggleButton repeatTrackButton;
 
   @Inject
-  public AudioPlayerController(EventBus eventBus, SettingsService settingsService, ObservableList<Track> tracks) {
+  public AudioPlayerController(EventBus eventBus, SettingsService settingsService, ObservableList<Track> tracksQueue) {
     this.eventBus = eventBus;
     this.settingsService = settingsService;
-    this.tracks = tracks;
-    this.queueManager = new OrderedPlaylistQueueManager(tracks);
+    this.tracksQueue = tracksQueue;
+    this.queueManager = new OrderedPlaylistQueueManager(tracksQueue);
     eventBus.register(this);
   }
 
@@ -85,7 +85,7 @@ public final class AudioPlayerController implements Initializable {
     volumeSlider.valueProperty().bindBidirectional(volumeProperty);
     volumeProperty.addListener(this::onVolumeChange);
     volumeProperty.set(settingsService.getVolume());
-    tracks.addListener(this::onPlaylistChange);
+    tracksQueue.addListener(this::onPlaylistChange);
     var playlistToggleGroup = new ToggleGroup();
     playlistToggleGroup.getToggles().addAll(repeatPlaylistButton, repeatTrackButton);
     playlistToggleGroup.selectedToggleProperty().addListener(this::onPlaylistToggleGroupChanged);
@@ -136,7 +136,7 @@ public final class AudioPlayerController implements Initializable {
   @Subscribe
   @SuppressWarnings("unused")
   public void onPlaylistOpenedEvent(PlaylistOpenedEvent event) {
-    if (!tracks.isEmpty()) {
+    if (!tracksQueue.isEmpty()) {
       startPlayingNewTrack(0);
     }
   }
@@ -145,7 +145,7 @@ public final class AudioPlayerController implements Initializable {
   @SuppressWarnings("unused")
   public void onPlaylistShuffled(PlaylistShuffledEvent playlistShuffledEvent) {
     if (currentTrack != null) {
-      currentTrackIndex = tracks.indexOf(currentTrack);
+      currentTrackIndex = tracksQueue.indexOf(currentTrack);
       LOG.info("onPlaylistShuffled: a new track index {} for a track: {}", currentTrackIndex, currentTrack);
     }
   }
@@ -158,7 +158,7 @@ public final class AudioPlayerController implements Initializable {
     if (removedTrackIndex == currentTrackIndex) {
       removeTheCurrentTrack(removedTrackIndex);
     } else {
-      tracks.remove(removedTrackIndex);
+      tracksQueue.remove(removedTrackIndex);
       if (removedTrackIndex < currentTrackIndex) {
         currentTrackIndex--;
       }
@@ -169,8 +169,8 @@ public final class AudioPlayerController implements Initializable {
     if (currentTrack != null) {
       pauseTrack();
     }
-    tracks.remove(removedTrackIndex);
-    if (currentTrackIndex < tracks.size() - 1) {
+    tracksQueue.remove(removedTrackIndex);
+    if (currentTrackIndex < tracksQueue.size() - 1) {
       startPlayingNewTrack(currentTrackIndex);
     } else {
       onPlaylistFinished();
@@ -199,7 +199,7 @@ public final class AudioPlayerController implements Initializable {
   }
 
   private void onPlaylistChange(Change<? extends Track> change) {
-    int playlistSize = tracks.size();
+    int playlistSize = tracksQueue.size();
     switch (playlistSize) {
       case 0 -> onEmptyPlaylist();
       case 1 -> formatPlaylistTotalTimeLabelForSingleTrack();
@@ -211,11 +211,11 @@ public final class AudioPlayerController implements Initializable {
       Toggle oldSelectedButton, Toggle newSelectedButton) {
     LOG.info("onPlaylistToggleGroupChanged newSelectedButton: {}", newSelectedButton);
     if (newSelectedButton == repeatTrackButton) {
-      queueManager = new RepeatTrackQueueManager(tracks);
+      queueManager = new RepeatTrackQueueManager(tracksQueue);
     } else if (newSelectedButton == repeatPlaylistButton) {
-      queueManager = new RepeatPlaylistQueueManager(tracks);
+      queueManager = new RepeatPlaylistQueueManager(tracksQueue);
     } else {
-      queueManager = new OrderedPlaylistQueueManager(tracks);
+      queueManager = new OrderedPlaylistQueueManager(tracksQueue);
     }
   }
 
@@ -225,7 +225,7 @@ public final class AudioPlayerController implements Initializable {
   }
 
   private void formatPlaylistTotalTimeLabelForSingleTrack() {
-    playlistTotalTimeLabel.setText("1 tracks - [" + DurationUtils.format(tracks.get(0).duration()) + "] ");
+    playlistTotalTimeLabel.setText("1 tracks - [" + DurationUtils.format(tracksQueue.get(0).duration()) + "] ");
   }
 
   private void formatPlaylistTotalTimeLabelForMultiplyTracks(int totalTracks) {
@@ -236,15 +236,15 @@ public final class AudioPlayerController implements Initializable {
   }
 
   private java.time.Duration getTotalPlaylistDuration() {
-    return tracks.stream()
+    return tracksQueue.stream()
         .map(Track::duration)
         .reduce(java.time.Duration::plus)
         .orElse(java.time.Duration.ZERO);
   }
 
   public void onPlayOrPauseButtonClicked() {
-    if (playerState == PlayerState.READY && !tracks.isEmpty()) {
-      currentTrack = tracks.get(0);
+    if (playerState == PlayerState.READY && !tracksQueue.isEmpty()) {
+      currentTrack = tracksQueue.get(0);
       startPlayingNewTrack();
     } else if(playerState == PlayerState.PAUSED) {
       resumePlayingTrack();
@@ -273,7 +273,7 @@ public final class AudioPlayerController implements Initializable {
 
   private void startPlayingNewTrack(int nextTrack) {
     currentTrackIndex = nextTrack;
-    currentTrack = tracks.get(nextTrack);
+    currentTrack = tracksQueue.get(nextTrack);
     startPlayingNewTrack();
   }
 

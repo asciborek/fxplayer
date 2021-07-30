@@ -1,6 +1,7 @@
 package com.github.asciborek.playlist;
 
-import com.github.asciborek.util.MetadataUtils;
+import com.github.asciborek.metadata.Track;
+import com.github.asciborek.metadata.TrackMetadataProvider;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -13,23 +14,25 @@ import java.util.concurrent.ExecutorService;
 public final class PlaylistService {
 
   private final ExecutorService executorService;
+  private final TrackMetadataProvider trackMetadataProvider;
   private final PlaylistStorage playlistStorage;
   private final Collection<String> supportedAudioFilesExtensions;
 
-  PlaylistService(ExecutorService executorService, PlaylistStorage playlistStorage,
-      Collection<String> supportedAudioFilesExtensions) {
+  PlaylistService(ExecutorService executorService, TrackMetadataProvider trackMetadataProvider,
+      PlaylistStorage playlistStorage, Collection<String> supportedAudioFilesExtensions) {
     this.executorService = executorService;
+    this.trackMetadataProvider = trackMetadataProvider;
     this.playlistStorage = playlistStorage;
     this.supportedAudioFilesExtensions = supportedAudioFilesExtensions;
   }
 
   public Optional<Track> getTrack(File trackFile) {
-    return MetadataUtils.getTrackMetaData(trackFile);
+    return trackMetadataProvider.getMetadata(trackFile);
   }
 
   public CompletableFuture<List<Track>> getDirectoryTracks(File directoryFile) {
-    var directoryTracksLoader = new DirectoryTracksLoader(directoryFile.toPath(),
-        supportedAudioFilesExtensions);
+    var directoryTracksLoader = new DirectoryTracksLoader(trackMetadataProvider,
+        directoryFile.toPath(), supportedAudioFilesExtensions);
     return CompletableFuture.supplyAsync(directoryTracksLoader, executorService);
   }
 

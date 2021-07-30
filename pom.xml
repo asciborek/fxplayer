@@ -6,7 +6,7 @@
 
   <groupId>com.github.asciborek</groupId>
   <artifactId>fxplayer</artifactId>
-  <version>0.2-SNAPSHOT</version>
+  <version>0.3</version>
 
   <properties>
     <maven.compiler.source>16</maven.compiler.source>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<VBox xmlns="http://javafx.com/javafx"
+  xmlns:fx="http://javafx.com/fxml"
+  fx:controller="com.github.asciborek.metadata.EditTagsController"
+  minHeight="150.0" minWidth="150.0">
+
+  <HBox>
+    <Label text="Title" minWidth="50" />
+    <TextField fx:id="title" minWidth="200"/>
+  </HBox>
+  <HBox>
+    <Label text="Album" minWidth="50"/>
+    <TextField fx:id="album" minWidth="200"/>
+  </HBox>
+  <HBox>
+    <Label text="Artist" minWidth="50"/>
+    <TextField fx:id="artist" minWidth="200"/>
+  </HBox>
+  <Region VBox.vgrow="ALWAYS" />
+  <HBox>
+    <Button text="cancel" minWidth="150" onMouseClicked="#onCancelButtonClicked"/>
+    <Button text="save" minWidth="150" onMouseClicked="#onSaveButtonClicked"/>
+  </HBox>
+</VBox>

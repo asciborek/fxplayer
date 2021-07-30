@@ -1,8 +1,14 @@
 package com.github.asciborek.player;
 
+import static com.google.common.io.Resources.getResource;
 import static javafx.scene.input.KeyCombination.keyCombination;
 
 import com.github.asciborek.FxPlayer.CloseApplicationEvent;
+import com.github.asciborek.metadata.EditTagsController;
+import com.github.asciborek.metadata.Track;
+import com.github.asciborek.metadata.TrackMetadataProvider;
+import com.github.asciborek.metadata.TrackMetadataUpdatedEvent;
+import com.github.asciborek.metadata.TrackMetadataUpdater;
 import com.github.asciborek.player.PlayerCommands.OpenTrackFileCommand;
 import com.github.asciborek.player.PlayerCommands.PlayOrPauseTrackCommand;
 import com.github.asciborek.player.PlayerCommands.RemoveTrackCommand;
@@ -10,10 +16,8 @@ import com.github.asciborek.player.PlayerEvents.PlaylistOpenedEvent;
 import com.github.asciborek.player.PlayerEvents.PlaylistShuffledEvent;
 import com.github.asciborek.player.PlayerEvents.StartPlayingTrackEvent;
 import com.github.asciborek.playlist.PlaylistService;
-import com.github.asciborek.playlist.Track;
 import com.github.asciborek.settings.SettingsService;
 import com.github.asciborek.util.FileUtils;
-import com.github.asciborek.util.MetadataUtils;
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -29,7 +33,9 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellDataFeatures;
@@ -40,6 +46,7 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Popup;
+import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,6 +57,7 @@ public final class MainWindowController implements Initializable {
 
   private static final String PLAYLIST_AUTO_SAVE_FILENAME = "playlist_auto_save.plst";
   private static final String PLAYLIST_FILE_EXTENSION = ".plst";
+  private static final String EDIT_TAGS_FXML = "fxml/edit_tags.fxml";
 
   private static final String OPEN_FILE_KEY_COMBINATION = "Ctrl + O";
   private static final String ADD_TRACK_KEY_COMBINATION = "Ctrl + Shift + A";
@@ -64,9 +72,11 @@ public final class MainWindowController implements Initializable {
       "playlist files (*.plst)", "*.plst");
 
   private final EventBus eventBus;
+  private final TrackMetadataProvider trackMetadataProvider;
+  private final TrackMetadataUpdater trackMetadataUpdater;
   private final PlaylistService playlistService;
   private final SettingsService settingsService;
-  private final ObservableList<Track> playlist;
+  private final ObservableList<Track> tracksQueue;
 
   //Music Menu
   @FXML
@@ -94,19 +104,22 @@ public final class MainWindowController implements Initializable {
   private TableColumn<Track, String> filenameColumn;
 
   @Inject
-  public MainWindowController(EventBus eventBus, PlaylistService playlistService,
+  public MainWindowController(EventBus eventBus, TrackMetadataProvider trackMetadataProvider,
+      TrackMetadataUpdater trackMetadataUpdater, PlaylistService playlistService,
       SettingsService settingsService, ObservableList<Track> playlist) {
+    this.trackMetadataProvider = trackMetadataProvider;
+    this.trackMetadataUpdater = trackMetadataUpdater;
     this.playlistService = playlistService;
     this.eventBus = eventBus;
     this.settingsService = settingsService;
-    this.playlist = playlist;
+    this.tracksQueue = playlist;
     eventBus.register(this);
   }
 
   public void initialize(URL url, ResourceBundle resourceBundle) {
     playlistService.loadPlaylistWithExistingFiles(playlistAutoSaveFile()).
         thenAccept(this::addTracksToPlaylist);
-    playlistView.setItems(playlist);
+    playlistView.setItems(tracksQueue);
     setCellValueFactories();
     registerKeyCombinations();
   }
@@ -114,8 +127,8 @@ public final class MainWindowController implements Initializable {
   @Subscribe
   @SuppressWarnings("unused")
   public void onCloseExit(CloseApplicationEvent closeApplicationEvent) {
-    LOG.info("save {} track(s) to the auto-save playlist", playlist.size());
-    playlistService.savePlaylist(playlistAutoSaveFile(), ImmutableList.copyOf(playlist));
+    LOG.info("save {} track(s) to the auto-save playlist", tracksQueue.size());
+    playlistService.savePlaylist(playlistAutoSaveFile(), ImmutableList.copyOf(tracksQueue));
   }
 
   public void openFile() {
@@ -134,7 +147,7 @@ public final class MainWindowController implements Initializable {
       playlistService.loadPlaylistWithExistingFiles(file)
           .thenAccept(this::onOpenPlaylist);
     } else if (FileUtils.isSupportedAudioFile(file.getPath())) {
-      MetadataUtils.getTrackMetaData(file)
+      trackMetadataProvider.getMetadata(file)
           .ifPresent(this::onOpenAudioFile);
     } else {
       LOG.info("a not supported file extensions for the file: {}", file.getPath());
@@ -143,9 +156,9 @@ public final class MainWindowController implements Initializable {
 
   private void onOpenPlaylist(List<Track> loadedPlaylist) {
     Platform.runLater(() -> {
-      playlist.clear();
+      tracksQueue.clear();
       if (!loadedPlaylist.isEmpty()) {
-        playlist.addAll(loadedPlaylist);
+        tracksQueue.addAll(loadedPlaylist);
         playlistView.refresh();
         eventBus.post(new PlaylistOpenedEvent());
       }
@@ -153,8 +166,8 @@ public final class MainWindowController implements Initializable {
   }
 
   private void onOpenAudioFile(Track track) {
-    playlist.clear();
-    playlist.add(track);
+    tracksQueue.clear();
+    tracksQueue.add(track);
     eventBus.post(new OpenTrackFileCommand(track));
   }
 
@@ -166,7 +179,7 @@ public final class MainWindowController implements Initializable {
     if (selectedFile != null) {
       settingsService.setAddTrackFileChooserInitDirectory(selectedFile.getParentFile());
       playlistService.getTrack(selectedFile)
-          .ifPresent(playlist::add);
+          .ifPresent(tracksQueue::add);
     }
   }
 
@@ -184,19 +197,19 @@ public final class MainWindowController implements Initializable {
   }
 
   public void clearPlaylist() {
-    LOG.info("Clear playlist. Removed items size: {}", playlist.size());
-    playlist.clear();
+    LOG.info("Clear playlist. Removed items size: {}", tracksQueue.size());
+    tracksQueue.clear();
   }
 
   public void shufflePlaylist() {
-    if (!playlist.isEmpty()) {
-      Collections.shuffle(playlist);
+    if (!tracksQueue.isEmpty()) {
+      Collections.shuffle(tracksQueue);
       eventBus.post(new PlaylistShuffledEvent());
     }
   }
 
   public void savePlaylist() {
-    var playlistToSave = ImmutableList.copyOf(playlist);
+    var playlistToSave = ImmutableList.copyOf(tracksQueue);
     var fileChooser = new FileChooser();
     fileChooser.setInitialDirectory(new File(FileUtils.getUserHome()));
     fileChooser.getExtensionFilters().add(PLAYLIST_EXTENSION_FILTER);
@@ -229,13 +242,28 @@ public final class MainWindowController implements Initializable {
     }
   }
 
-
-
   public void onPlaylistKeyClicked(KeyEvent keyEvent) {
     switch (keyEvent.getCode()) {
       case SPACE -> playOrPauseSelectedTrack();
       case DELETE -> removeSelectedTrack();
     }
+  }
+
+  public void onEditTrackInformationMenuItem() {
+    var selectedTrack = getSelectedTrack();
+    if (selectedTrack != null) {
+      LOG.info("onEditTrackInformation, the selected track: {}", selectedTrack);
+      try {
+        showEditTagsForm(selectedTrack);
+      } catch (Exception e) {
+        LOG.error("couldn't load the edit tags form ", e);
+      }
+    }
+  }
+
+  public void onRemoveTrackMenuItem() {
+    LOG.info("onRemoveTrackMenuItemClicked");
+    removeSelectedTrack();
   }
 
   @Subscribe
@@ -244,12 +272,45 @@ public final class MainWindowController implements Initializable {
     playlistView.getSelectionModel().select(event.track());
   }
 
+  @Subscribe
+  @SuppressWarnings("unused")
+  public void onTrackMetadataUpdatedEvent(TrackMetadataUpdatedEvent event) {
+    LOG.info("Track {} was updated, new data: {}", event.oldTrack(), event.newTrack());
+    tracksQueue.replaceAll(track -> {
+      if (track.equals(event.oldTrack())) {
+        LOG.info("reloading the {} track data", track.filePath());
+        return event.newTrack();
+      }
+      return track;
+    });
+    playlistView.refresh();
+  }
+
   private int getSelectedTrackIndex() {
     return playlistView.getSelectionModel().getFocusedIndex();
   }
 
   private Track getSelectedTrack() {
     return playlistView.getSelectionModel().getSelectedItem();
+  }
+
+  private void showEditTagsForm(Track selectedTrack) throws Exception {
+    FXMLLoader loader  = new FXMLLoader();
+    loader.setLocation(getResource(EDIT_TAGS_FXML));
+    Stage stage = new Stage();
+    loader.setControllerFactory(clazz -> editTagsControllerFactory(stage, clazz, selectedTrack));
+    Scene scene = new Scene(loader.load(), 300, 200);
+    stage.setMinWidth(300);
+    stage.setMinHeight(200);
+    stage.setScene(scene);
+    stage.show();
+  }
+
+  private Object editTagsControllerFactory(Stage stage, Class<?> clazz, Track track) {
+    if (clazz.equals(EditTagsController.class)) {
+      return new EditTagsController(stage, track, trackMetadataUpdater, eventBus);
+    }
+    throw new IllegalArgumentException();
   }
 
   private void playOrPauseSelectedTrack() {
@@ -300,7 +361,7 @@ public final class MainWindowController implements Initializable {
 
   private void addTracksToPlaylist(Collection<Track> tracks) {
     Platform.runLater(() -> {
-      playlist.addAll(tracks);
+      tracksQueue.addAll(tracks);
       playlistView.refresh();
     });
   }

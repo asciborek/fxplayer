@@ -1,11 +1,14 @@
 package com.github.asciborek.artist_info;
 
+import com.github.asciborek.metadata.Track;
+import com.github.asciborek.metadata.TrackMetadataUpdatedEvent;
 import com.github.asciborek.player.PlayerEvents.PlaylistClearedEvent;
 import com.github.asciborek.player.PlayerEvents.PlaylistFinishedEvent;
 import com.github.asciborek.player.PlayerEvents.StartPlayingTrackEvent;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -19,6 +22,7 @@ public class ArtistInfoController {
   private static final Logger LOG = LoggerFactory.getLogger(ArtistInfoController.class);
   private static final String NONE_ARTIST = "";
   private String currentArtist = NONE_ARTIST;
+  private Track currentTrack = null;
   private final ArtistInfoProvider artistInfoProvider;
 
   @FXML
@@ -37,27 +41,48 @@ public class ArtistInfoController {
   @SuppressWarnings("unused")
   public void onNewTrack(StartPlayingTrackEvent startPlayingTrackEvent) {
     LOG.info("received StartPlayingTrackEvent");
-    var newArtist = startPlayingTrackEvent.track().artist();
+    currentTrack = startPlayingTrackEvent.track();
+    var newArtist = currentTrack.artist();
     if (!newArtist.equals(currentArtist)) {
       currentArtist = newArtist;
-      artistInfoProvider
-          .getArtistInfo(currentArtist)
-          .exceptionally(ex -> ArtistInfo.UNREACHABLE)
-          .thenAccept(this::loadArtistInfo);
+      loadArtistInfo();
     }
   }
+
+  @Subscribe
+  @SuppressWarnings("unused")
+  public void onTrackMetadataUpdatedEvent(TrackMetadataUpdatedEvent event) {
+    LOG.info("received TrackMetadataUpdatedEvent");
+    if ((Objects.equals(currentTrack, event.oldTrack())) && !(Objects.equals(currentTrack, event.newTrack()))) {
+      currentTrack = event.newTrack();
+      if (!currentArtist.equals(event.newTrack().artist())) {
+        this.currentArtist = event.newTrack().artist();
+        loadArtistInfo();
+      }
+    }
+  }
+
+  private void loadArtistInfo() {
+    artistInfoProvider
+        .getArtistInfo(currentArtist)
+        .exceptionally(ex -> ArtistInfo.UNREACHABLE)
+        .thenAccept(this::loadArtistInfo);
+  }
+
 
   @Subscribe
   @SuppressWarnings("unused")
   public void onPlaylistFinished(PlaylistFinishedEvent event) {
     LOG.info("received PlaylistFinishedEvent");
     clearArtistInfo();
+    this.currentTrack = null;
   }
 
   @Subscribe
   @SuppressWarnings("unused")
   public void onPlaylistCleared(PlaylistClearedEvent event) {
     LOG.info("received PlaylistClearedEvent");
+    this.currentTrack = null;
     clearArtistInfo();
   }
 
@@ -67,9 +92,9 @@ public class ArtistInfoController {
   }
 
   private void loadArtistInfo(ArtistInfo artistInfo) {
-    Platform.runLater(() ->{
-        artistDescription.setText(artistInfo.description());
-        similarArtists.setText(similarArtistsText(artistInfo));
+    Platform.runLater(() -> {
+      artistDescription.setText(artistInfo.description());
+      similarArtists.setText(similarArtistsText(artistInfo));
     });
   }
 
