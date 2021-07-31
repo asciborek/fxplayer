@@ -5,7 +5,7 @@ import com.google.inject.Provider;
 import java.net.http.HttpClient;
 import java.util.concurrent.ExecutorService;
 
-public final class ArtistInfoProviderFactory implements Provider<ArtistInfoProvider> {
+final class ArtistInfoProviderFactory implements Provider<ArtistInfoProvider> {
 
   private final HttpClient httpClient;
   private final ExecutorService executorService;

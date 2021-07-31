@@ -18,7 +18,7 @@ import javafx.scene.image.Image;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class LastFmAlbumCoverProvider implements AlbumCoverProvider{
+final class LastFmAlbumCoverProvider implements AlbumCoverProvider{
 
   private static final Logger LOG = LoggerFactory.getLogger(LastFmAlbumCoverProvider.class);
   private static final String LAST_FM_REQUEST_TEMPLATE =

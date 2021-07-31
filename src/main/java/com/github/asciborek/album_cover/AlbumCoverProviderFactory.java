@@ -5,7 +5,7 @@ import com.google.inject.Provider;
 import java.net.http.HttpClient;
 import java.util.concurrent.ExecutorService;
 
-public class AlbumCoverProviderFactory implements Provider<AlbumCoverProvider> {
+final class AlbumCoverProviderFactory implements Provider<AlbumCoverProvider> {
 
   private final HttpClient httpClient;
   private final ExecutorService executorService;

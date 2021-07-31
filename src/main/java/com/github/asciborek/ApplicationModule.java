@@ -1,9 +1,7 @@
 package com.github.asciborek;
 
-import com.github.asciborek.album_cover.AlbumCoverProvider;
-import com.github.asciborek.album_cover.AlbumCoverProviderFactory;
-import com.github.asciborek.artist_info.ArtistInfoProvider;
-import com.github.asciborek.artist_info.ArtistInfoProviderFactory;
+import com.github.asciborek.album_cover.AlbumCoverModule;
+import com.github.asciborek.artist_info.ArtistInfoModule;
 import com.github.asciborek.metadata.MetadataModule;
 import com.github.asciborek.settings.SettingsService;
 import com.github.asciborek.settings.SettingsServiceFactory;
@@ -28,9 +26,9 @@ final class ApplicationModule extends AbstractModule {
     bind(ExecutorService.class).toProvider(this::executorService).in(Scopes.SINGLETON);
     bind(DeadEventLoggingListener.class).asEagerSingleton();
     bind(SettingsService.class).toProvider(SettingsServiceFactory.class).in(Scopes.SINGLETON);
-    bind(ArtistInfoProvider.class).toProvider(ArtistInfoProviderFactory.class).in(Scopes.SINGLETON);
-    bind(AlbumCoverProvider.class).toProvider(AlbumCoverProviderFactory.class).in(Scopes.SINGLETON);
     install(new MetadataModule());
+    install(new AlbumCoverModule());
+    install(new ArtistInfoModule());
   }
 
   private ExecutorService executorService() {
