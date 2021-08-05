@@ -6,20 +6,20 @@ import java.net.http.HttpClient;
 import java.time.Duration;
 import java.util.Properties;
 
-final class IntegrationModule extends AbstractModule {
+final class LastFmModule extends AbstractModule {
 
-  private final Properties apiKeysProperties;
+  private final Properties lastFmProperties;
 
-  public IntegrationModule(Properties apiKeysProperties) {
-    this.apiKeysProperties = apiKeysProperties;
+  public LastFmModule(Properties lastFmProperties) {
+    this.lastFmProperties = lastFmProperties;
   }
 
-  private static final String API_KEY_PROPERTY_NAME = "last.fm";
+  private static final String API_KEY_PROPERTY_NAME = "api_key";
 
   @Override
   protected void configure() {
     bind(HttpClient.class).toProvider(this::lastFmHttpClient).in(Scopes.SINGLETON);
-    bind(String.class).toInstance(apiKeysProperties.getProperty(API_KEY_PROPERTY_NAME));
+    bind(String.class).toInstance(lastFmProperties.getProperty(API_KEY_PROPERTY_NAME));
   }
 
   public HttpClient lastFmHttpClient() {

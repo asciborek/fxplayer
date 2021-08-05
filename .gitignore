@@ -1,4 +1,4 @@
 .idea
 *.iml
 /target
-api_keys.properties
+src/main/resources/last_fm.properties

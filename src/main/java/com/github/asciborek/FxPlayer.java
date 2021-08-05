@@ -25,10 +25,10 @@ import org.slf4j.LoggerFactory;
 public final class FxPlayer extends Application {
 
   private static final Logger LOG = LoggerFactory.getLogger(FxPlayer.class);
-  private static final String API_KEYS_FILE_NAME =  "api_keys.properties";
+  private static final String LAST_FM_PROPERTIES_FILE_NAME = "last_fm.properties";
 
   private final Properties apiProperties = readApiProperties();
-  private final Injector injector = Guice.createInjector(new ApplicationModule(), new PlayerModule(), new IntegrationModule(apiProperties));
+  private final Injector injector = Guice.createInjector(new ApplicationModule(), new PlayerModule(), new LastFmModule(apiProperties));
   private final EventBus eventBus = injector.getInstance(EventBus.class);
 
   public static void main(String[] args) {
@@ -36,7 +36,7 @@ public final class FxPlayer extends Application {
   }
 
   @Override
-  public void init() throws Exception {
+  public void init() {
     //The JavaFx "stop" method won't handle SIGINT
     Runtime.getRuntime().addShutdownHook(new Thread(this::shutdownExecutor));
   }
@@ -56,7 +56,7 @@ public final class FxPlayer extends Application {
   }
 
   @Override
-  public void stop() throws Exception {
+  public void stop() {
     LOG.info("Application Exit");
     eventBus.post(new CloseApplicationEvent());
     new Thread(this::shutdownExecutor).start(); //to prevent frozen UI
@@ -64,7 +64,7 @@ public final class FxPlayer extends Application {
 
   private Properties readApiProperties() {
     var properties = new Properties();
-    try (InputStream inputStream = Resources.getResource(API_KEYS_FILE_NAME).openStream()) {
+    try (InputStream inputStream = Resources.getResource(LAST_FM_PROPERTIES_FILE_NAME).openStream()) {
       properties.load(inputStream);
     } catch (IOException e) {
       throw new UncheckedIOException(e);
