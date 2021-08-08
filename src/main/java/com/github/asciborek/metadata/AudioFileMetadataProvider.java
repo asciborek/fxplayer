@@ -7,7 +7,6 @@ import java.util.Objects;
 import java.util.Optional;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
-import org.jaudiotagger.audio.mp3.MP3File;
 import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.mp4.Mp4FieldKey;
 import org.jaudiotagger.tag.mp4.Mp4Tag;
@@ -24,6 +23,7 @@ abstract class AudioFileMetadataProvider {
     this.supportedFileExtension = supportedFileExtension;
   }
 
+  @SuppressWarnings("UnstableApiUsage")
   public final Optional<Track> getTrackMetadata(File file) {
     var extension = Files.getFileExtension(file.toString());
     if (!Objects.equals(AudioFileExtension.valueOfIgnoreCase(extension), supportedFileExtension)) {
@@ -59,12 +59,13 @@ final class Mp3AudioFileMetadataProvider extends AudioFileMetadataProvider {
 
   @Override
   Track readTrackMetadata(File mp3File) throws Exception {
-    var mp3AudioFile = (MP3File) AudioFileIO.read(mp3File);
+    var audioFile = AudioFileIO.read(mp3File);
+    var tag = audioFile.getTag();
     return Track.builder()
-        .withTitle(mp3AudioFile.getID3v1Tag().getFirstTitle().trim())
-        .withArtist(mp3AudioFile.getID3v1Tag().getFirstArtist().trim())
-        .withAlbum(mp3AudioFile.getID3v1Tag().getFirstAlbum().trim())
-        .withDuration(getDuration(mp3AudioFile))
+        .withTitle(tag.getFirst(FieldKey.TITLE).trim())
+        .withArtist(tag.getFirst(FieldKey.ARTIST).trim())
+        .withAlbum(tag.getFirst(FieldKey.ALBUM).trim())
+        .withDuration(getDuration(audioFile))
         .withFilePath(mp3File.toPath())
         .build();
   }

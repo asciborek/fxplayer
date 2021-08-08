@@ -44,10 +44,10 @@ final class Mp3AudioFileMetadataUpdater extends AudioFileMetadataUpdater {
   @Override
   void updateTrackMetadata(Track track) throws Exception {
     var mp3AudioFile = (MP3File) AudioFileIO.read(track.filePath().toFile());
-    var tag = mp3AudioFile.getID3v1Tag();
-    tag.setTitle(track.title());
-    tag.setAlbum(track.album());
-    tag.setArtist(track.artist());
+    var tag = mp3AudioFile.getTag();
+    tag.setField(FieldKey.TITLE, track.title());
+    tag.setField(FieldKey.ALBUM, track.album());
+    tag.setField(FieldKey.ARTIST, track.artist());
     mp3AudioFile.commit();
   }
 }
