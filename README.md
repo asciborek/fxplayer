@@ -36,6 +36,3 @@ component scanning.
 - [x] Display the current track album cover
 - [x] Shuffling the  playlist 
 - [x] Editing tracks metadata
-
-## Features to implement
-- Scrobbling played tracks to last.fm
