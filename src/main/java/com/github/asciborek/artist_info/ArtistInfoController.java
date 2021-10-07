@@ -4,6 +4,7 @@ import com.github.asciborek.metadata.Track;
 import com.github.asciborek.metadata.TrackMetadataUpdatedEvent;
 import com.github.asciborek.player.PlayerEvents.PlaylistClearedEvent;
 import com.github.asciborek.player.PlayerEvents.PlaylistFinishedEvent;
+import com.github.asciborek.player.PlayerEvents.ShowSidebarChangeEvent;
 import com.github.asciborek.player.PlayerEvents.StartPlayingTrackEvent;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -21,9 +22,12 @@ public class ArtistInfoController {
 
   private static final Logger LOG = LoggerFactory.getLogger(ArtistInfoController.class);
   private static final String NONE_ARTIST = "";
+
+  private final ArtistInfoProvider artistInfoProvider;
+
   private String currentArtist = NONE_ARTIST;
   private Track currentTrack = null;
-  private final ArtistInfoProvider artistInfoProvider;
+  private boolean showSidebar = true;
 
   @FXML
   private TextArea artistDescription;
@@ -39,13 +43,26 @@ public class ArtistInfoController {
 
   @Subscribe
   @SuppressWarnings("unused")
+  public void onShowSidebarChange(ShowSidebarChangeEvent event) {
+    boolean previousSHowSidebar = showSidebar;
+    showSidebar = event.showSidebar();
+    LOG.info("received showSidebarChangeEvent {}", event);
+    if (!previousSHowSidebar && showSidebar) {
+      loadArtistInfo();
+    }
+  }
+
+  @Subscribe
+  @SuppressWarnings("unused")
   public void onNewTrack(StartPlayingTrackEvent startPlayingTrackEvent) {
     LOG.info("received StartPlayingTrackEvent");
     currentTrack = startPlayingTrackEvent.track();
     var newArtist = currentTrack.artist();
     if (!newArtist.equals(currentArtist)) {
       currentArtist = newArtist;
-      loadArtistInfo();
+      if (showSidebar) {
+        loadArtistInfo();
+      }
     }
   }
 
@@ -57,7 +74,9 @@ public class ArtistInfoController {
       currentTrack = event.newTrack();
       if (!currentArtist.equals(event.newTrack().artist())) {
         this.currentArtist = event.newTrack().artist();
-        loadArtistInfo();
+        if (showSidebar) {
+          loadArtistInfo();
+        }
       }
     }
   }
@@ -68,7 +87,6 @@ public class ArtistInfoController {
         .exceptionally(ex -> ArtistInfo.UNREACHABLE)
         .thenAccept(this::loadArtistInfo);
   }
-
 
   @Subscribe
   @SuppressWarnings("unused")

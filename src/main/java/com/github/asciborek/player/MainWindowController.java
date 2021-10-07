@@ -14,6 +14,7 @@ import com.github.asciborek.player.PlayerCommands.PlayOrPauseTrackCommand;
 import com.github.asciborek.player.PlayerCommands.RemoveTrackCommand;
 import com.github.asciborek.player.PlayerEvents.PlaylistOpenedEvent;
 import com.github.asciborek.player.PlayerEvents.PlaylistShuffledEvent;
+import com.github.asciborek.player.PlayerEvents.ShowSidebarChangeEvent;
 import com.github.asciborek.player.PlayerEvents.StartPlayingTrackEvent;
 import com.github.asciborek.playlist.PlaylistService;
 import com.github.asciborek.settings.SettingsService;
@@ -36,12 +37,14 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
+import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
@@ -71,6 +74,9 @@ public final class MainWindowController implements Initializable {
   private static final ExtensionFilter PLAYLIST_EXTENSION_FILTER = new ExtensionFilter(
       "playlist files (*.plst)", "*.plst");
 
+  private static final int SIDEBAR_WIDTH = 300;
+  private static final int HIDDEN_SIDEBAR_WIDTH = 0;
+
   private final EventBus eventBus;
   private final TrackMetadataProvider trackMetadataProvider;
   private final TrackMetadataUpdater trackMetadataUpdater;
@@ -89,6 +95,13 @@ public final class MainWindowController implements Initializable {
   private MenuItem addDirectoryMenuItem;
   @FXML
   private MenuItem clearPlaylistMenuItem;
+
+  //Tools Menu
+  @FXML
+  private CheckMenuItem showSidebarMenuItem;
+  //Embedded views
+  @FXML
+  private VBox sidebar;
   //Playlist UI
   @FXML
   private TableView<Track> playlistView;
@@ -226,6 +239,20 @@ public final class MainWindowController implements Initializable {
       playlistService.loadPlaylistWithExistingFiles(playlistFile)
           .thenAccept(this::addTracksToPlaylist);
     }
+  }
+
+  public void onShowSidebarChange() {
+    boolean showSidebar = showSidebarMenuItem.isSelected();
+    LOG.info("onShowSidebar, set visible to  {}", showSidebar);
+    sidebar.setVisible(showSidebar);
+    if (!showSidebar) {
+      sidebar.setMinWidth(HIDDEN_SIDEBAR_WIDTH);
+      sidebar.setMaxWidth(HIDDEN_SIDEBAR_WIDTH);
+    } else {
+      sidebar.setMinWidth(SIDEBAR_WIDTH);
+      sidebar.setMaxWidth(SIDEBAR_WIDTH);
+    }
+    eventBus.post(new ShowSidebarChangeEvent(showSidebar));
   }
 
   public void quit() {

@@ -5,6 +5,7 @@ import static com.google.common.io.Resources.getResource;
 import com.github.asciborek.metadata.Track;
 import com.github.asciborek.metadata.TrackMetadataUpdatedEvent;
 import com.github.asciborek.player.PlayerEvents.PlaylistFinishedEvent;
+import com.github.asciborek.player.PlayerEvents.ShowSidebarChangeEvent;
 import com.github.asciborek.player.PlayerEvents.StartPlayingTrackEvent;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -33,6 +34,7 @@ public class AlbumCoverController implements Initializable {
 
   private Track currentTrack = null;
   private ArtistAlbum currentArtistAlbum = NONE;
+  private boolean showSidebar = true;
 
   @Inject
   public AlbumCoverController(AlbumCoverProvider albumCoverProvider, EventBus eventBus) {
@@ -47,13 +49,26 @@ public class AlbumCoverController implements Initializable {
 
   @Subscribe
   @SuppressWarnings("unused")
+  public void onShowSidebarChange(ShowSidebarChangeEvent event) {
+    boolean previousShowSidebar = showSidebar;
+    showSidebar = event.showSidebar();
+    LOG.info("received showSidebarChangeEvent {}", event);
+    if (!previousShowSidebar && showSidebar) {
+      loadAlbumCover();
+    }
+  }
+
+  @Subscribe
+  @SuppressWarnings("unused")
   public void onNewTrack(StartPlayingTrackEvent event) {
     LOG.info("received StartPlayingTrackEvent");
     currentTrack = event.track();
     var newTrackArtistAlbum = new ArtistAlbum(currentTrack.artist(), currentTrack.album());
     if (!Objects.equals(newTrackArtistAlbum, currentArtistAlbum)) {
       currentArtistAlbum = newTrackArtistAlbum;
-      loadAlbumCover();
+      if (showSidebar) {
+        loadAlbumCover();
+      }
     }
   }
 
@@ -67,7 +82,9 @@ public class AlbumCoverController implements Initializable {
       currentTrack = event.newTrack();
       if (!oldTrackArtistAlbum.equals(newTrackArtistAlbum)) {
         currentArtistAlbum = newTrackArtistAlbum;
-        loadAlbumCover();
+        if (showSidebar) {
+          loadAlbumCover();
+        }
       }
     }
   }

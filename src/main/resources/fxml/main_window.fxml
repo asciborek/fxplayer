@@ -9,6 +9,7 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.CheckMenuItem?>
 <BorderPane xmlns="http://javafx.com/javafx"
   xmlns:fx="http://javafx.com/fxml"
   fx:controller="com.github.asciborek.player.MainWindowController"
@@ -28,11 +29,14 @@
         <MenuItem text="Save the current Playlist" onAction="#savePlaylist"/>
         <MenuItem text="Load a Playlist" onAction="#loadPlaylist"/>
       </Menu>
+      <Menu text="Tools">
+        <CheckMenuItem fx:id="showSidebarMenuItem" text="Show Sidebar" onAction="#onShowSidebarChange" selected="true"/>
+      </Menu>
     </MenuBar>
   </top>
 
   <left>
-    <VBox maxWidth="300">
+    <VBox maxWidth="300" fx:id="sidebar">
       <fx:include source="album_cover.fxml"/>
       <fx:include source="artist_info.fxml"/>
     </VBox>

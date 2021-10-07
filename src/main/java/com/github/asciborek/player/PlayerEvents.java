@@ -16,4 +16,6 @@ public final class PlayerEvents {
 
   static record PlaylistShuffledEvent() {}
 
+  public static record ShowSidebarChangeEvent(boolean showSidebar) {}
+
 }
