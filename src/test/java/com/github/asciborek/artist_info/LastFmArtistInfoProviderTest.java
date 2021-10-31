@@ -2,6 +2,7 @@ package com.github.asciborek.artist_info;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
@@ -11,7 +12,6 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -52,14 +52,14 @@ public class LastFmArtistInfoProviderTest {
     //when
     var artistInfo = artistInfoProvider.getArtistInfo(artist).get();
     //then
-    Assertions.assertEquals(expectedArtistInfo, artistInfo);
+    assertThat(artistInfo).isEqualTo(expectedArtistInfo);
   }
 
   @DisplayName("it should return NotFoundArtistInfo if artist Was not found")
   @Test
   void itShouldReturnNotFoundArtistInfoIfArtistWasNotFound() throws Exception {
     var artistInfo = artistInfoProvider.getArtistInfo("Not_Found").get();
-    Assertions.assertEquals(ArtistInfo.NOT_FOUND, artistInfo);
+    assertThat(artistInfo).isEqualTo(ArtistInfo.NOT_FOUND);
   }
 
   @AfterAll

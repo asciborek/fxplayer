@@ -1,15 +1,15 @@
 package com.github.asciborek.settings;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
-import com.github.asciborek.FxPlayer;
 import com.github.asciborek.FxPlayer.CloseApplicationEvent;
 import com.github.asciborek.util.FileUtils;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -22,11 +22,11 @@ public class SettingsServiceTest {
     var settingsService = new SettingsService(settingsStorage(tempFile));
 
     //default volume value is max
-    Assertions.assertEquals(SettingsService.MAX_VOLUME_LEVEL, settingsService.getVolume());
+    assertThat(SettingsService.MAX_VOLUME_LEVEL).isEqualTo(settingsService.getVolume());
     //default directory should be home directory
-    Assertions.assertEquals(new File(FileUtils.getUserHome()), settingsService.getAddTrackFileChooserInitDirectory());
-    Assertions.assertEquals(new File(FileUtils.getUserHome()), settingsService.getDirectoryDirectoryChooserInitDirectory());
-    Assertions.assertEquals(new File(FileUtils.getUserHome()), settingsService.getOpenFileFileChooserInitDirectory());
+    assertThat(settingsService.getAddTrackFileChooserInitDirectory()).isEqualTo(new File(FileUtils.getUserHome()));
+    assertThat(settingsService.getDirectoryDirectoryChooserInitDirectory()).isEqualTo(new File(FileUtils.getUserHome()));
+    assertThat(settingsService.getOpenFileFileChooserInitDirectory()).isEqualTo(new File(FileUtils.getUserHome()));
   }
 
   @Test
@@ -45,10 +45,10 @@ public class SettingsServiceTest {
     settingsService.setOpenFileFileChooserInitDirectory(expectedOpenFileFileChooserDirectory);
     settingsService.onCloseApplicationEvent(new CloseApplicationEvent());
     var newSettingsService = new SettingsService(settingsStorage(tempFile));
-    Assertions.assertEquals(expectedVolumeValue, newSettingsService.getVolume());
-    Assertions.assertEquals(expectedAddDirectoryDirectoryChooserDirectory, newSettingsService.getDirectoryDirectoryChooserInitDirectory());
-    Assertions.assertEquals(expectedAddTrackFileChooserDirectory, newSettingsService.getAddTrackFileChooserInitDirectory());
-    Assertions.assertEquals(expectedOpenFileFileChooserDirectory, newSettingsService.getOpenFileFileChooserInitDirectory());
+    assertThat(newSettingsService.getVolume()).isEqualTo(expectedVolumeValue);
+    assertThat(newSettingsService.getDirectoryDirectoryChooserInitDirectory()).isEqualTo(expectedAddDirectoryDirectoryChooserDirectory);
+    assertThat(newSettingsService.getAddTrackFileChooserInitDirectory()).isEqualTo(expectedAddTrackFileChooserDirectory);
+    assertThat(newSettingsService.getOpenFileFileChooserInitDirectory()).isEqualTo(expectedOpenFileFileChooserDirectory);
   }
 
   private SettingsStorage settingsStorage(Path tempFile) {

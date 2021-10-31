@@ -1,10 +1,11 @@
 package com.github.asciborek.player;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.github.asciborek.metadata.Track;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.OptionalInt;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -32,8 +33,8 @@ class RepeatTrackQueueManagerTest {
     var manager = new RepeatTrackQueueManager(queue);
     var previousTrack = manager.getPreviousTrack(3);
     var nextTrack = manager.getNextTrack(3);
-    Assertions.assertEquals(OptionalInt.of(3), previousTrack);
-    Assertions.assertEquals(OptionalInt.of(3), nextTrack);
+    assertThat(previousTrack).isEqualTo(OptionalInt.of(3));
+    assertThat(nextTrack).isEqualTo(OptionalInt.of(3));
   }
 
   @DisplayName("it should return the empty optional if the a track is not the playlist")
@@ -43,7 +44,7 @@ class RepeatTrackQueueManagerTest {
     var manager = new RepeatTrackQueueManager(queue);
     var previousTrack = manager.getPreviousTrack(3);
     var nextTrack = manager.getNextTrack(3);
-    Assertions.assertEquals(OptionalInt.empty(), previousTrack);
-    Assertions.assertEquals(OptionalInt.empty(), nextTrack);
+    assertThat(previousTrack).isEqualTo(OptionalInt.empty());
+    assertThat(nextTrack).isEqualTo(OptionalInt.empty());
   }
 }

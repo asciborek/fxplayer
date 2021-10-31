@@ -1,5 +1,7 @@
 package com.github.asciborek.playlist;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
@@ -16,7 +18,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -38,10 +39,10 @@ class PlaylistServiceTest {
   void itShouldLoadAllAudioFilesFromDirectory() throws Exception {
     var future = playlistService.getDirectoryTracks(getPathFromResource().toFile());
     var result = future.get(5, TimeUnit.SECONDS);
-    Assertions.assertEquals(3, result.size());
-    Assertions.assertEquals("1_test_audio.mp3", result.get(0).fileName());
-    Assertions.assertEquals("2_test_audio.mp4", result.get(1).fileName());
-    Assertions.assertEquals("3_test_audio.wav", result.get(2).fileName());
+    assertThat(result.size()).isEqualTo(3);
+    assertThat(result.get(0).fileName()).isEqualTo("1_test_audio.mp3");
+    assertThat(result.get(1).fileName()).isEqualTo("2_test_audio.mp4");
+    assertThat(result.get(2).fileName()).isEqualTo("3_test_audio.wav");
   }
 
   @Test
@@ -60,7 +61,7 @@ class PlaylistServiceTest {
     playlistService.savePlaylist(playlistFile, playlistToSave);
     var loadedPlaylist = playlistService.loadPlaylistWithExistingFiles(playlistFile).get(3, TimeUnit.SECONDS);
     //Assert
-    Assertions.assertEquals(expectedPlaylist, loadedPlaylist);
+    assertThat(loadedPlaylist).isEqualTo(expectedPlaylist);
   }
 
   private Path getAudioFilePath(String file) {

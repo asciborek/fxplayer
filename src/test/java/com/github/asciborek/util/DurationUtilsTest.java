@@ -1,8 +1,9 @@
 package com.github.asciborek.util;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.time.Duration;
 import java.util.stream.Stream;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -14,14 +15,14 @@ public class DurationUtilsTest {
   @MethodSource("formatTestArguments")
   @DisplayName("duration should be formatted to standard format")
   void shouldFormatDurationToStandardFormat(Duration duration, String formattedDuration) {
-    Assertions.assertEquals(formattedDuration, DurationUtils.format(duration));
+    assertThat(DurationUtils.format(duration)).isEqualTo(formattedDuration);
   }
 
   @ParameterizedTest
   @MethodSource("formatSecondsTestArguments")
   @DisplayName("duration should be formatted to standard format")
   void shouldFormatDurationInSecondsToStandardFormat(int seconds, String formattedDuration) {
-    Assertions.assertEquals(formattedDuration, DurationUtils.formatTimeInSeconds(seconds));
+    assertThat(DurationUtils.formatTimeInSeconds(seconds)).isEqualTo(formattedDuration);
   }
 
   private static Stream<Arguments> formatSecondsTestArguments() {

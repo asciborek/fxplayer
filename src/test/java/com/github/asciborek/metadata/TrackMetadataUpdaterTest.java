@@ -1,11 +1,12 @@
 package com.github.asciborek.metadata;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.google.common.io.Resources;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -43,10 +44,10 @@ public class TrackMetadataUpdaterTest {
     Track trackAfterUpdate =  trackMetadataProvider.getMetadata(trackBeforeCommittedUpdate.filePath())
         .orElseThrow();
     //Assertions
-    Assertions.assertEquals(EXPECTED_TITLE, trackAfterUpdate.title());
-    Assertions.assertEquals(EXPECTED_ALBUM, trackAfterUpdate.album());
-    Assertions.assertEquals(EXPECTED_ARTIST, trackAfterUpdate.artist());
-    Assertions.assertEquals(EXPECTED_LENGTH, trackAfterUpdate.length());
+    assertThat(trackAfterUpdate.title()).isEqualTo(EXPECTED_TITLE);
+    assertThat(trackAfterUpdate.album()).isEqualTo(EXPECTED_ALBUM);
+    assertThat(trackAfterUpdate.artist()).isEqualTo(EXPECTED_ARTIST);
+    assertThat(trackAfterUpdate.length()).isEqualTo(EXPECTED_LENGTH);
   }
 
   @DisplayName("should update mp4 tags")
@@ -68,10 +69,10 @@ public class TrackMetadataUpdaterTest {
     Track trackAfterUpdate = trackMetadataProvider.getMetadata(trackBeforeCommittedUpdate.filePath())
         .orElseThrow();
     //Assertions
-    Assertions.assertEquals(EXPECTED_TITLE, trackAfterUpdate.title());
-    Assertions.assertEquals(EXPECTED_ALBUM, trackAfterUpdate.album());
-    Assertions.assertEquals(EXPECTED_ARTIST, trackAfterUpdate.artist());
-    Assertions.assertEquals(EXPECTED_LENGTH, trackAfterUpdate.length());
+    assertThat(trackAfterUpdate.title()).isEqualTo(EXPECTED_TITLE);
+    assertThat(trackAfterUpdate.album()).isEqualTo(EXPECTED_ALBUM);
+    assertThat(trackAfterUpdate.artist()).isEqualTo(EXPECTED_ARTIST);
+    assertThat(trackAfterUpdate.length()).isEqualTo(EXPECTED_LENGTH);
   }
 
   @DisplayName("should update wav tags")
@@ -93,10 +94,10 @@ public class TrackMetadataUpdaterTest {
     Track trackAfterUpdate = trackMetadataProvider.getMetadata(trackBeforeCommittedUpdate.filePath())
         .orElseThrow();
     //Assertions
-    Assertions.assertEquals(EXPECTED_TITLE, trackAfterUpdate.title());
-    Assertions.assertEquals(EXPECTED_ALBUM, trackAfterUpdate.album());
-    Assertions.assertEquals(EXPECTED_ARTIST, trackAfterUpdate.artist());
-    Assertions.assertEquals(EXPECTED_LENGTH, trackAfterUpdate.length());
+    assertThat(trackAfterUpdate.title()).isEqualTo(EXPECTED_TITLE);
+    assertThat(trackAfterUpdate.album()).isEqualTo(EXPECTED_ALBUM);
+    assertThat(trackAfterUpdate.artist()).isEqualTo(EXPECTED_ARTIST);
+    assertThat(trackAfterUpdate.length()).isEqualTo(EXPECTED_LENGTH);
   }
 
 }

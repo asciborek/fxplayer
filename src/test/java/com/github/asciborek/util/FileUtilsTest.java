@@ -1,12 +1,14 @@
 package com.github.asciborek.util;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.google.common.io.Files;
 import com.google.common.io.Resources;
+import java.io.IOException;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.junit.jupiter.api.Assertions;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -22,16 +24,15 @@ public class FileUtilsTest {
     var path = getPathFromResource();
     try (var fileStream = FileUtils.getDirectoryFilesWithSupportedExtensions(path, extensions)) {
       var fileList = fileStream.collect(Collectors.toList());
-      Assertions.assertTrue(allMatchesExtension(fileList));
-      Assertions.assertFalse(fileList.isEmpty());
-    } catch (Exception e) {
-      Assertions.fail(e);
+      assertThat(fileList).allMatch(this::matchExpression);
+      assertThat(fileList.isEmpty()).isFalse();
+    } catch (IOException e) {
+      Assertions.fail("getDirectoryFilesWithSupportedExtensions thrown IO exception", e);
     }
   }
 
-  private boolean allMatchesExtension(List<Path> files) {
-    return files.stream()
-        .allMatch(file -> SUPPORTED_EXTENSIONS.contains(Files.getFileExtension(file.toString())));
+  private boolean matchExpression(Path file) {
+    return SUPPORTED_EXTENSIONS.contains(Files.getFileExtension(file.toString()));
   }
 
   private Path getPathFromResource() {

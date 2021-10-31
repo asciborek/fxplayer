@@ -1,8 +1,9 @@
 package com.github.asciborek.metadata;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.google.common.io.Resources;
 import java.io.File;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -24,11 +25,11 @@ public class TrackMetadataProviderTest {
   void shouldReadMp3MetaData() throws Exception {
     File file = new File(Resources.getResource(TEST_MP3_FILEPATH).toURI());
     Track track = trackMetadataProvider.getMetadata(file).orElseThrow();
-    Assertions.assertEquals(EXPECTED_TITLE, track.title());
-    Assertions.assertEquals(EXPECTED_ALBUM, track.album());
-    Assertions.assertEquals(EXPECTED_ARTIST, track.artist());
-    Assertions.assertEquals(EXPECTED_LENGTH, track.length());
-    Assertions.assertEquals("1_test_audio.mp3", track.fileName());
+    assertThat(track.title()).isEqualTo(EXPECTED_TITLE);
+    assertThat(track.album()).isEqualTo(EXPECTED_ALBUM);
+    assertThat(track.artist()).isEqualTo(EXPECTED_ARTIST);
+    assertThat(track.length()).isEqualTo(EXPECTED_LENGTH);
+    assertThat(track.fileName()).isEqualTo("1_test_audio.mp3");
   }
 
   @Test
@@ -36,11 +37,11 @@ public class TrackMetadataProviderTest {
   void shouldReadMp4MetaData() throws Exception {
     File file = new File(Resources.getResource(TEST_MP4_FILEPATH).toURI());
     Track track = trackMetadataProvider.getMetadata(file).orElseThrow();
-    Assertions.assertEquals(EXPECTED_TITLE, track.title());
-    Assertions.assertEquals(EXPECTED_ALBUM, track.album());
-    Assertions.assertEquals(EXPECTED_ARTIST, track.artist());
-    Assertions.assertEquals(EXPECTED_LENGTH, track.length());
-    Assertions.assertEquals("2_test_audio.mp4", track.fileName());
+    assertThat(track.title()).isEqualTo(EXPECTED_TITLE);
+    assertThat(track.album()).isEqualTo(EXPECTED_ALBUM);
+    assertThat(track.artist()).isEqualTo(EXPECTED_ARTIST);
+    assertThat(track.length()).isEqualTo(EXPECTED_LENGTH);
+    assertThat(track.fileName()).isEqualTo("2_test_audio.mp4");
   }
 
 
@@ -49,11 +50,11 @@ public class TrackMetadataProviderTest {
   void shouldReadWavMetaData() throws Exception {
     File file = new File(Resources.getResource(TEST_WAV_FILEPATH).toURI());
     Track track = trackMetadataProvider.getMetadata(file).orElseThrow();
-    Assertions.assertEquals(EXPECTED_TITLE, track.title());
-    Assertions.assertEquals(EXPECTED_ALBUM, track.album());
-    Assertions.assertEquals(EXPECTED_ARTIST, track.artist());
-    Assertions.assertEquals(EXPECTED_LENGTH, track.length());
-    Assertions.assertEquals("3_test_audio.wav", track.fileName());
+    assertThat(track.title()).isEqualTo(EXPECTED_TITLE);
+    assertThat(track.album()).isEqualTo(EXPECTED_ALBUM);
+    assertThat(track.artist()).isEqualTo(EXPECTED_ARTIST);
+    assertThat(track.length()).isEqualTo(EXPECTED_LENGTH);
+    assertThat(track.fileName()).isEqualTo("3_test_audio.wav");
   }
 
 }
