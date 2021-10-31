@@ -18,6 +18,8 @@ final class AlbumCoverControllerFactory implements Provider<AlbumCoverController
 
   @Override
   public AlbumCoverController get() {
-    return new AlbumCoverController(albumCoverProvider, eventBus);
+    var controller = new AlbumCoverController(albumCoverProvider);
+    eventBus.register(controller);
+    return controller;
   }
 }

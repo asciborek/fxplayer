@@ -18,6 +18,8 @@ final class ArtistInfoControllerFactory implements Provider<ArtistInfoController
 
   @Override
   public ArtistInfoController get() {
-    return new ArtistInfoController(artistInfoProvider, eventBus);
+    var controller = new ArtistInfoController(artistInfoProvider);
+    eventBus.register(controller);
+    return controller;
   }
 }

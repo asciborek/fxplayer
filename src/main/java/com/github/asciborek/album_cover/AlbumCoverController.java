@@ -7,9 +7,7 @@ import com.github.asciborek.metadata.TrackMetadataUpdatedEvent;
 import com.github.asciborek.player.PlayerEvents.PlaylistFinishedEvent;
 import com.github.asciborek.player.PlayerEvents.ShowSidebarChangeEvent;
 import com.github.asciborek.player.PlayerEvents.StartPlayingTrackEvent;
-import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import com.google.inject.Inject;
 import java.net.URL;
 import java.util.Objects;
 import java.util.ResourceBundle;
@@ -36,10 +34,8 @@ public class AlbumCoverController implements Initializable {
   private ArtistAlbum currentArtistAlbum = NONE;
   private boolean showSidebar = true;
 
-  @Inject
-  public AlbumCoverController(AlbumCoverProvider albumCoverProvider, EventBus eventBus) {
+  public AlbumCoverController(AlbumCoverProvider albumCoverProvider) {
     this.albumCoverProvider = albumCoverProvider;
-    eventBus.register(this);
   }
 
   @Override

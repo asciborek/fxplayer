@@ -35,5 +35,5 @@ final class ApplicationModule extends AbstractModule {
     LOG.info("create executor service, available processors: {}", AVAILABLE_PROCESSORS);
     return Executors.newFixedThreadPool(AVAILABLE_PROCESSORS);
   }
-
+  
 }

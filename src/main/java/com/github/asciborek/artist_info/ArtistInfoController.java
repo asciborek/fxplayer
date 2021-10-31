@@ -6,7 +6,6 @@ import com.github.asciborek.player.PlayerEvents.PlaylistClearedEvent;
 import com.github.asciborek.player.PlayerEvents.PlaylistFinishedEvent;
 import com.github.asciborek.player.PlayerEvents.ShowSidebarChangeEvent;
 import com.github.asciborek.player.PlayerEvents.StartPlayingTrackEvent;
-import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import java.util.Objects;
@@ -36,9 +35,8 @@ public class ArtistInfoController {
   private TextArea similarArtists;
 
   @Inject
-  public ArtistInfoController(ArtistInfoProvider artistInfoProvider, EventBus eventBus) {
+  public ArtistInfoController(ArtistInfoProvider artistInfoProvider) {
     this.artistInfoProvider = artistInfoProvider;
-    eventBus.register(this);
   }
 
   @Subscribe
