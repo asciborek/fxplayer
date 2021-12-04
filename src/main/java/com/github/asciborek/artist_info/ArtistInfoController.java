@@ -34,8 +34,7 @@ public class ArtistInfoController {
   @FXML
   private TextArea similarArtists;
 
-  @Inject
-  public ArtistInfoController(ArtistInfoProvider artistInfoProvider) {
+  ArtistInfoController(ArtistInfoProvider artistInfoProvider) {
     this.artistInfoProvider = artistInfoProvider;
   }
 

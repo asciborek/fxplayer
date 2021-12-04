@@ -20,7 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("UnstableApiUsage")//Guava
-public class AlbumCoverController implements Initializable {
+public final class AlbumCoverController implements Initializable {
 
   private static final Logger LOG = LoggerFactory.getLogger(AlbumCoverController.class);
   private static final Image EMPTY_CD_IMAGE = new Image(getResource("images/empty_cd.jpg").toString());
@@ -34,7 +34,7 @@ public class AlbumCoverController implements Initializable {
   private ArtistAlbum currentArtistAlbum = NONE;
   private boolean showSidebar = true;
 
-  public AlbumCoverController(AlbumCoverProvider albumCoverProvider) {
+  AlbumCoverController(AlbumCoverProvider albumCoverProvider) {
     this.albumCoverProvider = albumCoverProvider;
   }
 
