@@ -1,14 +1,14 @@
 package com.github.asciborek.player;
 
 import com.github.asciborek.metadata.Track;
-import com.github.asciborek.player.PlayerCommands.OpenTrackFileCommand;
-import com.github.asciborek.player.PlayerCommands.PlayOrPauseTrackCommand;
-import com.github.asciborek.player.PlayerCommands.RemoveTrackCommand;
-import com.github.asciborek.player.PlayerEvents.PlaylistClearedEvent;
-import com.github.asciborek.player.PlayerEvents.PlaylistFinishedEvent;
-import com.github.asciborek.player.PlayerEvents.PlaylistOpenedEvent;
-import com.github.asciborek.player.PlayerEvents.PlaylistShuffledEvent;
-import com.github.asciborek.player.PlayerEvents.StartPlayingTrackEvent;
+import com.github.asciborek.player.PlayerCommand.OpenTrackFileCommand;
+import com.github.asciborek.player.PlayerCommand.PlayOrPauseTrackCommand;
+import com.github.asciborek.player.PlayerCommand.RemoveTrackCommand;
+import com.github.asciborek.player.PlayerEvent.PlaylistClearedEvent;
+import com.github.asciborek.player.PlayerEvent.PlaylistFinishedEvent;
+import com.github.asciborek.player.PlayerEvent.PlaylistOpenedEvent;
+import com.github.asciborek.player.PlayerEvent.PlaylistShuffledEvent;
+import com.github.asciborek.player.PlayerEvent.StartPlayingTrackEvent;
 import com.github.asciborek.settings.SettingsService;
 import com.github.asciborek.util.DurationUtils;
 import com.google.common.eventbus.EventBus;

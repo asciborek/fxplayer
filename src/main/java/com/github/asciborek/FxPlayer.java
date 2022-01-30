@@ -43,16 +43,16 @@ public final class FxPlayer extends Application {
 
   @Override
   public void start(Stage primaryStage) throws Exception {
-    primaryStage.setTitle("FxPlayer");
+    var updater = new WindowTitleUpdater(primaryStage);
+    eventBus.register(updater);
+
+    primaryStage.setTitle(WindowTitleUpdater.DEFAULT_TITLE);
     FXMLLoader loader = new FXMLLoader();
     loader.setLocation(getResource("fxml/main_window.fxml"));
     loader.setControllerFactory(injector::getInstance);
     Parent root = loader.load();
-    primaryStage.setMinHeight(1000);
-    primaryStage.setMinWidth(1200);
-    primaryStage.setScene(new Scene(root, 1200, 1000));
-    primaryStage.setMaximized(true);
-    primaryStage.show();
+
+    initMainWindow(primaryStage, root);
   }
 
   @Override
@@ -60,6 +60,14 @@ public final class FxPlayer extends Application {
     LOG.info("Application Exit");
     eventBus.post(new CloseApplicationEvent());
     new Thread(this::shutdownExecutor).start(); //to prevent frozen UI
+  }
+
+  private void initMainWindow(Stage primaryStage, Parent root) {
+    primaryStage.setMinHeight(1000);
+    primaryStage.setMinWidth(1200);
+    primaryStage.setScene(new Scene(root, 1200, 1000));
+    primaryStage.setMaximized(true);
+    primaryStage.show();
   }
 
   private Properties readApiProperties() {
@@ -78,11 +86,11 @@ public final class FxPlayer extends Application {
       LOG.info("start terminating executorService");
       try {
         if (!executorService.awaitTermination(3, TimeUnit.SECONDS)){
-          LOG.info("awaitTermination didn't terminated executorService, calling executorService.shutdownNow()");
+          LOG.info("awaitTermination didn't terminate executorService, calling executorService.shutdownNow()");
           executorService.shutdownNow();
         }
       } catch (InterruptedException e) {
-        LOG.error("InterruptedException during awaitTermination calling executorService.shutdownNow()", e);
+        LOG.error("InterruptedException during awaitTermination, calling executorService.shutdownNow()", e);
         executorService.shutdownNow();
       }
 

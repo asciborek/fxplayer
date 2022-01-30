@@ -4,9 +4,9 @@ import static com.google.common.io.Resources.getResource;
 
 import com.github.asciborek.metadata.Track;
 import com.github.asciborek.metadata.TrackMetadataUpdatedEvent;
-import com.github.asciborek.player.PlayerEvents.PlaylistFinishedEvent;
-import com.github.asciborek.player.PlayerEvents.ShowSidebarChangeEvent;
-import com.github.asciborek.player.PlayerEvents.StartPlayingTrackEvent;
+import com.github.asciborek.player.PlayerEvent.PlaylistFinishedEvent;
+import com.github.asciborek.player.PlayerEvent.ShowSidebarChangeEvent;
+import com.github.asciborek.player.PlayerEvent.StartPlayingTrackEvent;
 import com.google.common.eventbus.Subscribe;
 import java.net.URL;
 import java.util.Objects;
