@@ -17,4 +17,8 @@ open module fxplayer {
   requires com.fasterxml.jackson.dataformat.xml;
   requires com.fasterxml.jackson.datatype.jdk8;
   requires com.fasterxml.jackson.datatype.jsr310;
+  requires com.zaxxer.hikari;
+  requires org.flywaydb.core;
+  requires org.xerial.sqlitejdbc;
+  requires org.jooq;
 }

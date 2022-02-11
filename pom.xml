@@ -64,6 +64,27 @@
       <artifactId>guice</artifactId>
       <version>5.0.1</version>
     </dependency>
+    <!-- Sqlite -->
+    <dependency>
+      <groupId>org.xerial</groupId>
+      <artifactId>sqlite-jdbc</artifactId>
+      <version>3.36.0.3</version>
+    </dependency>
+    <dependency>
+      <groupId>org.flywaydb</groupId>
+      <artifactId>flyway-core</artifactId>
+      <version>8.4.4</version>
+    </dependency>
+    <dependency>
+      <groupId>com.zaxxer</groupId>
+      <artifactId>HikariCP</artifactId>
+      <version>5.0.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jooq</groupId>
+      <artifactId>jooq</artifactId>
+      <version>3.16.3</version>
+    </dependency>
     <!-- Libraries -->
     <dependency>
       <groupId>com.google.guava</groupId>

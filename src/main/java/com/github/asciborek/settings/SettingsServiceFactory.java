@@ -8,6 +8,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import java.nio.file.Path;
+import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,31 +16,20 @@ import org.slf4j.LoggerFactory;
 public final class SettingsServiceFactory implements Provider<SettingsService> {
 
   private static final Logger LOG = LoggerFactory.getLogger(SettingsServiceFactory.class);
-  private static final String SETTINGS_FILENAME = "settings.json";
 
   private final EventBus eventBus;
+  private final DataSource dataSource;
 
   @Inject
-  public SettingsServiceFactory(EventBus eventBus) {
+  public SettingsServiceFactory(EventBus eventBus, DataSource dataSource) {
     this.eventBus = eventBus;
-  }
-
-  private ObjectMapper objectMapper() {
-    var mapper = new ObjectMapper();
-    mapper.registerModule(new Jdk8Module());
-    mapper.enable(SerializationFeature.INDENT_OUTPUT);
-    return  mapper;
-  }
-
-  private Path settingsFilePath() {
-    return FileUtils.getApplicationDataDirectory().resolve(SETTINGS_FILENAME);
+    this.dataSource = dataSource;
   }
 
   @Override
   public SettingsService get() {
     LOG.info("creating SettingsService...");
-    var settingsStorage = new JsonFileSettingsStorage(objectMapper(), settingsFilePath());
-    var settingsService =  new SettingsService(settingsStorage);
+    var settingsService =  new SettingsService(new SqliteSettingsStorage(dataSource));
     eventBus.register(settingsService);
     return settingsService;
   }
