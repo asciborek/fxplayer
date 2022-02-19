@@ -3,6 +3,7 @@ package com.github.asciborek;
 import static com.google.common.io.Resources.getResource;
 
 import com.github.asciborek.player.PlayerModule;
+import com.github.asciborek.util.FileUtils;
 import com.google.common.eventbus.EventBus;
 import com.google.common.io.Resources;
 import com.google.inject.Guice;
@@ -10,6 +11,8 @@ import com.google.inject.Injector;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -30,6 +33,18 @@ public final class FxPlayer extends Application {
   private final Properties apiProperties = readApiProperties();
   private final Injector injector = Guice.createInjector(new ApplicationModule(), new PlayerModule(), new LastFmModule(apiProperties));
   private final EventBus eventBus = injector.getInstance(EventBus.class);
+
+  static {
+    Path applicationDirectory = FileUtils.getApplicationDataDirectory();
+    if (Files.notExists(applicationDirectory)) {
+      try {
+        Files.createDirectory(applicationDirectory);
+      } catch (IOException e) {
+        LOG.error("couldn't create application directory");
+        throw new UncheckedIOException(e);
+      }
+    }
+  }
 
   public static void main(String[] args) {
     launch(args);
