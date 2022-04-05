@@ -7,6 +7,7 @@ import com.github.asciborek.player.PlayerEvent.PlaylistOpenedEvent;
 import com.github.asciborek.player.PlayerEvent.PlaylistShuffledEvent;
 import com.github.asciborek.player.PlayerEvent.ShowSidebarChangeEvent;
 import com.github.asciborek.player.PlayerEvent.StartPlayingTrackEvent;
+import java.time.Instant;
 
 public sealed interface  PlayerEvent permits PlaylistClearedEvent, PlaylistFinishedEvent,
     PlaylistOpenedEvent, StartPlayingTrackEvent, PlaylistShuffledEvent, ShowSidebarChangeEvent {
@@ -22,5 +23,11 @@ public sealed interface  PlayerEvent permits PlaylistClearedEvent, PlaylistFinis
   record PlaylistShuffledEvent() implements PlayerEvent {}
 
   record ShowSidebarChangeEvent(boolean showSidebar) implements PlayerEvent {}
+
+  record TrackPlayedEvent(Track track, Instant eventTime) {
+    public long timestamp() {
+      return eventTime.toEpochMilli();
+    }
+  }
 
 }

@@ -11,6 +11,7 @@ import com.github.asciborek.player.PlayerEvent.PlaylistShuffledEvent;
 import com.github.asciborek.player.PlayerEvent.StartPlayingTrackEvent;
 import com.github.asciborek.settings.SettingsService;
 import com.github.asciborek.util.DurationUtils;
+import com.github.asciborek.util.TimeProvider;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
@@ -45,6 +46,8 @@ public final class AudioPlayerController implements Initializable {
   private final EventBus eventBus;
   private final SettingsService settingsService;
   private final ObservableList<Track> tracksQueue;
+  private final TimeProvider timeProvider;
+
   private PlayerState playerState = PlayerState.READY;
   private Track currentTrack;
   private int currentTrackIndex = NOT_PLAYING_TRACK_FLAG;
@@ -71,10 +74,12 @@ public final class AudioPlayerController implements Initializable {
   private ToggleButton repeatTrackButton;
 
   @Inject
-  public AudioPlayerController(EventBus eventBus, SettingsService settingsService, ObservableList<Track> tracksQueue) {
+  public AudioPlayerController(EventBus eventBus, SettingsService settingsService,
+      ObservableList<Track> tracksQueue, TimeProvider timeProvider) {
     this.eventBus = eventBus;
     this.settingsService = settingsService;
     this.tracksQueue = tracksQueue;
+    this.timeProvider = timeProvider;
     this.queueManager = new OrderedPlaylistQueueManager(tracksQueue);
     eventBus.register(this);
   }
@@ -289,10 +294,14 @@ public final class AudioPlayerController implements Initializable {
 
   private void initMediaPlayerForNewTrack() {
     Media media = new Media(currentTrack.filePath().toUri().toString());
+    var trackPlayedEventPublisher = new TrackPlayedEventPublisher(currentTrack, eventBus, timeProvider);
     mediaPlayer = new MediaPlayer(media);
     mediaPlayer.volumeProperty().bind(volumeProperty);
     mediaPlayer.currentTimeProperty().addListener(this::onCurrentTimeListener);
+    mediaPlayer.currentTimeProperty().addListener(trackPlayedEventPublisher::onTrackProgress);
     mediaPlayer.play();
+    mediaPlayer.setOnPlaying(trackPlayedEventPublisher::onTrackPlaying);
+    mediaPlayer.setOnPaused(trackPlayedEventPublisher::onTrackPaused);
     mediaPlayer.setOnEndOfMedia(this::nextTrack);
   }
 

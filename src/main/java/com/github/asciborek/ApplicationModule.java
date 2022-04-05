@@ -4,11 +4,15 @@ import com.github.asciborek.album_cover.AlbumCoverController;
 import com.github.asciborek.album_cover.AlbumCoverControllerFactory;
 import com.github.asciborek.artist_info.ArtistInfoController;
 import com.github.asciborek.artist_info.ArtistInfoControllerFactory;
+import com.github.asciborek.local_statistics.PlayedTracksHistoryCollector;
+import com.github.asciborek.local_statistics.PlayedTracksHistoryCollectorFactory;
 import com.github.asciborek.metadata.MetadataModule;
 import com.github.asciborek.settings.SettingsService;
 import com.github.asciborek.settings.SettingsServiceFactory;
 import com.github.asciborek.util.DeadEventLoggingListener;
 import com.github.asciborek.util.FileUtils;
+import com.github.asciborek.util.SystemTimeProvider;
+import com.github.asciborek.util.TimeProvider;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
@@ -31,9 +35,12 @@ final class ApplicationModule extends AbstractModule {
   @Override
   @SuppressWarnings("UnstableApiUsage")
   protected void configure() {
+    bind(TimeProvider.class).toInstance(new SystemTimeProvider());
     bind(ExecutorService.class).toProvider(this::executorService).in(Scopes.SINGLETON);
     bind(DataSource.class).toProvider(this::dataSource).asEagerSingleton();
     bind(EventBus.class).toInstance(new EventBus());
+    bind(PlayedTracksHistoryCollector.class)
+        .toProvider(PlayedTracksHistoryCollectorFactory.class).asEagerSingleton();
     bind(DeadEventLoggingListener.class).asEagerSingleton();
     bind(SettingsService.class).toProvider(SettingsServiceFactory.class).in(Scopes.SINGLETON);
     bind(AlbumCoverController.class).toProvider(AlbumCoverControllerFactory.class).in(Scopes.SINGLETON);

@@ -1,4 +1,4 @@
-FxPlayer is my music player written for fun. Currently it supports mp3, mp4 and wav files.
+FxPlayer is my music player written for fun. Currently, it supports mp3, mp4 and wav files.
 
 ## How to build the application
 In order to build the application you need JDK 17, and
@@ -12,7 +12,7 @@ that it will work on other operating systems.
 ## Application design
 ### Package structure
 Core packages(subpackages of ```com.github.asciborek```) are seperated by features, not technical
-details (like data, services, controllers etc). This kind of design Robert C. Martin describes as
+details (like data, services, controllers etc.). This kind of design Robert C. Martin describes as
 [Screaming Architecture](https://blog.cleancoder.com/uncle-bob/2011/09/30/Screaming-Architecture.html).
 
 ### Components decoupling
@@ -31,8 +31,9 @@ component scanning.
 - [x] Loading single files and directories as well.
 - [x] Saving and loading playlist files. Load and save the last playlist.
 - [x] Storing and loading the last application settings(e.g: volume level).
-- [x] Fetching artist info from last.fm and displaying it.
 - [x] "repeat a track" and "repeat a playlist" options.
-- [x] Display the current track album cover
 - [x] Shuffling the  playlist 
 - [x] Editing tracks metadata
+- [x] Collecting track playing history
+- [x] Fetching artist info from last.fm and displaying it.
+- [x] Display the current track album cover
