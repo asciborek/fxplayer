@@ -4,8 +4,7 @@ import com.github.asciborek.album_cover.AlbumCoverController;
 import com.github.asciborek.album_cover.AlbumCoverControllerFactory;
 import com.github.asciborek.artist_info.ArtistInfoController;
 import com.github.asciborek.artist_info.ArtistInfoControllerFactory;
-import com.github.asciborek.local_statistics.PlayedTracksHistoryCollector;
-import com.github.asciborek.local_statistics.PlayedTracksHistoryCollectorFactory;
+import com.github.asciborek.local_statistics.LocalStatisticsModule;
 import com.github.asciborek.metadata.MetadataModule;
 import com.github.asciborek.settings.SettingsService;
 import com.github.asciborek.settings.SettingsServiceFactory;
@@ -39,13 +38,13 @@ final class ApplicationModule extends AbstractModule {
     bind(ExecutorService.class).toProvider(this::executorService).in(Scopes.SINGLETON);
     bind(DataSource.class).toProvider(this::dataSource).asEagerSingleton();
     bind(EventBus.class).toInstance(new EventBus());
-    bind(PlayedTracksHistoryCollector.class)
-        .toProvider(PlayedTracksHistoryCollectorFactory.class).asEagerSingleton();
     bind(DeadEventLoggingListener.class).asEagerSingleton();
     bind(SettingsService.class).toProvider(SettingsServiceFactory.class).in(Scopes.SINGLETON);
     bind(AlbumCoverController.class).toProvider(AlbumCoverControllerFactory.class).in(Scopes.SINGLETON);
     bind(ArtistInfoController.class).toProvider(ArtistInfoControllerFactory.class).in(Scopes.SINGLETON);
+
     install(new MetadataModule());
+    install(new LocalStatisticsModule());
   }
 
   private ExecutorService executorService() {
