@@ -6,10 +6,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.github.asciborek.FxPlayer.CloseApplicationEvent;
+import com.github.asciborek.TestUtils;
 import com.github.asciborek.util.FileUtils;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
@@ -17,6 +20,7 @@ import javax.sql.DataSource;
 import org.flywaydb.core.Flyway;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -27,15 +31,12 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 @TestInstance(Lifecycle.PER_CLASS)
 public class SettingsServiceTest {
 
-  private final Path dbFile = getTempSqliteFile();
-  private final DataSource dataSource = createSqliteDatasource(dbFile);
+  private final Path dbFile = TestUtils.getTempSqliteFile();
+  private final HikariDataSource dataSource = TestUtils.createSqliteDatasource(dbFile);
 
   @BeforeAll
   void initDb() {
-    Flyway flyway = Flyway.configure()
-        .dataSource(dataSource)
-        .load();
-    flyway.migrate();
+    TestUtils.initDb(dataSource);
   }
 
   @Test
@@ -113,26 +114,14 @@ public class SettingsServiceTest {
     context.deleteFrom(DSL.table(SETTINGS_TABLE)).execute();
   }
 
+  @AfterAll
+  void tearDownDb() throws IOException {
+    dataSource.close();
+    Files.delete(dbFile);
+  }
+
   private SqliteSettingsStorage creteSqliteSettingsStorage() {
     return new SqliteSettingsStorage(dataSource);
-  }
-
-  private ObjectMapper objectMapper() {
-    var objectMapper = new ObjectMapper();
-    objectMapper.registerModule(new Jdk8Module());
-    return  objectMapper;
-  }
-
-  private Path getTempSqliteFile() {
-    return Paths.get(FileUtils.getTempDirectory(), "fx-database" + Instant.now().toEpochMilli() + ".db");
-  }
-
-  private DataSource createSqliteDatasource(Path dbFile) {
-    String jdbcUrl =  "jdbc:sqlite:" + dbFile;
-    HikariConfig config = new HikariConfig();
-    config.setJdbcUrl(jdbcUrl);
-    config.setMaximumPoolSize(1);
-    return new HikariDataSource(config);
   }
 
 }
