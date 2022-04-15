@@ -39,11 +39,7 @@ final class LocalTrackStatisticsController {
     var artist = event.track().artist();
     var title = event.track().title();
     trackLocalStatisticsProvider.getTrackLocalStatistics(artist, title)
-        .thenAccept(this::displayStatistics)
-        .exceptionally(e -> {
-            e.printStackTrace();
-            return null;
-        });
+        .thenAccept(this::displayStatistics);
   }
 
   @Subscribe
