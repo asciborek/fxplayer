@@ -5,6 +5,7 @@ import com.github.asciborek.player.PlayerEvent.StartPlayingTrackEvent;
 import com.github.asciborek.util.TimeProvider;
 import com.google.common.eventbus.Subscribe;
 import java.time.Instant;
+import java.time.format.DateTimeFormatter;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
@@ -24,10 +25,12 @@ final class LocalTrackStatisticsController {
 
   private final TrackLocalStatisticsProvider trackLocalStatisticsProvider;
   private final TimeProvider timeProvider;
+  private final DateTimeFormatter dateTimeFormatter;
 
-  public LocalTrackStatisticsController(TrackLocalStatisticsProvider trackLocalStatisticsProvider, TimeProvider timeProvider) {
+  public LocalTrackStatisticsController(TrackLocalStatisticsProvider trackLocalStatisticsProvider, TimeProvider timeProvider, DateTimeFormatter dateTimeFormatter) {
     this.trackLocalStatisticsProvider = trackLocalStatisticsProvider;
     this.timeProvider = timeProvider;
+    this.dateTimeFormatter = dateTimeFormatter;
   }
 
   @Subscribe
@@ -75,7 +78,7 @@ final class LocalTrackStatisticsController {
   private String formatDate(Instant instant) {
     return instant.atZone(timeProvider.applicationZoneId())
         .toLocalDateTime()
-        .toString();
+        .format(dateTimeFormatter);
   }
 
 }

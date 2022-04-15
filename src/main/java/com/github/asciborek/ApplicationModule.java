@@ -18,6 +18,7 @@ import com.google.inject.Scopes;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import java.nio.file.Path;
+import java.time.format.DateTimeFormatter;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.sql.DataSource;
@@ -30,11 +31,13 @@ final class ApplicationModule extends AbstractModule {
   private static final Logger LOG = LoggerFactory.getLogger(ApplicationModule.class);
   private static final int AVAILABLE_PROCESSORS = Runtime.getRuntime().availableProcessors();
   private static final String DB_FILENAME = "fx-player.db";
+  private static final String DEFAULT_DATE_TIME_FORMAT = "dd MMMM yyyy hh:mm a";
 
   @Override
   @SuppressWarnings("UnstableApiUsage")
   protected void configure() {
     bind(TimeProvider.class).toInstance(new SystemTimeProvider());
+    bind(DateTimeFormatter.class).toProvider(this::dateTimeFormatter).in(Scopes.SINGLETON);
     bind(ExecutorService.class).toProvider(this::executorService).in(Scopes.SINGLETON);
     bind(DataSource.class).toProvider(this::dataSource).asEagerSingleton();
     bind(EventBus.class).toInstance(new EventBus());
@@ -45,6 +48,10 @@ final class ApplicationModule extends AbstractModule {
 
     install(new MetadataModule());
     install(new LocalStatisticsModule());
+  }
+
+  private DateTimeFormatter dateTimeFormatter() {
+    return DateTimeFormatter.ofPattern(DEFAULT_DATE_TIME_FORMAT);
   }
 
   private ExecutorService executorService() {
