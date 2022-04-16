@@ -4,8 +4,7 @@ import com.github.asciborek.album_cover.AlbumCoverController;
 import com.github.asciborek.album_cover.AlbumCoverControllerFactory;
 import com.github.asciborek.artist_info.ArtistInfoController;
 import com.github.asciborek.artist_info.ArtistInfoControllerFactory;
-import com.github.asciborek.local_statistics.PlayedTracksHistoryCollector;
-import com.github.asciborek.local_statistics.PlayedTracksHistoryCollectorFactory;
+import com.github.asciborek.local_statistics.LocalStatisticsModule;
 import com.github.asciborek.metadata.MetadataModule;
 import com.github.asciborek.settings.SettingsService;
 import com.github.asciborek.settings.SettingsServiceFactory;
@@ -19,6 +18,7 @@ import com.google.inject.Scopes;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import java.nio.file.Path;
+import java.time.format.DateTimeFormatter;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.sql.DataSource;
@@ -31,21 +31,27 @@ final class ApplicationModule extends AbstractModule {
   private static final Logger LOG = LoggerFactory.getLogger(ApplicationModule.class);
   private static final int AVAILABLE_PROCESSORS = Runtime.getRuntime().availableProcessors();
   private static final String DB_FILENAME = "fx-player.db";
+  private static final String DEFAULT_DATE_TIME_FORMAT = "dd MMMM yy hh:mm a";
 
   @Override
   @SuppressWarnings("UnstableApiUsage")
   protected void configure() {
     bind(TimeProvider.class).toInstance(new SystemTimeProvider());
+    bind(DateTimeFormatter.class).toProvider(this::dateTimeFormatter).in(Scopes.SINGLETON);
     bind(ExecutorService.class).toProvider(this::executorService).in(Scopes.SINGLETON);
     bind(DataSource.class).toProvider(this::dataSource).asEagerSingleton();
     bind(EventBus.class).toInstance(new EventBus());
-    bind(PlayedTracksHistoryCollector.class)
-        .toProvider(PlayedTracksHistoryCollectorFactory.class).asEagerSingleton();
     bind(DeadEventLoggingListener.class).asEagerSingleton();
     bind(SettingsService.class).toProvider(SettingsServiceFactory.class).in(Scopes.SINGLETON);
     bind(AlbumCoverController.class).toProvider(AlbumCoverControllerFactory.class).in(Scopes.SINGLETON);
     bind(ArtistInfoController.class).toProvider(ArtistInfoControllerFactory.class).in(Scopes.SINGLETON);
+
     install(new MetadataModule());
+    install(new LocalStatisticsModule());
+  }
+
+  private DateTimeFormatter dateTimeFormatter() {
+    return DateTimeFormatter.ofPattern(DEFAULT_DATE_TIME_FORMAT);
   }
 
   private ExecutorService executorService() {

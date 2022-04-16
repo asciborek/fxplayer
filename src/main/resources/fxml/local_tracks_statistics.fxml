@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<VBox xmlns="http://javafx.com/javafx"
+  xmlns:fx="http://javafx.com/fxml"
+  fx:controller="com.github.asciborek.local_statistics.LocalTrackStatisticsController"
+  minHeight="100.0" minWidth="300.0">
+
+  <HBox>
+    <Label text="Total Track Plays Count" minWidth="150" />
+    <TextField fx:id="totalPlaysCount" minWidth="150" editable="false"/>
+  </HBox>
+  <HBox>
+    <Label text="First Track Played Time" minWidth="150"/>
+    <TextField fx:id="firstPlayed" minWidth="150" editable="false"/>
+  </HBox>
+  <HBox>
+    <Label text="Last Track Played TIme " minWidth="150"/>
+    <TextField fx:id="lastPlayed" minWidth="150" editable="false"/>
+  </HBox>
+</VBox>

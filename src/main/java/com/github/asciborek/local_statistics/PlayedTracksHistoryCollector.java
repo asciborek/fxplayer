@@ -11,7 +11,7 @@ import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 
-public final class PlayedTracksHistoryCollector {
+final class PlayedTracksHistoryCollector {
 
   private final ExecutorService executorService;
   private final DSLContext dslContext;

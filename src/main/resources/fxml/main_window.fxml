@@ -38,6 +38,7 @@
   <left>
     <VBox maxWidth="300" fx:id="sidebar">
       <fx:include source="album_cover.fxml"/>
+      <fx:include source="local_tracks_statistics.fxml"/>
       <fx:include source="artist_info.fxml"/>
     </VBox>
   </left>
