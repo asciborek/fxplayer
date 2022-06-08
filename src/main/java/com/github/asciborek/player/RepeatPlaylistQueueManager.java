@@ -18,7 +18,7 @@ final class RepeatPlaylistQueueManager implements QueueManager {
     if (playlist.isEmpty() || hasInvalidIndex(currentTrack)) {
       return OptionalInt.empty();
     }
-    if (currentTrack == 0) {
+    if (currentTrack == FIRST_ELEMENT_INDEX) {
       return OptionalInt.of(playlist.size() - 1);
     }
     return OptionalInt.of(currentTrack - 1);
@@ -30,13 +30,13 @@ final class RepeatPlaylistQueueManager implements QueueManager {
       return OptionalInt.empty();
     }
     if (currentTrack == playlist.size() - 1) {
-      return OptionalInt.of(0);
+      return OptionalInt.of(FIRST_ELEMENT_INDEX);
     }
     return OptionalInt.of(currentTrack + 1);
   }
 
   private boolean hasInvalidIndex(int currentTrack) {
-    return currentTrack < 0 || currentTrack > playlist.size() - 1;
+    return currentTrack < FIRST_ELEMENT_INDEX || currentTrack > playlist.size() - 1;
   }
 
 }

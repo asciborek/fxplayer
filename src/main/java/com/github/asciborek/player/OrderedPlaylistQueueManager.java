@@ -18,7 +18,7 @@ final class OrderedPlaylistQueueManager implements QueueManager {
     if (playlist.isEmpty()) {
       return OptionalInt.empty();
     }
-    if (currentTrack <= 0 || currentTrack > playlist.size() - 1) {
+    if (currentTrack <= FIRST_ELEMENT_INDEX || currentTrack > playlist.size() - 1) {
       return OptionalInt.empty();
     }
     return OptionalInt.of(currentTrack - 1);
@@ -29,7 +29,7 @@ final class OrderedPlaylistQueueManager implements QueueManager {
     if (playlist.isEmpty()) {
       return OptionalInt.empty();
     }
-    if (currentTrack < 0 || currentTrack >= playlist.size() - 1) {
+    if (currentTrack < FIRST_ELEMENT_INDEX || currentTrack >= playlist.size() - 1) {
       return OptionalInt.empty();
     }
     return OptionalInt.of(currentTrack + 1);
