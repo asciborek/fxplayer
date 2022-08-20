@@ -24,6 +24,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 
 @TestInstance(Lifecycle.PER_CLASS)
+@SuppressWarnings("UnstableApiUsage")
 class PlaylistServiceTest {
   private final List<String> supportedAudioExtensions = List.of("mp3", "mp4", "wav");
   private final ExecutorService executorService = Executors.newSingleThreadExecutor();
@@ -35,8 +36,8 @@ class PlaylistServiceTest {
   private static final Duration TRACK_DURATION  = Duration.of(30, ChronoUnit.SECONDS);
 
   @Test
-  @DisplayName("it should load all audio files from a directory")
-  void itShouldLoadAllAudioFilesFromDirectory() throws Exception {
+  @DisplayName("load all audio files from a directory")
+  void loadAllAudioFilesFromDirectory() throws Exception {
     var future = playlistService.getDirectoryTracks(getPathFromResource().toFile());
     var result = future.get(5, TimeUnit.SECONDS);
     assertThat(result.size()).isEqualTo(3);
@@ -46,8 +47,8 @@ class PlaylistServiceTest {
   }
 
   @Test
-  @DisplayName("it should load all existing tracks from the directory")
-  void itShouldWriteAndLoadTracksFromPlaylistFile() throws Exception {
+  @DisplayName("write and load tracks from the playlist file")
+  void writeAndLoadTracksFromPlaylistFile() throws Exception {
     //Prepare Data
     var firstExistingFilePath = getAudioFilePath("1_test_audio.mp3");
     var secondExistingFilePath = getAudioFilePath("2_test_audio.mp4");

@@ -16,6 +16,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 public class TrackLocalStatisticsProviderTest {
@@ -49,7 +50,8 @@ public class TrackLocalStatisticsProviderTest {
   }
 
   @Test
-  void shouldReadPlayedTracksStatistics() throws Exception {
+  @DisplayName("read played tracks statistics")
+  void readPlayedTracksStatistics() throws Exception {
     //given
     final PlayedTracksHistoryCollector collector = createCollector();
     final TrackLocalStatisticsProvider trackLocalStatisticsProvider = createTrackLocalStatisticsProvider();
@@ -74,7 +76,8 @@ public class TrackLocalStatisticsProviderTest {
   }
 
   @Test
-  void shouldReadZeroTotalCountForTrackNotPlayedYet() throws Exception {
+  @DisplayName("read zero total count for a track which wasn't played yet")
+  void readZeroTotalCountForTrackNotPlayedYet() throws Exception {
     //given
     final TrackLocalStatisticsProvider trackLocalStatisticsProvider = createTrackLocalStatisticsProvider();
 

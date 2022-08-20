@@ -33,8 +33,8 @@ class OrderedPlaylistQueueManagerTest {
   @Nested
   class GetPreviousTrack {
     @Test
-    @DisplayName("it should select the previous tracks from the list")
-    void itShouldSelectPreviousTrackFromTheList() {
+    @DisplayName("select the previous tracks from the list")
+    void selectPreviousTrackFromTheList() {
       final List<Track> playlist = List.of(zeroTrack, firstTrack, secondTrack, thirdTrack, fourthTrack, fifthTrack);
       final QueueManager queueManager = new OrderedPlaylistQueueManager(playlist);
       var previousTrack = queueManager.getPreviousTrack(2);
@@ -42,8 +42,8 @@ class OrderedPlaylistQueueManagerTest {
     }
 
     @Test
-    @DisplayName("it should return the empty optional for the first tracks")
-    void itShouldReturnTheEmptyOptionalForTheFirstTrack() {
+    @DisplayName("return the empty optional for the first tracks")
+    void returnTheEmptyOptionalForTheFirstTrack() {
       final List<Track> playlist = List.of(zeroTrack, firstTrack, secondTrack, thirdTrack, fourthTrack, fifthTrack);
       final QueueManager queueManager = new OrderedPlaylistQueueManager(playlist);
       var previousTrack = queueManager.getPreviousTrack(0);
@@ -51,16 +51,16 @@ class OrderedPlaylistQueueManagerTest {
     }
 
     @Test
-    @DisplayName("if the playlist is empty then the empty optional should be returned")
-    void ifPlaylistIsEmptyThenEmptyOptionalShouldBeReturned() {
+    @DisplayName("return the empty optional for the empty playlist")
+    void returnEmptyOptionalForTheEmptyPlaylist() {
       final QueueManager queueManager = new OrderedPlaylistQueueManager(List.of());
       var previousTrack = queueManager.getPreviousTrack(0);
       assertThat(previousTrack).isEqualTo(OptionalInt.empty());
     }
 
     @Test
-    @DisplayName("if the index argument is higher than the size of the list then the empty optional should be returned")
-    void ifTheIndexArgumentIsHigherThanTheSizeOfTheListThenTheEmptyOptionalShouldBeReturned() {
+    @DisplayName("return empty optional when index is higher than the size of the list")
+    void returnEmptyOptionalWhenIndexIsHigherThanTheSizeOfTheList() {
       final QueueManager queueManager = new OrderedPlaylistQueueManager(List.of(zeroTrack, firstTrack));
       var previousTrack = queueManager.getPreviousTrack(2);
       assertThat(previousTrack).isEqualTo(OptionalInt.empty());
@@ -71,13 +71,14 @@ class OrderedPlaylistQueueManagerTest {
   @Nested
   class GetNextTrack{
     @Test
-    @DisplayName("it should select the next tracks on the playlist")
-    void itShouldSelectNextTrackOnThePlaylist() {
+    @DisplayName("select the next trac on the playlist")
+    void selectTheNextTrackOnThePlaylist() {
       final List<Track> playlist = List.of(zeroTrack, firstTrack, secondTrack, thirdTrack, fourthTrack, fifthTrack);
       final QueueManager queueManager = new OrderedPlaylistQueueManager(playlist);
       var nextTrack = queueManager.getNextTrack(2);
       assertThat(nextTrack).isEqualTo(OptionalInt.of(3));
     }
+
     @Test
     @DisplayName("after the last tracks the empty optional should be returned")
     void afterLastTrackEmptyOptionalShouldBeReturned() {
@@ -88,16 +89,16 @@ class OrderedPlaylistQueueManagerTest {
     }
 
     @Test
-    @DisplayName("if the playlist is empty then the empty optional should be returned")
-    void ifPlaylistIsEmptyThenEmptyOptionalShouldBeReturned() {
+    @DisplayName("return the empty optional for the empty playlist")
+    void returnEmptyOptionalForTheEmptyPlaylist() {
       final QueueManager queueManager = new OrderedPlaylistQueueManager(List.of());
       var nextTrack = queueManager.getNextTrack(1);
       assertThat(nextTrack).isEqualTo(OptionalInt.empty());
     }
 
     @Test
-    @DisplayName("if the index argument is higher or equal the size of the list minus 1 then the empty optional should be returned")
-    void ifTheIndexArgumentIsHigherThanTheSizeOfTheListThenTheEmptyOptionalShouldBeReturned() {
+    @DisplayName("return empty optional if the index argument is higher or equal to the size of the list minus 1")
+    void returnEmptyOptionalIfTheIndexArgumentIsHigherOrEqualToTheSizeOfTheListMinusOne() {
       final QueueManager queueManager = new OrderedPlaylistQueueManager(List.of(zeroTrack, firstTrack));
       var nextTrack = queueManager.getNextTrack(1);
       assertThat(nextTrack).isEqualTo(OptionalInt.empty());

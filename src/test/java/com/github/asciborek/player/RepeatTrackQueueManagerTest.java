@@ -26,9 +26,9 @@ class RepeatTrackQueueManagerTest {
         .build();
   }
 
-  @DisplayName("it should return the same track if it is on the playlist")
+  @DisplayName("return the same track")
   @Test
-  void itShouldSelectTheSameTrackIfItIsOnPlaylist() {
+  void returnTheSameTrack() {
     var queue = List.of(zeroTrack, firstTrack, secondTrack, thirdTrack);
     var manager = new RepeatTrackQueueManager(queue);
     var previousTrack = manager.getPreviousTrack(3);
@@ -37,9 +37,9 @@ class RepeatTrackQueueManagerTest {
     assertThat(nextTrack).isEqualTo(OptionalInt.of(3));
   }
 
-  @DisplayName("it should return the empty optional if the a track is not the playlist")
+  @DisplayName("return the empty optional if the track is not on the playlist")
   @Test
-  void itShouldReturnAnEmptyOptionalIfTrackIsNotOnPlaylist() {
+  void returnTheEmptyOptionalIfTheTrackIsNotOnThePlaylist() {
     var queue = List.of(zeroTrack, firstTrack, secondTrack);
     var manager = new RepeatTrackQueueManager(queue);
     var previousTrack = manager.getPreviousTrack(3);

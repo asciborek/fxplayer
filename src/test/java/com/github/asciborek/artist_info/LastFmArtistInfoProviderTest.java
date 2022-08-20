@@ -40,9 +40,9 @@ public class LastFmArtistInfoProviderTest {
             .willReturn(aResponse().withBodyFile("get_artist_info_success.json")));
   }
 
-  @DisplayName("it should return an existing artist info")
   @Test
-  void itShouldReturnExistingArtistInfo() throws Exception {
+  @DisplayName("return existing artist info")
+  void returnExistingArtistInfo() throws Exception {
     //given
     var artist = "Haken";
     var expectedDescription = "Haken are English progressive metal band";
@@ -55,9 +55,9 @@ public class LastFmArtistInfoProviderTest {
     assertThat(artistInfo).isEqualTo(expectedArtistInfo);
   }
 
-  @DisplayName("it should return NotFoundArtistInfo if artist Was not found")
   @Test
-  void itShouldReturnNotFoundArtistInfoIfArtistWasNotFound() throws Exception {
+  @DisplayName("return NotFoundArtistInfo when artist was not found")
+  void returnNotFoundArtistInfoWhenArtistWasNotFound() throws Exception {
     var artistInfo = artistInfoProvider.getArtistInfo("Not_Found").get();
     assertThat(artistInfo).isEqualTo(ArtistInfo.NOT_FOUND);
   }

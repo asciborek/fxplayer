@@ -18,8 +18,8 @@ public class FileUtilsTest {
   private static final Set<String> SUPPORTED_EXTENSIONS = Set.of("mp3", "mp4");
 
   @Test
-  @DisplayName("it should get recursively all files from the directory and filter by extension")
-  void shouldGetDirectoryFilesWithSupportedExtensions() {
+  @DisplayName("get recursively all files from the directory and filter by extension")
+  void getDirectoryFilesWithSupportedExtensions() {
     var extensions = SUPPORTED_EXTENSIONS;
     var path = getPathFromResource();
     try (var fileStream = FileUtils.getDirectoryFilesWithSupportedExtensions(path, extensions)) {

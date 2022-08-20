@@ -32,6 +32,7 @@ public class RepeatPlaylistQueueManagerTest {
 
   @Nested
   class GetPreviousTrack {
+
     @Test
     @DisplayName("it should select the previous tracks from the list")
     void itShouldSelectPreviousTrackFromTheList() {
@@ -42,8 +43,8 @@ public class RepeatPlaylistQueueManagerTest {
     }
 
     @Test
-    @DisplayName("the previous track for the first track should be the last track")
-    void itShouldReturnTheLastTrackForTheFirstTrack() {
+    @DisplayName("return the last element on the list when the previous track was the first track")
+    void returnTheLastElementOnListWhenThePreviousTrackWasTheFirstTrack() {
       final List<Track> playlist = List.of(zeroTrack, firstTrack, secondTrack, thirdTrack, fourthTrack, fifthTrack);
       final QueueManager queueManager = new RepeatPlaylistQueueManager(playlist);
       var previousTrack = queueManager.getPreviousTrack(0);
@@ -51,16 +52,16 @@ public class RepeatPlaylistQueueManagerTest {
     }
 
     @Test
-    @DisplayName("if the playlist is empty then the empty optional should be returned")
-    void ifPlaylistIsEmptyThenEmptyOptionalShouldBeReturned() {
+    @DisplayName("return the empty optional for the empty playlist")
+    void returnEmptyOptionalForTheEmptyPlaylist() {
       final QueueManager queueManager = new RepeatPlaylistQueueManager(List.of());
       var previousTrack = queueManager.getPreviousTrack(1);
       assertThat(previousTrack).isEqualTo(OptionalInt.empty());
     }
 
     @Test
-    @DisplayName("if the index argument is higher than the size of the list then the empty optional should be returned")
-    void ifTheIndexArgumentIsHigherThanTheSizeOfTheListThenTheEmptyOptionalShouldBeReturned() {
+    @DisplayName("return empty optional when index is higher than the size of the list")
+    void returnEmptyOptionalWhenIndexIsHigherThanTheSizeOfTheList()  {
       final QueueManager queueManager = new RepeatPlaylistQueueManager(List.of(zeroTrack, firstTrack));
       var previousTrack = queueManager.getPreviousTrack(2);
       assertThat(previousTrack).isEqualTo(OptionalInt.empty());
@@ -71,8 +72,8 @@ public class RepeatPlaylistQueueManagerTest {
   class GetNextTrack {
 
     @Test
-    @DisplayName("it should select the next tracks on the playlist")
-    void itShouldSelectNextTrackOnThePlaylist() {
+    @DisplayName("select the next trac on the playlist")
+    void selectTheNextTrackOnThePlaylist() {
       final List<Track> playlist = List.of(zeroTrack, firstTrack, secondTrack, thirdTrack, fourthTrack, fifthTrack);
       final QueueManager queueManager = new RepeatPlaylistQueueManager(playlist);
       var nextTrack = queueManager.getNextTrack(2);
@@ -80,8 +81,8 @@ public class RepeatPlaylistQueueManagerTest {
     }
 
     @Test
-    @DisplayName("after the last track the first track should be returned")
-    void afterTheLastTrackTheFirstOptionalShouldBeReturned() {
+    @DisplayName("after the last track on the list return the first track")
+    void afterTheLastTrackOnTheListReturnTheFirstTrack() {
       final List<Track> playlist = List.of(zeroTrack, firstTrack, secondTrack, thirdTrack, fourthTrack, fifthTrack);
       final QueueManager nextTrackSelector = new RepeatPlaylistQueueManager(playlist);
       var nextTrack = nextTrackSelector.getNextTrack(5);
@@ -89,16 +90,16 @@ public class RepeatPlaylistQueueManagerTest {
     }
 
     @Test
-    @DisplayName("if the playlist is empty then the empty optional should be returned")
-    void ifPlaylistIsEmptyThenEmptyOptionalShouldBeReturned() {
+    @DisplayName("return the empty optional for the empty playlist")
+    void returnEmptyOptionalForTheEmptyPlaylist() {
       final QueueManager queueManager = new RepeatPlaylistQueueManager(List.of());
       var previousTrack = queueManager.getNextTrack(1);
       assertThat(previousTrack).isEqualTo(OptionalInt.empty());
     }
 
     @Test
-    @DisplayName("if the index argument is higher than the size of the list then the empty optional should be returned")
-    void ifTheIndexArgumentIsHigherThanTheSizeOfTheListThenTheEmptyOptionalShouldBeReturned() {
+    @DisplayName("return empty optional when index is higher than the size of the list")
+    void returnEmptyOptionalWhenIndexIsHigherThanTheSizeOfTheList() {
       final QueueManager queueManager = new RepeatPlaylistQueueManager(List.of(zeroTrack, firstTrack));
       var previousTrack = queueManager.getNextTrack(2);
       assertThat(previousTrack).isEqualTo(OptionalInt.empty());

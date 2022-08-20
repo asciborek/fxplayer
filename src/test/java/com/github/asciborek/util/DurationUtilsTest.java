@@ -13,15 +13,15 @@ public class DurationUtilsTest {
 
   @ParameterizedTest
   @MethodSource("formatTestArguments")
-  @DisplayName("duration should be formatted to standard format")
-  void shouldFormatDurationToStandardFormat(Duration duration, String formattedDuration) {
+  @DisplayName("format duration to standard format")
+  void formatDurationToStandardFormat(Duration duration, String formattedDuration) {
     assertThat(DurationUtils.format(duration)).isEqualTo(formattedDuration);
   }
 
   @ParameterizedTest
   @MethodSource("formatSecondsTestArguments")
-  @DisplayName("duration should be formatted to standard format")
-  void shouldFormatDurationInSecondsToStandardFormat(int seconds, String formattedDuration) {
+  @DisplayName("format duration in seconds to standard format")
+  void formatDurationInSecondsToStandardFormat(int seconds, String formattedDuration) {
     assertThat(DurationUtils.formatTimeInSeconds(seconds)).isEqualTo(formattedDuration);
   }
 

@@ -40,8 +40,8 @@ public class SettingsServiceTest {
   }
 
   @Test
-  @DisplayName("should load the default settings if the settings row doesn't exist")
-  void shouldLoadDefaultSettingsIfSettingsRowDoesNotExist() {
+  @DisplayName("load the default settings if the settings row doesn't exist")
+  void loadDefaultSettingsIfSettingsRowDoesNotExist() {
     var settingsService = new SettingsService(creteSqliteSettingsStorage());
 
     //default volume value is max
@@ -53,8 +53,8 @@ public class SettingsServiceTest {
   }
 
   @Test
-  @DisplayName("should save and read settings in database")
-  void shouldSaveAndReadSettingsInDatabase() {
+  @DisplayName("save and read settings in database")
+  void saveAndReadSettingsInDatabase() {
     var expectedVolumeValue = 0.3;
     var expectedAddTrackFileChooserDirectory = new File(FileUtils.getUserHome() + "/Music/Haken/Affinity");
     var expectedAddDirectoryDirectoryChooserDirectory = new File(FileUtils.getUserHome() + "/Music/Haken/Virus");
@@ -75,8 +75,8 @@ public class SettingsServiceTest {
   }
 
   @Test
-  @DisplayName("should update settings if the settings row already exists")
-  void shouldUpdateSettingsIfRowExists() {
+  @DisplayName("update settings if the settings row already exists")
+  void updateSettingsIfRowExists() {
     var initVolumeValue = 0.3;
     var initAddTrackFileChooserDirectory = new File(FileUtils.getUserHome() + "/Music/Haken/Affinity");
     var initAddDirectoryDirectoryChooserDirectory = new File(FileUtils.getUserHome() + "/Music/Haken/Virus");

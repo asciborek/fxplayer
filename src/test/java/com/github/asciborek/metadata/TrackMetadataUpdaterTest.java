@@ -10,6 +10,7 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+@SuppressWarnings("UnstableApiUsage")
 public class TrackMetadataUpdaterTest {
   private static final String EXPECTED_TITLE = "dummy_updated";
   private static final String EXPECTED_ALBUM = "fxplayer_updated";
@@ -25,9 +26,9 @@ public class TrackMetadataUpdaterTest {
 
   private final TrackMetadataUpdater trackMetadataUpdater = new TrackMetadataUpdater();
 
-  @DisplayName("should update mp3 tags")
   @Test
-  void shouldUpdateMp3Tags() throws Exception {
+  @DisplayName("update mp3 tags")
+  void updateMp3Tags() throws Exception {
     //Prepare a new file
     File file =  new File(Resources.getResource(TEST_MP3_FILEPATH).toURI());
     var copiedFilePath = Files.createTempFile("dummy_updated", ".mp3");
@@ -50,9 +51,9 @@ public class TrackMetadataUpdaterTest {
     assertThat(trackAfterUpdate.length()).isEqualTo(EXPECTED_LENGTH);
   }
 
-  @DisplayName("should update mp4 tags")
   @Test
-  void shouldUpdateMp4Tags() throws Exception {
+  @DisplayName("update mp4 tags")
+  void updateMp4Tags() throws Exception {
     //Prepare a new file
     File file = new File(Resources.getResource(TEST_MP4_FILEPATH).toURI());
     var copiedFilePath = Files.createTempFile("dummy_updated", ".mp4");
@@ -75,9 +76,9 @@ public class TrackMetadataUpdaterTest {
     assertThat(trackAfterUpdate.length()).isEqualTo(EXPECTED_LENGTH);
   }
 
-  @DisplayName("should update wav tags")
   @Test
-  void shouldUpdateWavTags() throws Exception {
+  @DisplayName("should update wav tags")
+  void updateWavTags() throws Exception {
     //Prepare a new file
     File file = new File(Resources.getResource(TEST_WAV_FILEPATH).toURI());
     var copiedFilePath = Files.createTempFile("dummy_updated", ".wav");

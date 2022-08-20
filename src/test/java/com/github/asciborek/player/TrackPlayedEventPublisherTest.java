@@ -9,6 +9,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Optional;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 class TrackPlayedEventPublisherTest {
@@ -32,7 +33,8 @@ class TrackPlayedEventPublisherTest {
       .build();
 
   @Test
-  void shouldPublishEventAfterHalfOfShortTrackWithValidDurationDiffs() {
+  @DisplayName("publish event after half of short track")
+  void publishEventAfterHalfOfShortTrackWithValidDurationDiffs() {
     //given
     final var eventBus = new EventBus();
     final var now = Instant.now();
@@ -59,7 +61,8 @@ class TrackPlayedEventPublisherTest {
 
 
   @Test
-  void shouldPublishEventAfterMaxThresholdForLongTrackWithValidDurationDiffs() {
+  @DisplayName("publish event after max threshold for long track")
+  void publishEventAfterMaxThresholdForLongTrack() {
     //given
     final var eventBus = new EventBus();
     final var now = Instant.now();
@@ -86,7 +89,8 @@ class TrackPlayedEventPublisherTest {
 
 
   @Test
-  void shouldNotPublishEventBeforeHalfOfTrackAndEventPublishThresholdForValidDurationDiffs() {
+  @DisplayName("don't publish event before half of track and event publish threshold")
+  void dontPublishEventBeforeHalfOfTrackAndEventPublishThreshold() {
     //given
     final var eventBus = new EventBus();
     final var now = Instant.now();
@@ -109,7 +113,8 @@ class TrackPlayedEventPublisherTest {
   }
 
   @Test
-  void shouldNotPublishEventAfterHalfOfTrackIfTrackWasPaused() {
+  @DisplayName("don't publish event after half of track if track was paused")
+  void dontPublishEventAfterHalfOfTrackIfTrackWasPaused() {
     //given
     final var eventBus = new EventBus();
     final var now = Instant.now();
@@ -133,7 +138,8 @@ class TrackPlayedEventPublisherTest {
   }
 
   @Test
-  void shouldNotPublishEventAfterHalfOfTrackIfDurationDiffsAreToBig() {
+  @DisplayName("don't publish event after half of track if duration diffs are to big")
+  void dontPublishEventAfterHalfOfTrackIfDurationDiffsAreToBig() {
     //given
     final var eventBus = new EventBus();
     final var now = Instant.now();
@@ -166,16 +172,17 @@ class TrackPlayedEventPublisherTest {
     private TrackPlayedEvent event;
 
     @Subscribe
+    @SuppressWarnings("unused")
     public void onTrackPlayedEvent(TrackPlayedEvent event) {
       eventReceivedCount++;
       this.event = event;
     }
 
-    public int eventReceivedCount() {
+    private int eventReceivedCount() {
       return eventReceivedCount;
     }
 
-    public Optional<TrackPlayedEvent> event() {
+    private Optional<TrackPlayedEvent> event() {
       return Optional.ofNullable(event);
     };
   }
