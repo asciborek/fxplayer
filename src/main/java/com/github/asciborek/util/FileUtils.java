@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Stream;
 
+@SuppressWarnings("UnstableApiUsage")//Guava
 public final class FileUtils {
 
   private static final String USER_HOME = "user.home";
@@ -45,22 +46,6 @@ public final class FileUtils {
     return Files.walk(directoryPath)
         .filter(Files::isRegularFile)
         .filter(file -> hasSupportedExtension(file.toString(), extensions));
-  }
-
-  public static void createDirectory(Path path) {
-    try {
-      Files.createDirectory(path);
-    } catch (IOException e) {
-      throw new RuntimeException();
-    }
-  }
-
-  public static void createFile(Path path) {
-    try {
-      Files.createFile(path);
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
   }
 
   private static boolean hasSupportedExtension(String file, Iterable<String> extensions) {

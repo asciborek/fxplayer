@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.ContextMenu?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<TableView  fx:id="playlistView" xmlns="http://javafx.com/javafx"
+  xmlns:fx="http://javafx.com/fxml"  fx:controller="com.github.asciborek.player.PlaylistController"
+  onMouseClicked="#onPlaylistMouseClicked" onKeyPressed="#onPlaylistKeyClicked">
+  <contextMenu>
+    <ContextMenu>
+      <items>
+        <MenuItem text="Edit track information" onAction="#onEditTrackInformationMenuItem"/>
+        <MenuItem text="Remove the track from the queue" onAction="#onRemoveTrackMenuItem"/>
+      </items>
+    </ContextMenu>
+  </contextMenu>
+  <placeholder>
+    <Label/>
+  </placeholder>
+  <columns>
+    <TableColumn fx:id="titleColumn" text="Title" minWidth="200" sortable="false"/>
+    <TableColumn fx:id="albumColumn" text="Album" minWidth="200" sortable="false"/>
+    <TableColumn fx:id="artistColumn" text="Artist" minWidth="200" sortable="false"/>
+    <TableColumn fx:id="lengthColumn" text="Length" maxWidth="100" sortable="false"/>
+    <TableColumn fx:id="filenameColumn" text="File Name" minWidth="300" sortable="false"/>
+  </columns>
+</TableView>

@@ -44,26 +44,7 @@
   </left>
 
   <center>
-    <TableView fx:id="playlistView" onMouseClicked="#onPlaylistMouseClicked" onKeyPressed="#onPlaylistKeyClicked">
-      <contextMenu>
-        <ContextMenu>
-          <items>
-            <MenuItem text="Edit track information" onAction="#onEditTrackInformationMenuItem"/>
-            <MenuItem text="Remove the track from the queue" onAction="#onRemoveTrackMenuItem"/>
-          </items>
-        </ContextMenu>
-      </contextMenu>
-      <placeholder>
-        <Label/>
-      </placeholder>
-      <columns>
-        <TableColumn fx:id="titleColumn" text="Title" minWidth="200" sortable="false"/>
-        <TableColumn fx:id="albumColumn" text="Album" minWidth="200" sortable="false"/>
-        <TableColumn fx:id="artistColumn" text="Artist" minWidth="200" sortable="false"/>
-        <TableColumn fx:id="lengthColumn" text="Length" maxWidth="100" sortable="false"/>
-        <TableColumn fx:id="filenameColumn" text="File Name" minWidth="300" sortable="false"/>
-      </columns>
-    </TableView>
+    <fx:include source="playlist.fxml"/>
   </center>
 
   <bottom>

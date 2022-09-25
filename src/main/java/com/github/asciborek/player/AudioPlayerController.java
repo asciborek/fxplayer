@@ -73,7 +73,6 @@ public final class AudioPlayerController implements Initializable {
   @FXML
   private ToggleButton repeatTrackButton;
 
-  @Inject
   public AudioPlayerController(EventBus eventBus, SettingsService settingsService,
       ObservableList<Track> tracksQueue, TimeProvider timeProvider) {
     this.eventBus = eventBus;
@@ -81,7 +80,6 @@ public final class AudioPlayerController implements Initializable {
     this.tracksQueue = tracksQueue;
     this.timeProvider = timeProvider;
     this.queueManager = new OrderedPlaylistQueueManager(tracksQueue);
-    eventBus.register(this);
   }
 
   @Override
