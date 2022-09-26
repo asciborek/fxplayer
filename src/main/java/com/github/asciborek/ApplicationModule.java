@@ -31,7 +31,7 @@ final class ApplicationModule extends AbstractModule {
   private static final Logger LOG = LoggerFactory.getLogger(ApplicationModule.class);
   private static final int AVAILABLE_PROCESSORS = Runtime.getRuntime().availableProcessors();
   private static final String DB_FILENAME = "fx-player.db";
-  private static final String DEFAULT_DATE_TIME_FORMAT = "dd MMMM yy hh:mm a";
+  private static final String DEFAULT_DATE_TIME_FORMAT = "dd MMM yy hh:mm a";
 
   @Override
   @SuppressWarnings("UnstableApiUsage")
