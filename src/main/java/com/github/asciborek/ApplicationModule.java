@@ -6,6 +6,8 @@ import com.github.asciborek.artist_info.ArtistInfoController;
 import com.github.asciborek.artist_info.ArtistInfoControllerFactory;
 import com.github.asciborek.local_statistics.LocalStatisticsModule;
 import com.github.asciborek.metadata.MetadataModule;
+import com.github.asciborek.notifications.NotificationPublisherFactory;
+import com.github.asciborek.notifications.NotificationsPublisher;
 import com.github.asciborek.settings.SettingsService;
 import com.github.asciborek.settings.SettingsServiceFactory;
 import com.github.asciborek.util.DeadEventLoggingListener;
@@ -42,6 +44,7 @@ final class ApplicationModule extends AbstractModule {
     bind(DataSource.class).toProvider(this::dataSource).asEagerSingleton();
     bind(EventBus.class).toInstance(new EventBus());
     bind(DeadEventLoggingListener.class).asEagerSingleton();
+    bind(NotificationsPublisher.class).toProvider(NotificationPublisherFactory.class).asEagerSingleton();
     bind(SettingsService.class).toProvider(SettingsServiceFactory.class).in(Scopes.SINGLETON);
     bind(AlbumCoverController.class).toProvider(AlbumCoverControllerFactory.class).in(Scopes.SINGLETON);
     bind(ArtistInfoController.class).toProvider(ArtistInfoControllerFactory.class).in(Scopes.SINGLETON);

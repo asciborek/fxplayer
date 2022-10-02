@@ -4,6 +4,7 @@ open module fxplayer {
   requires javafx.graphics;
   requires javafx.fxml;
   requires javafx.media;
+  requires org.controlsfx.controls;
   requires logback.core;
   requires org.slf4j;
   requires com.google.common;
