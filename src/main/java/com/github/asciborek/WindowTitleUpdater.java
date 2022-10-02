@@ -17,7 +17,6 @@ public final class WindowTitleUpdater {
   }
 
   @Subscribe
-  @SuppressWarnings("unused")
   public void updateTitleOnStartPlayingTrackEvent(StartPlayingTrackEvent event) {
     String artist = event.track().artist();
     String title = event.track().title();
@@ -25,7 +24,6 @@ public final class WindowTitleUpdater {
   }
 
   @Subscribe
-  @SuppressWarnings("unused")
   public void setDefaultTitleOnPlaylistFinished(PlaylistFinishedEvent event) {
     stage.setTitle(DEFAULT_TITLE);
   }

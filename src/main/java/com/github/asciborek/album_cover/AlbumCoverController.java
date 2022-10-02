@@ -44,7 +44,6 @@ public final class AlbumCoverController implements Initializable {
   }
 
   @Subscribe
-  @SuppressWarnings("unused")
   public void onShowSidebarChange(ShowSidebarChangeEvent event) {
     boolean previousShowSidebar = showSidebar;
     showSidebar = event.showSidebar();
@@ -55,7 +54,6 @@ public final class AlbumCoverController implements Initializable {
   }
 
   @Subscribe
-  @SuppressWarnings("unused")
   public void onNewTrack(StartPlayingTrackEvent event) {
     LOG.info("received StartPlayingTrackEvent");
     currentTrack = event.track();
@@ -69,7 +67,6 @@ public final class AlbumCoverController implements Initializable {
   }
 
   @Subscribe
-  @SuppressWarnings("unused")
   public void onTrackMetadataUpdatedEvent(TrackMetadataUpdatedEvent event) {
     LOG.info("received TrackMetadataUpdatedEvent");
     if (Objects.equals(currentTrack, event.oldTrack())) {
@@ -92,7 +89,6 @@ public final class AlbumCoverController implements Initializable {
   }
 
   @Subscribe
-  @SuppressWarnings("unused")
   public void onPlaylistFinished(PlaylistFinishedEvent event) {
     LOG.info("received PlaylistFinishedEvent");
     albumCoverImageView.setImage(EMPTY_CD_IMAGE);

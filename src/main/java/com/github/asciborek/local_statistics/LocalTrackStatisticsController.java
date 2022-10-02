@@ -35,7 +35,6 @@ final class LocalTrackStatisticsController {
   }
 
   @Subscribe
-  @SuppressWarnings("unused")
   public void onNewTrack(StartPlayingTrackEvent event) {
     var artist = event.track().artist();
     var title = event.track().title();
@@ -44,7 +43,6 @@ final class LocalTrackStatisticsController {
   }
 
   @Subscribe
-  @SuppressWarnings("unused")
   public void onPlaylistFinished(PlaylistFinishedEvent event) {
     totalPlaysCount.setText(EMPTY_STRING);
     firstPlayed.setText(EMPTY_STRING);

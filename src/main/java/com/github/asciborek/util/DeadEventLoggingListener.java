@@ -19,7 +19,6 @@ public final class DeadEventLoggingListener {
   }
 
   @Subscribe
-  @SuppressWarnings("unused")
   public void onDeadEvent(DeadEvent deadEvent) {
     LOG.info("dead event occurred: {}", deadEvent);
   }

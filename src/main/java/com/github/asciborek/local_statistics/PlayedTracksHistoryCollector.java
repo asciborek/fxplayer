@@ -21,7 +21,6 @@ final class PlayedTracksHistoryCollector {
     dslContext = DSL.using(dataSource, SQLDialect.SQLITE);
   }
 
-  @SuppressWarnings("unused")
   @Subscribe
   public void onTrackPlayed(TrackPlayedEvent trackPlayedEvent) {
     executorService.submit(() -> saveTrackToStatistics(trackPlayedEvent));

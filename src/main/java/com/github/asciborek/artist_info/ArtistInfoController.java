@@ -38,7 +38,6 @@ public class ArtistInfoController {
   }
 
   @Subscribe
-  @SuppressWarnings("unused")
   public void onShowSidebarChange(ShowSidebarChangeEvent event) {
     boolean previousSHowSidebar = showSidebar;
     showSidebar = event.showSidebar();
@@ -49,7 +48,6 @@ public class ArtistInfoController {
   }
 
   @Subscribe
-  @SuppressWarnings("unused")
   public void onNewTrack(StartPlayingTrackEvent startPlayingTrackEvent) {
     LOG.info("received StartPlayingTrackEvent");
     currentTrack = startPlayingTrackEvent.track();
@@ -63,7 +61,6 @@ public class ArtistInfoController {
   }
 
   @Subscribe
-  @SuppressWarnings("unused")
   public void onTrackMetadataUpdatedEvent(TrackMetadataUpdatedEvent event) {
     LOG.info("received TrackMetadataUpdatedEvent");
     if ((Objects.equals(currentTrack, event.oldTrack())) && !(Objects.equals(currentTrack, event.newTrack()))) {
@@ -85,7 +82,6 @@ public class ArtistInfoController {
   }
 
   @Subscribe
-  @SuppressWarnings("unused")
   public void onPlaylistFinished(PlaylistFinishedEvent event) {
     LOG.info("received PlaylistFinishedEvent");
     clearArtistInfo();
@@ -93,7 +89,6 @@ public class ArtistInfoController {
   }
 
   @Subscribe
-  @SuppressWarnings("unused")
   public void onPlaylistCleared(PlaylistClearedEvent event) {
     LOG.info("received PlaylistClearedEvent");
     this.currentTrack = null;

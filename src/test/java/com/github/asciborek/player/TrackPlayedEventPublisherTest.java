@@ -172,7 +172,6 @@ class TrackPlayedEventPublisherTest {
     private TrackPlayedEvent event;
 
     @Subscribe
-    @SuppressWarnings("unused")
     public void onTrackPlayedEvent(TrackPlayedEvent event) {
       eventReceivedCount++;
       this.event = event;

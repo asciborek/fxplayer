@@ -22,7 +22,6 @@ public final class SettingsService {
   }
 
   @Subscribe
-  @SuppressWarnings("unused")
   public void onCloseApplicationEvent(CloseApplicationEvent closeApplicationEvent) {
     LOG.info("save the application settings");
     settingsStorage.save(settings);

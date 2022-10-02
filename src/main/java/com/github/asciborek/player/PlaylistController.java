@@ -125,7 +125,6 @@ public final class PlaylistController implements Initializable {
   }
 
   @Subscribe
-  @SuppressWarnings("unused")
   public void onOpenFileCommand(OpenFileCommand openFileCommand) {
     final File file = openFileCommand.file();
     if (file.getPath().endsWith(PLAYLIST_FILE_EXTENSION)) {
@@ -140,41 +139,35 @@ public final class PlaylistController implements Initializable {
   }
 
   @Subscribe
-  @SuppressWarnings("unused")
   public void onAddTrackCommand(AddTrackCommand addTrackCommand) {
     playlistService.getTrack(addTrackCommand.trackFile())
         .ifPresent(tracksQueue::add);
   }
 
   @Subscribe
-  @SuppressWarnings("unused")
   public void onAddDirectoryCommand(AddDirectoryCommand addDirectoryCommand) {
     playlistService.getDirectoryTracks(addDirectoryCommand.directory())
         .thenAccept(this::addTracksToPlaylist);
   }
 
   @Subscribe
-  @SuppressWarnings("unused")
   public void onSavePlaylistCommand(SavePlaylistCommand savePlaylistCommand) {
     playlistService.savePlaylist(savePlaylistCommand.playlistFile(), tracksQueue);
   }
 
   @Subscribe
-  @SuppressWarnings("unused")
   public void onLoadPlaylistCommand(LoadPlaylistCommand loadPlaylistCommand) {
     playlistService.loadPlaylistWithExistingFiles(loadPlaylistCommand.playlistFile())
         .thenAccept(this::addTracksToPlaylist);
   }
 
   @Subscribe
-  @SuppressWarnings("unused")
   public void onClearPlaylistCommand(ClearPlaylistCommand clearPlaylistCommand) {
     LOG.info("Clear playlist. Removed items size: {}", tracksQueue.size());
     tracksQueue.clear();
   }
 
   @Subscribe
-  @SuppressWarnings("unused")
   public void onShufflePlaylistCommand(ShufflePlaylistCommand shufflePlaylistCommand) {
     if (!tracksQueue.isEmpty()) {
       Collections.shuffle(tracksQueue);
@@ -183,7 +176,6 @@ public final class PlaylistController implements Initializable {
   }
 
   @Subscribe
-  @SuppressWarnings("unused")
   public void onTrackMetadataUpdatedEvent(TrackMetadataUpdatedEvent event) {
     LOG.info("Track {} was updated, new data: {}", event.oldTrack(), event.newTrack());
     tracksQueue.replaceAll(track -> {
@@ -197,13 +189,11 @@ public final class PlaylistController implements Initializable {
   }
 
   @Subscribe
-  @SuppressWarnings("unused")
   public void onStartPlayingTrackEvent(StartPlayingTrackEvent event) {
     playlistView.getSelectionModel().select(event.track());
   }
 
   @Subscribe
-  @SuppressWarnings("unused")
   public void onCloseExit(CloseApplicationEvent closeApplicationEvent) {
     LOG.info("save {} track(s) to the auto-save playlist", tracksQueue.size());
     playlistService.savePlaylist(playlistAutoSaveFile(), ImmutableList.copyOf(tracksQueue));

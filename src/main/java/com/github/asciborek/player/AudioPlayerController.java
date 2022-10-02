@@ -95,7 +95,6 @@ public final class AudioPlayerController implements Initializable {
   }
 
   @Subscribe
-  @SuppressWarnings("unused")
   public void onOpenTrackFileCommand(OpenTrackFileCommand openTrackFileCommand) {
     currentTrack = openTrackFileCommand.track();
     currentTrackIndex = 0;
@@ -104,7 +103,6 @@ public final class AudioPlayerController implements Initializable {
   }
 
   @Subscribe
-  @SuppressWarnings("unused")
   public void onPlayOrPauseCommand(PlayOrPauseTrackCommand playOrPauseTrackCommand) {
     Track newTrack = playOrPauseTrackCommand.track();
     int newTrackIndex = playOrPauseTrackCommand.trackIndex();
@@ -137,7 +135,6 @@ public final class AudioPlayerController implements Initializable {
   }
 
   @Subscribe
-  @SuppressWarnings("unused")
   public void onPlaylistOpenedEvent(PlaylistOpenedEvent event) {
     if (!tracksQueue.isEmpty()) {
       startPlayingNewTrack(0);
@@ -145,7 +142,6 @@ public final class AudioPlayerController implements Initializable {
   }
 
   @Subscribe
-  @SuppressWarnings("unused")
   public void onPlaylistShuffled(PlaylistShuffledEvent playlistShuffledEvent) {
     if (currentTrack != null) {
       currentTrackIndex = tracksQueue.indexOf(currentTrack);
@@ -154,7 +150,6 @@ public final class AudioPlayerController implements Initializable {
   }
 
   @Subscribe
-  @SuppressWarnings("unused")
   public void onRemoveTrackCommand(RemoveTrackCommand removeTrackCommand) {
     int removedTrackIndex = removeTrackCommand.trackIndex();
     LOG.info("received RemoveTrackCommand, track index: {}", removedTrackIndex);
