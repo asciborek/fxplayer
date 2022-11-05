@@ -31,16 +31,14 @@ import org.slf4j.LoggerFactory;
 final class ApplicationModule extends AbstractModule {
 
   private static final Logger LOG = LoggerFactory.getLogger(ApplicationModule.class);
-  private static final int AVAILABLE_PROCESSORS = Runtime.getRuntime().availableProcessors();
   private static final String DB_FILENAME = "fx-player.db";
   private static final String DEFAULT_DATE_TIME_FORMAT = "dd MMM yy hh:mm a";
 
   @Override
-  @SuppressWarnings("UnstableApiUsage")
   protected void configure() {
     bind(TimeProvider.class).toInstance(new SystemTimeProvider());
     bind(DateTimeFormatter.class).toProvider(this::dateTimeFormatter).in(Scopes.SINGLETON);
-    bind(ExecutorService.class).toProvider(this::executorService).in(Scopes.SINGLETON);
+    bind(ExecutorService.class).toProvider(Executors::newVirtualThreadPerTaskExecutor).in(Scopes.SINGLETON);
     bind(DataSource.class).toProvider(this::dataSource).asEagerSingleton();
     bind(EventBus.class).toInstance(new EventBus());
     bind(DeadEventLoggingListener.class).asEagerSingleton();
@@ -55,11 +53,6 @@ final class ApplicationModule extends AbstractModule {
 
   private DateTimeFormatter dateTimeFormatter() {
     return DateTimeFormatter.ofPattern(DEFAULT_DATE_TIME_FORMAT);
-  }
-
-  private ExecutorService executorService() {
-    LOG.info("create executor service, available processors: {}", AVAILABLE_PROCESSORS);
-    return Executors.newFixedThreadPool(AVAILABLE_PROCESSORS);
   }
 
   private DataSource dataSource() {
