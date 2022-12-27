@@ -4,17 +4,18 @@ import com.github.asciborek.metadata.Track;
 import com.github.asciborek.player.PlayerCommand.OpenTrackFileCommand;
 import com.github.asciborek.player.PlayerCommand.PlayOrPauseTrackCommand;
 import com.github.asciborek.player.PlayerCommand.RemoveTrackCommand;
+import com.github.asciborek.player.PlayerEvent.PausePlayingTrackEvent;
 import com.github.asciborek.player.PlayerEvent.PlaylistClearedEvent;
 import com.github.asciborek.player.PlayerEvent.PlaylistFinishedEvent;
 import com.github.asciborek.player.PlayerEvent.PlaylistOpenedEvent;
 import com.github.asciborek.player.PlayerEvent.PlaylistShuffledEvent;
+import com.github.asciborek.player.PlayerEvent.ResumePlayingTrackEvent;
 import com.github.asciborek.player.PlayerEvent.StartPlayingTrackEvent;
 import com.github.asciborek.settings.SettingsService;
 import com.github.asciborek.util.DurationUtils;
 import com.github.asciborek.util.TimeProvider;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import com.google.inject.Inject;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.beans.property.DoubleProperty;
@@ -37,7 +38,6 @@ import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@SuppressWarnings("UnstableApiUsage")//Guava EventBus
 public final class AudioPlayerController implements Initializable {
 
   private static final Logger LOG = LoggerFactory.getLogger(AudioPlayerController.class);
@@ -301,11 +301,13 @@ public final class AudioPlayerController implements Initializable {
   private void resumePlayingTrack() {
     mediaPlayer.play();
     playerState = PlayerState.PLAYING;
+    eventBus.post(new ResumePlayingTrackEvent(currentTrack));
   }
 
   private void pauseTrack() {
     mediaPlayer.pause();
     playerState = PlayerState.PAUSED;
+    eventBus.post(new PausePlayingTrackEvent(currentTrack));
   }
 
   private void onPlaylistFinished() {

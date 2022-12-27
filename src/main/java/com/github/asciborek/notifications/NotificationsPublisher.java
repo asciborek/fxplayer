@@ -1,6 +1,8 @@
 package com.github.asciborek.notifications;
 
+import com.github.asciborek.player.PlayerEvent.PausePlayingTrackEvent;
 import com.github.asciborek.player.PlayerEvent.PlaylistFinishedEvent;
+import com.github.asciborek.player.PlayerEvent.ResumePlayingTrackEvent;
 import com.github.asciborek.player.PlayerEvent.StartPlayingTrackEvent;
 import com.google.common.eventbus.Subscribe;
 import org.slf4j.Logger;
@@ -18,19 +20,37 @@ public final class NotificationsPublisher {
   }
 
   @Subscribe
-  public void onPlaylistFinished(PlaylistFinishedEvent playlistFinishedEvent) {
-    LOG.info("received playlistFinishedEvent");
+  public void onStartPlayingTrackEvent(StartPlayingTrackEvent startPlayingTrackEvent) {
+    LOG.info("received startPlayingTrackEvent {}", startPlayingTrackEvent);
+    var track = startPlayingTrackEvent.track();
     notificationsFactory
-        .playlistFinishedNotification()
+        .startPlayingTrackNotification(track)
         .showInformation();
   }
 
   @Subscribe
-  public void onStartPlaying(StartPlayingTrackEvent startPlayingTrackEvent) {
-    LOG.info("received startPlayingTrackEvent {}", startPlayingTrackEvent);
-    var track = startPlayingTrackEvent.track();
+  public void onPausePlayingTrackEvent(PausePlayingTrackEvent pausePlayingTrackEvent) {
+    LOG.info("received pausePlayingTrackEvent {}", pausePlayingTrackEvent);
+    var track = pausePlayingTrackEvent.track();
     notificationsFactory
-        .startPlayingNotification(track)
+        .pausePlayingTrackNotification(track)
+        .showInformation();
+  }
+
+  @Subscribe
+  public void onResumePlayingTrackEvent(ResumePlayingTrackEvent resumePlayingTrackEvent) {
+    LOG.info("received pausePlayingTrackEvent {}", resumePlayingTrackEvent);
+    var track = resumePlayingTrackEvent.track();
+    notificationsFactory
+        .resumePlayingTrackNotification(track)
+        .showInformation();
+  }
+
+  @Subscribe
+  public void onPlaylistFinishedEvent(PlaylistFinishedEvent playlistFinishedEvent) {
+    LOG.info("received playlistFinishedEvent");
+    notificationsFactory
+        .playlistFinishedNotification()
         .showInformation();
   }
 
