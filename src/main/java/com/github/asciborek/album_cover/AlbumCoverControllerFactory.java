@@ -1,5 +1,6 @@
 package com.github.asciborek.album_cover;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -12,20 +13,22 @@ public final class AlbumCoverControllerFactory implements Provider<AlbumCoverCon
   private final EventBus eventBus;
   private final HttpClient httpClient;
   private final ExecutorService executorService;
+  private final ObjectMapper objectMapper;
   private final String lastFmApiKey;
 
   @Inject
   public AlbumCoverControllerFactory(EventBus eventBus, HttpClient httpClient,
-      ExecutorService executorService, String lastFmApiKey) {
+      ExecutorService executorService, ObjectMapper objectMapper, String lastFmApiKey) {
     this.eventBus = eventBus;
     this.httpClient = httpClient;
     this.executorService = executorService;
+    this.objectMapper = objectMapper;
     this.lastFmApiKey = lastFmApiKey;
   }
 
   @Override
   public AlbumCoverController get() {
-    var delegateProvider = new LastFmAlbumCoverProvider(httpClient, executorService, lastFmApiKey);
+    var delegateProvider = new LastFmAlbumCoverProvider(httpClient, executorService, objectMapper, lastFmApiKey);
     var controller = new AlbumCoverController(new CachingAlbumCoverProvider(delegateProvider));
     eventBus.register(controller);
     return controller;

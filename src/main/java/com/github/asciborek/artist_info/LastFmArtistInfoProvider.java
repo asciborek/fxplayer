@@ -1,10 +1,7 @@
 package com.github.asciborek.artist_info;
 
+import com.fasterxml.jackson.databind.ObjectReader;
 import com.google.common.base.Stopwatch;
-import com.google.common.collect.ImmutableList;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.URI;
@@ -28,16 +25,18 @@ final class LastFmArtistInfoProvider implements ArtistInfoProvider {
 
   private final HttpClient httpClient;
   private final ExecutorService executorService;
+  private final ObjectReader objectReader;
   private final String apiURI;
   private final String apiKey;
 
-  LastFmArtistInfoProvider(HttpClient httpClient, ExecutorService executorService, String apiKey) {
-    this(httpClient, executorService,  apiKey, LAST_FM_REQUEST_TEMPLATE);
+  LastFmArtistInfoProvider(HttpClient httpClient, ExecutorService executorService, ObjectReader objectReader, String apiKey) {
+    this(httpClient, executorService, objectReader, apiKey, LAST_FM_REQUEST_TEMPLATE);
   }
 
-  LastFmArtistInfoProvider(HttpClient httpClient, ExecutorService executorService, String apiKey, String requestUriFormat) {
+  LastFmArtistInfoProvider(HttpClient httpClient, ExecutorService executorService, ObjectReader objectReader, String apiKey, String requestUriFormat) {
     this.httpClient = httpClient;
     this.executorService = executorService;
+    this.objectReader = objectReader;
     this.apiURI = requestUriFormat;
     this.apiKey = apiKey;
   }
@@ -76,41 +75,28 @@ final class LastFmArtistInfoProvider implements ArtistInfoProvider {
     if (response.statusCode() != HTTP_OK) {
       throw new FetchLastFmArtistInfoException(response.statusCode());
     }
-    return parseResponse(response.body());
+    return parseRespons(response.body());
   }
 
-  private ArtistInfo parseResponse(String json) {
+  private ArtistInfo parseRespons(String json) {
     var stopWatch = Stopwatch.createStarted();
-    JsonObject jsonObject = JsonParser.parseString(json).getAsJsonObject();
-    var errorElement = jsonObject.get("error");
-    if (errorElement != null) {
+    final ArtistResponse artistResponse;
+    try {
+      artistResponse = objectReader.readValue(json, ArtistResponse.class);
+    } catch (IOException e) {
       return ArtistInfo.NOT_FOUND;
     }
-    var result = new ArtistInfo(parseDescription(jsonObject), parseSimilarArtists(jsonObject));
     var elapsed = stopWatch.stop().elapsed(TimeUnit.MILLISECONDS);
     LOG.info("after parse artist info, elapsed time: {} (ms)", elapsed);
-    return result;
-  }
-
-  private String parseDescription(JsonObject jsonObject) {
-    return jsonObject
-        .get("artist").getAsJsonObject()
-        .get("bio").getAsJsonObject()
-        .get("content").getAsString();
-  }
-
-  private List<String> parseSimilarArtists(JsonObject jsonObject) {
-    ImmutableList.Builder<String> similarArtistsBuilder = ImmutableList.builder();
-    var jsonArray = jsonObject.get("artist").getAsJsonObject()
-        .get("similar").getAsJsonObject()
-        .get("artist").getAsJsonArray();
-    for (JsonElement element: jsonArray) {
-      var similarArtist = element.getAsJsonObject().get("name").getAsString();
-      similarArtistsBuilder.add(similarArtist);
+    if (artistResponse.error() != null) {
+      return ArtistInfo.NOT_FOUND;
     }
-    return similarArtistsBuilder.build();
+    var similarArtist = artistResponse.artist().similar().artist().stream()
+        .limit(5)
+        .map(SimilarArtistItem::name)
+        .toList();
+    return new ArtistInfo(artistResponse.artist().bio().content(), similarArtist);
   }
-
 
   static final class FetchLastFmArtistInfoException extends RuntimeException{
     FetchLastFmArtistInfoException(String message) {
@@ -120,5 +106,11 @@ final class LastFmArtistInfoProvider implements ArtistInfoProvider {
       super("Could not fetch last.fm artist info, the response status: " + statusCode);
     }
   }
+
+  private record ArtistResponse(Integer error, Artist artist) {}
+  private record Artist(Similar similar, Bio bio){}
+  private record Similar(List<SimilarArtistItem> artist) {}
+  private record SimilarArtistItem(String name){}
+  private record Bio(String content){}
 
 }

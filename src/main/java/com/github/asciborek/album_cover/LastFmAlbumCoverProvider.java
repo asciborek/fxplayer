@@ -1,9 +1,9 @@
 package com.github.asciborek.album_cover;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
 import com.google.common.base.Stopwatch;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.URI;
@@ -11,6 +11,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -24,23 +25,23 @@ final class LastFmAlbumCoverProvider implements AlbumCoverProvider{
   private static final String LAST_FM_REQUEST_TEMPLATE =
       "https://ws.audioscrobbler.com/2.0/?method=album.getinfo&api_key=%s&artist=%s&album=%s&format=json";
   private static final String IMAGE_SIZE = "mega";
-  private static final String JSON_SIZE_ELEMENT = "size";
-  private static final String JSON_IMAGE_LINK_ELEMENT = "#text";
-  private static final String JSON_ALBUM_ELEMENT = "album";
-  private static final String JSON_IMAGE_ARRAY = "image";
 
   private final HttpClient lastFmHttpClient;
   private final ExecutorService executorService;
+  private final ObjectReader objectReader;
   private final String apiUriTemplate;
   private final String apiKey;
 
-  LastFmAlbumCoverProvider(HttpClient lastFmHttpClient, ExecutorService executorService, String apiKey) {
-    this(lastFmHttpClient, executorService, LAST_FM_REQUEST_TEMPLATE, apiKey);
+  LastFmAlbumCoverProvider(HttpClient lastFmHttpClient, ExecutorService executorService,
+      ObjectMapper objectMapper, String apiKey) {
+    this(lastFmHttpClient, executorService, objectMapper, LAST_FM_REQUEST_TEMPLATE, apiKey);
   }
 
-  LastFmAlbumCoverProvider(HttpClient lastFmHttpClient, ExecutorService executorService, String apiUriTemplate, String apiKey) {
+  LastFmAlbumCoverProvider(HttpClient lastFmHttpClient, ExecutorService executorService,
+      ObjectMapper objectMapper, String apiUriTemplate, String apiKey) {
     this.lastFmHttpClient = lastFmHttpClient;
     this.executorService = executorService;
+    this.objectReader = objectMapper.reader();
     this.apiUriTemplate = apiUriTemplate;
     this.apiKey = apiKey;
   }
@@ -86,21 +87,30 @@ final class LastFmAlbumCoverProvider implements AlbumCoverProvider{
   }
 
   private String extractLink(String json) {
-    JsonObject jsonObject = JsonParser.parseString(json).getAsJsonObject();
-    var errorElement = jsonObject.get("error");
-    if (errorElement != null) {
+    try {
+      var response = objectReader.readValue(json, AlbumResponse.class);
+      if (response.error() != null){
+        throw new FetchAlbumException();
+      }
+      return response.album().image()
+          .stream()
+          .filter(this::matchesSize)
+          .findFirst()
+          .map(ImageItem::text)
+          .orElseThrow(FetchAlbumException::new);
+    } catch (IOException e) {
       throw new FetchAlbumException();
     }
-    var array = jsonObject
-        .get(JSON_ALBUM_ELEMENT).getAsJsonObject()
-        .get(JSON_IMAGE_ARRAY).getAsJsonArray();
-    for (JsonElement element: array) {
-      var size = element.getAsJsonObject().get(JSON_SIZE_ELEMENT).getAsString();
-      if (IMAGE_SIZE.equals(size)) {
-        return (element.getAsJsonObject().get(JSON_IMAGE_LINK_ELEMENT).getAsString());
-      }
-    }
-    throw new FetchAlbumException();
   }
+
+  private boolean matchesSize(ImageItem imageItem) {
+    return imageItem.size.equals(IMAGE_SIZE);
+  }
+
+  private record AlbumResponse(Integer error, Album album){}
+
+  private record Album(List<ImageItem> image) {}
+
+  private record ImageItem(String size, @JsonProperty("#text") String text){ }
 
 }

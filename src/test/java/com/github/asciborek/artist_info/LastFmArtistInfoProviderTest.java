@@ -4,6 +4,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.fasterxml.jackson.databind.ObjectReader;
+import com.github.asciborek.TestUtils;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import java.net.http.HttpClient;
@@ -26,8 +28,9 @@ public class LastFmArtistInfoProviderTest {
       "http://localhost:8080/2.0/?method=artist.getinfo&artist=%s&api_key=%s&format=json";
   private final ExecutorService executorService = Executors.newSingleThreadExecutor();
   private final HttpClient httpClient= httpClient();
+  private final ObjectReader objectReader = TestUtils.objectReader();
   private final ArtistInfoProvider artistInfoProvider
-      = new LastFmArtistInfoProvider(httpClient, executorService, API_KEY, REQUEST_URI_TEMPLATE);
+      = new LastFmArtistInfoProvider(httpClient, executorService, objectReader, API_KEY, REQUEST_URI_TEMPLATE);
   private final WireMockServer wireMockServer = new WireMockServer();
 
   @BeforeAll

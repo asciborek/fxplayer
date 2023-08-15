@@ -1,5 +1,7 @@
 package com.github.asciborek;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.asciborek.album_cover.AlbumCoverController;
 import com.github.asciborek.album_cover.AlbumCoverControllerFactory;
 import com.github.asciborek.artist_info.ArtistInfoController;
@@ -41,6 +43,7 @@ final class ApplicationModule extends AbstractModule {
     bind(ExecutorService.class).toProvider(Executors::newVirtualThreadPerTaskExecutor).in(Scopes.SINGLETON);
     bind(DataSource.class).toProvider(this::dataSource).asEagerSingleton();
     bind(EventBus.class).toInstance(new EventBus());
+    bind(ObjectMapper.class).toProvider(this::objectMapper).in(Scopes.SINGLETON);
     bind(DeadEventLoggingListener.class).asEagerSingleton();
     bind(NotificationsPublisher.class).toProvider(NotificationPublisherFactory.class).asEagerSingleton();
     bind(SettingsService.class).toProvider(SettingsServiceFactory.class).in(Scopes.SINGLETON);
@@ -49,6 +52,12 @@ final class ApplicationModule extends AbstractModule {
 
     install(new MetadataModule());
     install(new LocalStatisticsModule());
+  }
+
+  private ObjectMapper objectMapper() {
+    var objectMapper = new ObjectMapper();
+    objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    return objectMapper;
   }
 
   private DateTimeFormatter dateTimeFormatter() {

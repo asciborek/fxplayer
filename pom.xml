@@ -131,11 +131,6 @@
       <artifactId>jackson-datatype-jsr310</artifactId>
       <version>${jackson-version}</version>
     </dependency>
-    <dependency>
-      <groupId>com.google.code.gson</groupId>
-      <artifactId>gson</artifactId>
-      <version>2.10.1</version>
-    </dependency>
     <!-- Logging -->
     <dependency>
       <groupId>ch.qos.logback</groupId>
