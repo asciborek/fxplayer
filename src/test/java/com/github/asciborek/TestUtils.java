@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.ObjectReader;
 import com.github.asciborek.util.FileUtils;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
@@ -18,6 +20,18 @@ public final class TestUtils {
 
   public static Path getTempSqliteFile() {
     return Paths.get(FileUtils.getTempDirectory(), "fx-database" + Instant.now().toEpochMilli() + ".db");
+  }
+
+  public static void createFiles(Path... paths) throws IOException{
+    for (Path path : paths) {
+        Files.createFile(path);
+    }
+  }
+
+  public static void deleteFiles(Path... paths) throws IOException {
+    for (Path path : paths) {
+      Files.deleteIfExists(path);
+    }
   }
 
   public static ObjectReader objectReader(){

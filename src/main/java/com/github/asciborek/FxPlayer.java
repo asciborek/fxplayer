@@ -2,7 +2,6 @@ package com.github.asciborek;
 
 import static com.google.common.io.Resources.getResource;
 
-import com.github.asciborek.player.PlayerModule;
 import com.github.asciborek.util.FileUtils;
 import com.google.common.eventbus.EventBus;
 import com.google.common.io.Resources;
@@ -24,14 +23,13 @@ import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@SuppressWarnings("UnstableApiUsage")
 public final class FxPlayer extends Application {
 
   private static final Logger LOG = LoggerFactory.getLogger(FxPlayer.class);
   private static final String LAST_FM_PROPERTIES_FILE_NAME = "last_fm.properties";
 
   private final Properties apiProperties = readApiProperties();
-  private final Injector injector = Guice.createInjector(new ApplicationModule(), new PlayerModule(), new LastFmModule(apiProperties));
+  private final Injector injector = Guice.createInjector(new ApplicationModule(), new LastFmModule(apiProperties));
   private final EventBus eventBus = injector.getInstance(EventBus.class);
 
   static {
@@ -112,6 +110,6 @@ public final class FxPlayer extends Application {
     }
   }
 
-  public static record CloseApplicationEvent() {}
+  public record CloseApplicationEvent() {}
 
 }

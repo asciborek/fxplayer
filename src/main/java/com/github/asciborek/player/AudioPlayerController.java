@@ -11,6 +11,7 @@ import com.github.asciborek.player.PlayerEvent.PlaylistOpenedEvent;
 import com.github.asciborek.player.PlayerEvent.PlaylistShuffledEvent;
 import com.github.asciborek.player.PlayerEvent.ResumePlayingTrackEvent;
 import com.github.asciborek.player.PlayerEvent.StartPlayingTrackEvent;
+import com.github.asciborek.player.TracksFilesWatcher.TracksFilesDeletedEvent;
 import com.github.asciborek.settings.SettingsService;
 import com.github.asciborek.util.DurationUtils;
 import com.github.asciborek.util.TimeProvider;
@@ -18,6 +19,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import java.net.URL;
 import java.util.ResourceBundle;
+import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ObservableValue;
@@ -161,6 +163,14 @@ public final class AudioPlayerController implements Initializable {
         currentTrackIndex--;
       }
     }
+  }
+
+  @Subscribe
+  public void onTracksFilesDeletedEvent(TracksFilesDeletedEvent event) {
+    Platform.runLater(() -> {
+      var deletedFiles = event.trackPaths();
+      tracksQueue.removeIf(track -> deletedFiles.contains(track.filePath()));
+    });
   }
 
   private void removeTheCurrentTrack(int removedTrackIndex) {

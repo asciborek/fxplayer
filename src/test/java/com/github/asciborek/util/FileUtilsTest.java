@@ -6,6 +6,7 @@ import com.google.common.io.Files;
 import com.google.common.io.Resources;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.assertj.core.api.Assertions;
@@ -29,6 +30,16 @@ public class FileUtilsTest {
     } catch (IOException e) {
       Assertions.fail("getDirectoryFilesWithSupportedExtensions thrown IO exception", e);
     }
+  }
+
+
+  @Test
+  void pathsAreEqual() {
+    var originalFilePath = Paths.get("/home/aleksander/analiza.txt");
+    var directoryPath = Paths.get("/home/aleksander/");
+    var fileName = "analiza.txt";
+    var resolvedPath = directoryPath.resolve(fileName);
+    assertThat(resolvedPath).isEqualTo(originalFilePath);
   }
 
   private boolean matchExpression(Path file) {

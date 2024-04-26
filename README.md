@@ -18,7 +18,7 @@ details (like data, services, controllers etc.). This kind of design Robert C. M
 ### Components decoupling
 In order to implement component decoupling I use "event-driven architecture" approach using Guava
 EventBus. For instance when a new track is playing, the ```artist_info``` subcomponent is not called directly,
-but is notified by subscribing  ```StartPlayignTrackEvent```. 
+but is notified by subscribing  ```StartPlayingTrackEvent```. 
 ### Dependency Injection
 
 In order to ensure testability and loose coupling I use dependency injection implemented with 
@@ -37,3 +37,4 @@ component scanning.
 - [x] Collecting track playing history
 - [x] Fetching artist info from last.fm and displaying it.
 - [x] Display the current track album cover
+- [x] Removing tracks from playlist after track files being deleted

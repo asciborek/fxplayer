@@ -10,6 +10,7 @@ import com.github.asciborek.local_statistics.LocalStatisticsModule;
 import com.github.asciborek.metadata.MetadataModule;
 import com.github.asciborek.notifications.NotificationPublisherFactory;
 import com.github.asciborek.notifications.NotificationsPublisher;
+import com.github.asciborek.player.PlayerModule;
 import com.github.asciborek.settings.SettingsService;
 import com.github.asciborek.settings.SettingsServiceFactory;
 import com.github.asciborek.util.DeadEventLoggingListener;
@@ -38,11 +39,14 @@ final class ApplicationModule extends AbstractModule {
 
   @Override
   protected void configure() {
+    final var executorService = Executors.newVirtualThreadPerTaskExecutor();
+    final var eventBus = new EventBus();
+
     bind(TimeProvider.class).toInstance(new SystemTimeProvider());
     bind(DateTimeFormatter.class).toProvider(this::dateTimeFormatter).in(Scopes.SINGLETON);
-    bind(ExecutorService.class).toProvider(Executors::newVirtualThreadPerTaskExecutor).in(Scopes.SINGLETON);
+    bind(ExecutorService.class).toInstance(executorService);
     bind(DataSource.class).toProvider(this::dataSource).asEagerSingleton();
-    bind(EventBus.class).toInstance(new EventBus());
+    bind(EventBus.class).toInstance(eventBus);
     bind(ObjectMapper.class).toProvider(this::objectMapper).in(Scopes.SINGLETON);
     bind(DeadEventLoggingListener.class).asEagerSingleton();
     bind(NotificationsPublisher.class).toProvider(NotificationPublisherFactory.class).asEagerSingleton();
@@ -52,6 +56,7 @@ final class ApplicationModule extends AbstractModule {
 
     install(new MetadataModule());
     install(new LocalStatisticsModule());
+    install(new PlayerModule(eventBus, executorService));
   }
 
   private ObjectMapper objectMapper() {

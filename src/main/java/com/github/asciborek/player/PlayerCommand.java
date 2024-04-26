@@ -13,9 +13,7 @@ import com.github.asciborek.player.PlayerCommand.SavePlaylistCommand;
 import com.github.asciborek.player.PlayerCommand.ShufflePlaylistCommand;
 import java.io.File;
 
-public sealed interface PlayerCommand permits OpenTrackFileCommand, PlayOrPauseTrackCommand,
-    RemoveTrackCommand, OpenFileCommand, AddTrackCommand, AddDirectoryCommand, LoadPlaylistCommand,
-    SavePlaylistCommand, ClearPlaylistCommand, ShufflePlaylistCommand {
+public sealed interface PlayerCommand {
 
   record OpenTrackFileCommand(Track track) implements PlayerCommand {}
 

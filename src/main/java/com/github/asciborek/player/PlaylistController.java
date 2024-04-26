@@ -1,6 +1,5 @@
 package com.github.asciborek.player;
 
-import static com.google.common.io.Resources.getResource;
 
 import com.github.asciborek.FxPlayer.CloseApplicationEvent;
 import com.github.asciborek.metadata.Track;
@@ -19,12 +18,13 @@ import com.github.asciborek.player.PlayerCommand.ShufflePlaylistCommand;
 import com.github.asciborek.player.PlayerEvent.PlaylistOpenedEvent;
 import com.github.asciborek.player.PlayerEvent.PlaylistShuffledEvent;
 import com.github.asciborek.player.PlayerEvent.StartPlayingTrackEvent;
+import com.github.asciborek.player.PlayerEvent.TrackAddedEvent;
+import com.github.asciborek.player.PlayerEvent.TracksAddedEvent;
 import com.github.asciborek.playlist.PlaylistService;
 import com.github.asciborek.util.FileUtils;
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import com.google.inject.Inject;
 import java.io.File;
 import java.net.URL;
 import java.util.Collection;
@@ -210,6 +210,7 @@ public final class PlaylistController implements Initializable {
   private void addTracksToPlaylist(Collection<Track> tracks) {
     Platform.runLater(() -> {
       tracksQueue.addAll(tracks);
+      eventBus.post(new TracksAddedEvent(tracks));
       playlistView.refresh();
     });
   }
@@ -263,6 +264,7 @@ public final class PlaylistController implements Initializable {
       if (!loadedPlaylist.isEmpty()) {
         tracksQueue.addAll(loadedPlaylist);
         playlistView.refresh();
+        eventBus.post(new TracksAddedEvent(loadedPlaylist));
         eventBus.post(new PlaylistOpenedEvent());
       }
     });
@@ -271,6 +273,7 @@ public final class PlaylistController implements Initializable {
   private void onOpenAudioFile(Track track) {
     tracksQueue.clear();
     tracksQueue.add(track);
+    eventBus.post(new TrackAddedEvent(track));
     eventBus.post(new OpenTrackFileCommand(track));
   }
 
