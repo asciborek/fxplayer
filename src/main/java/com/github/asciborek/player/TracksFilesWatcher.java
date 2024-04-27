@@ -125,7 +125,6 @@ public final class TracksFilesWatcher {
         try {
             Thread.sleep(taskSuspensionTime);
             for (WatchEvent<?> event : watchKey.pollEvents()) {
-              LOG.info("Received event {}", event);
               if (event.kind() == StandardWatchEventKinds.ENTRY_DELETE) {
                 LOG.info("received entry delete event, context: {}", event.context());
                 var trackFileName = event.context().toString();
@@ -140,7 +139,6 @@ public final class TracksFilesWatcher {
             eventBus.post(new TracksFilesDeletedEvent(ImmutableSet.copyOf(deletedPaths)));
             deletedPaths.clear();
           }
-          LOG.info("resetting watch key {}", watchKey);
           watchKey.reset();
         }
         watchKey.cancel();
