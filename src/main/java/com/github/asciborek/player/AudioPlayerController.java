@@ -195,7 +195,7 @@ public final class AudioPlayerController implements Initializable {
   }
 
   private void onVolumeChange(ObservableValue<? extends Number> property, Number oldValue, Number newValue) {
-    volumeLabel.setText(" " + (int)(newValue.doubleValue() * 100) + "%");
+    volumeLabel.setText(STR." \{(int) (newValue.doubleValue() * 100)}%");
     settingsService.setVolume(newValue.doubleValue());
     LOG.info("the old volume value: {}, the new volume value: {}", oldValue.doubleValue(), newValue.doubleValue());
   }
@@ -233,13 +233,14 @@ public final class AudioPlayerController implements Initializable {
   }
 
   private void formatPlaylistTotalTimeLabelForSingleTrack() {
-    playlistTotalTimeLabel.setText("1 tracks - [" + DurationUtils.format(tracksQueue.get(0).duration()) + "] ");
+    playlistTotalTimeLabel.setText(
+        STR."1 tracks - [\{DurationUtils.format(tracksQueue.getFirst().duration())}] ");
   }
 
   private void formatPlaylistTotalTimeLabelForMultiplyTracks(int totalTracks) {
     var totalDuration = getTotalPlaylistDuration();
-    var playlistTotalTimeText = " " + totalTracks + " tracks - ["
-        + DurationUtils.format(totalDuration) + "] ";
+    var playlistTotalTimeText = STR." \{totalTracks} tracks - [\{DurationUtils.format(
+        totalDuration)}] ";
     playlistTotalTimeLabel.setText(playlistTotalTimeText);
   }
 
@@ -252,7 +253,7 @@ public final class AudioPlayerController implements Initializable {
 
   public void onPlayOrPauseButtonClicked() {
     if (playerState == PlayerState.READY && !tracksQueue.isEmpty()) {
-      currentTrack = tracksQueue.get(0);
+      currentTrack = tracksQueue.getFirst();
       startPlayingNewTrack();
     } else if(playerState == PlayerState.PAUSED) {
       resumePlayingTrack();

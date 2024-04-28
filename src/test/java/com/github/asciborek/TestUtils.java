@@ -19,7 +19,8 @@ public final class TestUtils {
   private TestUtils() {}
 
   public static Path getTempSqliteFile() {
-    return Paths.get(FileUtils.getTempDirectory(), "fx-database" + Instant.now().toEpochMilli() + ".db");
+    return Paths.get(FileUtils.getTempDirectory(),
+        STR."fx-database\{Instant.now().toEpochMilli()}.db");
   }
 
   public static void createFiles(Path... paths) throws IOException{
@@ -41,7 +42,7 @@ public final class TestUtils {
   }
 
   public static HikariDataSource createSqliteDatasource(Path dbFile) {
-    String jdbcUrl =  "jdbc:sqlite:" + dbFile;
+    String jdbcUrl = STR."jdbc:sqlite:\{dbFile}";
     HikariConfig config = new HikariConfig();
     config.setJdbcUrl(jdbcUrl);
     config.setMaximumPoolSize(1);

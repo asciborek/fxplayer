@@ -112,9 +112,10 @@ public class ArtistInfoController {
     if (similarArtists.isEmpty()) {
       return "";
     } else {
-      return "Similar artists: " + similarArtists.stream()
+      var artistsString = similarArtists.stream()
           .limit(5)
           .collect(Collectors.joining("\n"));
+      return STR."Similar artists: \{artistsString}";
     }
   }
 }

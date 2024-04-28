@@ -20,7 +20,7 @@ public final class WindowTitleUpdater {
   public void updateTitleOnStartPlayingTrackEvent(StartPlayingTrackEvent event) {
     String artist = event.track().artist();
     String title = event.track().title();
-    stage.setTitle(artist + " - " + title);
+    stage.setTitle(STR."\{artist} - \{title}");
   }
 
   @Subscribe
