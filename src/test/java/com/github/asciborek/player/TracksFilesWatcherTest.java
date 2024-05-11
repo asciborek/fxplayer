@@ -1,17 +1,15 @@
 package com.github.asciborek.player;
 
+import com.github.asciborek.GenericTestEventListener;
 import com.github.asciborek.TestUtils;
 import com.github.asciborek.metadata.Track;
 import com.github.asciborek.player.PlayerEvent.TracksAddedEvent;
 import com.github.asciborek.player.TracksFilesWatcher.TracksFilesDeletedEvent;
 import com.github.asciborek.player.TracksFilesWatcher.WatchDirectoryTask;
-import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -41,7 +39,7 @@ public class TracksFilesWatcherTest {
   private final TracksFilesWatcher tracksFilesWatcher = new TracksFilesWatcher(
       eventBus, executorService, watchDirectoryTasks, WATCH_TIME_INTERVAL
   );
-  private final TracksFilesDeletedEventTestListener testListener = new TracksFilesDeletedEventTestListener();
+  private final GenericTestEventListener<TracksFilesDeletedEvent> testListener = new GenericTestEventListener<>(TracksFilesDeletedEvent.class);
 
   @BeforeAll
   void setUp() {
@@ -130,23 +128,6 @@ public class TracksFilesWatcherTest {
         .stream()
         .map(path -> Track.builder().withFilePath(path).build())
         .collect(Collectors.toUnmodifiableSet());
-  }
-
-  static class TracksFilesDeletedEventTestListener {
-    private final List<TracksFilesDeletedEvent> events = new ArrayList<>();
-
-    @Subscribe
-    void onTracksFilesDeletedEvent(TracksFilesDeletedEvent event) {
-      events.add(event);
-    }
-
-    private List<TracksFilesDeletedEvent> getEventsSnapshot() {
-      return ImmutableList.copyOf(events);
-    }
-
-    private void clearEvents() {
-      events.clear();
-    }
   }
 
 }
