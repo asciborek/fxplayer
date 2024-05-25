@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Button?>
+<VBox xmlns="http://javafx.com/javafx"
+  xmlns:fx="http://javafx.com/fxml"
+  fx:controller="com.github.asciborek.last_fm.SignInController"
+  minHeight="150.0" minWidth="150.0">
+
+  <HBox>
+    <Label text="You are not signed in" minWidth="120" />
+    <Button fx:id="signIn" text="Sign in!" minWidth="50" onMouseClicked="#onSignIn" />
+  </HBox>
+
+</VBox>

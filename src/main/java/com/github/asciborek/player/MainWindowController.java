@@ -19,6 +19,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.CheckMenuItem;
@@ -156,6 +157,10 @@ public final class MainWindowController implements Initializable {
     eventBus.post(new ShowSidebarChangeEvent(showSidebar));
   }
 
+  public void openLastFmSettings() {
+    eventBus.post(new OpenLastFmSettingsCommand());
+  }
+
   public void quit() {
     LOG.info("MenuItem quit event");
     Platform.exit();
@@ -167,5 +172,4 @@ public final class MainWindowController implements Initializable {
     addDirectoryMenuItem.setAccelerator(keyCombination(ADD_DIRECTORY_KEY_COMBINATION));
     clearPlaylistMenuItem.setAccelerator(keyCombination(CLEAR_PLAYLIST_COMBINATION));
   }
-
 }

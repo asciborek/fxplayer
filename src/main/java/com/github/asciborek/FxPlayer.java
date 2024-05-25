@@ -28,8 +28,8 @@ public final class FxPlayer extends Application {
   private static final Logger LOG = LoggerFactory.getLogger(FxPlayer.class);
   private static final String LAST_FM_PROPERTIES_FILE_NAME = "last_fm.properties";
 
-  private final Properties apiProperties = readApiProperties();
-  private final Injector injector = Guice.createInjector(new ApplicationModule(), new LastFmModule(apiProperties));
+  private final Properties lastFmProperties = readApiProperties();
+  private final Injector injector = Guice.createInjector(new ApplicationModule(lastFmProperties));
   private final EventBus eventBus = injector.getInstance(EventBus.class);
 
   static {
