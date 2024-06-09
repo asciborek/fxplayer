@@ -14,17 +14,17 @@ final class NotificationsFactory {
   private static final Duration PLAYLIST_FINISHED_NOTIFICATION_DURATION = Duration.seconds(5);
 
   public Notifications startPlayingTrackNotification(Track track) {
-    var text = STR."Start playing \{track.artist()} - \{track.title()}";
+    var text = String.format("Start playing %s - %s", track.artist(), track.title());
     return notification(text, START_PLAYING_TRACK_NOTIFICATION_DURATION);
   }
 
   public Notifications pausePlayingTrackNotification(Track track) {
-    var text = STR."Pause playing \{track.artist()} - \{track.title()}";
+    var text = String.format("Pause playing %s - %s", track.artist(), track.title());
     return notification(text, PAUSE_PLAYING_TRACK_NOTIFICATION_DURATION);
   }
 
   public Notifications resumePlayingTrackNotification(Track track) {
-    var text = STR."Resume playing \{track.artist()} - \{track.title()}";
+    var text = String.format("Resume playing %s - %s", track.artist(), track.title());
     return notification(text, RESUME_PLAYING_TRACK_NOTIFICATION_DURATION);
   }
 

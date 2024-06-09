@@ -103,7 +103,7 @@ final class LastFmArtistInfoProvider implements ArtistInfoProvider {
       super(message);
     }
     FetchLastFmArtistInfoException(int statusCode) {
-      super(STR."Could not fetch last.fm artist info, the response status: \{statusCode}");
+      super("Could not fetch last.fm artist info, the response status: " + statusCode);
     }
   }
 

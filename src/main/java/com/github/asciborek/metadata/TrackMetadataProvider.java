@@ -33,7 +33,7 @@ public final class TrackMetadataProvider {
     String extension = Files.getFileExtension(file.toString());
     var delegate = providers.get(AudioFileExtension.valueOfIgnoreCase(extension));
     if (delegate == null) {
-      throw new IllegalArgumentException(STR."Unsupported file extension \{extension}");
+      throw new IllegalArgumentException("Unsupported file extension " + extension);
     }
     return delegate.getTrackMetadata(file);
   }
