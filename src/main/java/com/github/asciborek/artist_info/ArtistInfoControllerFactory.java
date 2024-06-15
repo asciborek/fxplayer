@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectReader;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import com.google.inject.name.Named;
 import java.net.http.HttpClient;
 import java.util.concurrent.ExecutorService;
 
@@ -19,7 +20,7 @@ public final class ArtistInfoControllerFactory implements Provider<ArtistInfoCon
 
   @Inject
   public ArtistInfoControllerFactory(EventBus eventBus, HttpClient httpClient,
-      ExecutorService executorService, ObjectMapper objectMapper, String lastFmApiKey) {
+      ExecutorService executorService, ObjectMapper objectMapper, @Named("lastFmApiKey") String lastFmApiKey) {
     this.eventBus = eventBus;
     this.httpClient = httpClient;
     this.executorService = executorService;

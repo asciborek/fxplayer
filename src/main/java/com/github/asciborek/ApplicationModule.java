@@ -6,6 +6,7 @@ import com.github.asciborek.album_cover.AlbumCoverController;
 import com.github.asciborek.album_cover.AlbumCoverControllerFactory;
 import com.github.asciborek.artist_info.ArtistInfoController;
 import com.github.asciborek.artist_info.ArtistInfoControllerFactory;
+import com.github.asciborek.last_fm.LastFmModule;
 import com.github.asciborek.local_statistics.LocalStatisticsModule;
 import com.github.asciborek.metadata.MetadataModule;
 import com.github.asciborek.notifications.NotificationPublisherFactory;
@@ -24,6 +25,7 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import java.nio.file.Path;
 import java.time.format.DateTimeFormatter;
+import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.sql.DataSource;
@@ -36,6 +38,12 @@ final class ApplicationModule extends AbstractModule {
   private static final Logger LOG = LoggerFactory.getLogger(ApplicationModule.class);
   private static final String DB_FILENAME = "fx-player.db";
   private static final String DEFAULT_DATE_TIME_FORMAT = "dd MMM yy hh:mm a";
+
+  private final Properties lastFmProperties;
+
+  public ApplicationModule(Properties lastFmProperties) {
+    this.lastFmProperties = lastFmProperties;
+  }
 
   @Override
   protected void configure() {
@@ -57,6 +65,7 @@ final class ApplicationModule extends AbstractModule {
     install(new MetadataModule());
     install(new LocalStatisticsModule());
     install(new PlayerModule(eventBus, executorService));
+    install(new LastFmModule(lastFmProperties));
   }
 
   private ObjectMapper objectMapper() {

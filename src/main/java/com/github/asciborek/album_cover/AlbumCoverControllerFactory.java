@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import com.google.inject.name.Named;
 import java.net.http.HttpClient;
 import java.util.concurrent.ExecutorService;
 
@@ -18,7 +19,7 @@ public final class AlbumCoverControllerFactory implements Provider<AlbumCoverCon
 
   @Inject
   public AlbumCoverControllerFactory(EventBus eventBus, HttpClient httpClient,
-      ExecutorService executorService, ObjectMapper objectMapper, String lastFmApiKey) {
+      ExecutorService executorService, ObjectMapper objectMapper, @Named("lastFmApiKey") String lastFmApiKey) {
     this.eventBus = eventBus;
     this.httpClient = httpClient;
     this.executorService = executorService;

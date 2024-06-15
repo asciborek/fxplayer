@@ -1,12 +1,13 @@
-package com.github.asciborek;
+package com.github.asciborek.last_fm;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
+import com.google.inject.name.Names;
 import java.net.http.HttpClient;
 import java.time.Duration;
 import java.util.Properties;
 
-final class LastFmModule extends AbstractModule {
+public final class LastFmModule extends AbstractModule {
 
   private final Properties lastFmProperties;
 
@@ -19,7 +20,7 @@ final class LastFmModule extends AbstractModule {
   @Override
   protected void configure() {
     bind(HttpClient.class).toProvider(this::lastFmHttpClient).in(Scopes.SINGLETON);
-    bind(String.class).toInstance(lastFmProperties.getProperty(API_KEY_PROPERTY_NAME));
+    bind(String.class).annotatedWith(Names.named("lastFmApiKey")).toInstance(lastFmProperties.getProperty(API_KEY_PROPERTY_NAME));
   }
 
   public HttpClient lastFmHttpClient() {
