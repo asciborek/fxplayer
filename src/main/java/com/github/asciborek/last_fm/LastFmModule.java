@@ -23,19 +23,14 @@ public final class LastFmModule extends AbstractModule {
   protected void configure() {
     bind(HttpClient.class).toProvider(this::lastFmHttpClient).in(Scopes.SINGLETON);
     bind(String.class).annotatedWith(Names.named("lastFmApiKey")).toInstance(lastFmProperties.getProperty(API_KEY_PROPERTY_NAME));
-    bind(OpenLastFmSettingsCommandHandler.class).toProvider(this::openLastFmSettingsCommandHandler).asEagerSingleton();
+    bind(LastFmAuthenticationHandler.class).toProvider(LastFmAuthenticationHandlerFactory.class).asEagerSingleton();
+    bind(OpenLastFmSettingsCommandHandler.class).toProvider(OpenLastFmSettingsCommandHandlerFactory.class).asEagerSingleton();
   }
 
   public HttpClient lastFmHttpClient() {
     return HttpClient.newBuilder()
         .connectTimeout(Duration.ofSeconds(10))
         .build();
-  }
-
-  private OpenLastFmSettingsCommandHandler openLastFmSettingsCommandHandler() {
-    var openLastFmSettingsCommandHandler = new OpenLastFmSettingsCommandHandler();
-    eventBus.register(openLastFmSettingsCommandHandler);
-    return openLastFmSettingsCommandHandler;
   }
 
 }

@@ -10,11 +10,17 @@ import javafx.stage.Stage;
 
 public final class OpenLastFmSettingsCommandHandler {
 
+  private final LastFmAuthenticationHandler lastFmAuthenticationHandler;
+
+  public OpenLastFmSettingsCommandHandler(LastFmAuthenticationHandler lastFmAuthenticationHandler) {
+    this.lastFmAuthenticationHandler = lastFmAuthenticationHandler;
+  }
+
   @Subscribe
   public void onOpenLastFmSettingsCommand(OpenLastFmSettingsCommand command) throws IOException {
     FXMLLoader fxmlLoader = new FXMLLoader();
     fxmlLoader.setLocation(Resources.getResource("fxml/last_fm_sign_in.fxml"));
-    fxmlLoader.setControllerFactory(_ -> new SignInController());
+    fxmlLoader.setControllerFactory(_ -> new SignInController(lastFmAuthenticationHandler));
     Stage stage = new Stage();
     Scene scene = new Scene(fxmlLoader.load(), 300, 200);
     stage.setMinWidth(300);

@@ -13,6 +13,12 @@ public class SignInController implements Initializable {
 
   private static final Logger LOG = LoggerFactory.getLogger(SignInController.class);
 
+  private final LastFmAuthenticationHandler lastFmAuthenticationHandler;
+
+  public SignInController(LastFmAuthenticationHandler lastFmAuthenticationHandler) {
+    this.lastFmAuthenticationHandler = lastFmAuthenticationHandler;
+  }
+
   @FXML
   private Button signIn;
 
@@ -22,6 +28,7 @@ public class SignInController implements Initializable {
 
   public void onSignIn() {
     LOG.info("signIn button clicked");
+    lastFmAuthenticationHandler.signInToLastFm();
   }
 
 }
