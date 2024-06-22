@@ -6,19 +6,21 @@ import com.google.inject.Provider;
 
 public class OpenLastFmSettingsCommandHandlerFactory implements Provider<OpenLastFmSettingsCommandHandler> {
 
-  private final LastFmAuthenticationHandler lastFmAuthenticationHandler;
+  private final LastFmAuthenticationService lastFmAuthenticationService;
   private final EventBus eventBus;
 
   @Inject
-  public OpenLastFmSettingsCommandHandlerFactory(LastFmAuthenticationHandler lastFmAuthenticationHandler,
+  public OpenLastFmSettingsCommandHandlerFactory(
+      LastFmAuthenticationService lastFmAuthenticationService,
       EventBus eventBus) {
-    this.lastFmAuthenticationHandler = lastFmAuthenticationHandler;
+    this.lastFmAuthenticationService = lastFmAuthenticationService;
     this.eventBus = eventBus;
   }
 
   @Override
   public OpenLastFmSettingsCommandHandler get() {
-    var openLastFmSettingsCommandHandler = new OpenLastFmSettingsCommandHandler(lastFmAuthenticationHandler);
+    var openLastFmSettingsCommandHandler = new OpenLastFmSettingsCommandHandler(
+        lastFmAuthenticationService);
     eventBus.register(openLastFmSettingsCommandHandler);
     return openLastFmSettingsCommandHandler;
   }

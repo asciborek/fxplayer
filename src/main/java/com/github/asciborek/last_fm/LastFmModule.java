@@ -23,7 +23,7 @@ public final class LastFmModule extends AbstractModule {
   protected void configure() {
     bind(HttpClient.class).toProvider(this::lastFmHttpClient).in(Scopes.SINGLETON);
     bind(String.class).annotatedWith(Names.named("lastFmApiKey")).toInstance(lastFmProperties.getProperty(API_KEY_PROPERTY_NAME));
-    bind(LastFmAuthenticationHandler.class).toProvider(LastFmAuthenticationHandlerFactory.class).asEagerSingleton();
+    bind(LastFmAuthenticationService.class).toProvider(LastFmAuthenticationHandlerFactory.class).asEagerSingleton();
     bind(OpenLastFmSettingsCommandHandler.class).toProvider(OpenLastFmSettingsCommandHandlerFactory.class).asEagerSingleton();
   }
 

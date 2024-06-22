@@ -2,7 +2,6 @@ package com.github.asciborek.last_fm;
 
 import java.net.URL;
 import java.util.ResourceBundle;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -13,10 +12,10 @@ public class SignInController implements Initializable {
 
   private static final Logger LOG = LoggerFactory.getLogger(SignInController.class);
 
-  private final LastFmAuthenticationHandler lastFmAuthenticationHandler;
+  private final LastFmAuthenticationService lastFmAuthenticationService;
 
-  public SignInController(LastFmAuthenticationHandler lastFmAuthenticationHandler) {
-    this.lastFmAuthenticationHandler = lastFmAuthenticationHandler;
+  public SignInController(LastFmAuthenticationService lastFmAuthenticationService) {
+    this.lastFmAuthenticationService = lastFmAuthenticationService;
   }
 
   @FXML
@@ -28,7 +27,7 @@ public class SignInController implements Initializable {
 
   public void onSignIn() {
     LOG.info("signIn button clicked");
-    lastFmAuthenticationHandler.signInToLastFm();
+    lastFmAuthenticationService.signInToLastFm();
   }
 
 }

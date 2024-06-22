@@ -7,7 +7,7 @@ import com.google.inject.name.Named;
 import java.net.http.HttpClient;
 import java.util.concurrent.ExecutorService;
 
-public class LastFmAuthenticationHandlerFactory implements Provider<LastFmAuthenticationHandler> {
+public class LastFmAuthenticationHandlerFactory implements Provider<LastFmAuthenticationService> {
 
   private final HttpClient httpClient;
   private final ExecutorService executorService;
@@ -24,7 +24,7 @@ public class LastFmAuthenticationHandlerFactory implements Provider<LastFmAuthen
   }
 
   @Override
-  public LastFmAuthenticationHandler get() {
-    return new LastFmAuthenticationHandler(httpClient, executorService, objectMapper, apiKey);
+  public LastFmAuthenticationService get() {
+    return new LastFmAuthenticationService(httpClient, executorService, objectMapper, apiKey);
   }
 }
