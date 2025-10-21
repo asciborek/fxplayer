@@ -5,7 +5,7 @@
 <VBox xmlns="http://javafx.com/javafx"
   xmlns:fx="http://javafx.com/fxml"
   fx:controller="com.github.asciborek.artist_info.ArtistInfoController"
-  minHeight="500.0" minWidth="300.0">
+  minHeight="200.0" minWidth="300.0">
 
   <TextArea fx:id="artistDescription" wrapText="true" minHeight="300" editable="false"/>
   <TextArea fx:id="similarArtists" editable="false" minHeight="120" maxHeight="120"/>
