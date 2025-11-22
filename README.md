@@ -1,7 +1,7 @@
 FxPlayer is my music player written for fun. Currently, it supports mp3, mp4 and wav files.
 
 ## How to build the application
-In order to build the application you need JDK 24, and
+In order to build the application you need JDK 25, and
 the "last_fm.properties" file (which is put in .gitignore) stored in the ```src/main/resources```.
 In the current moment only the api key is required. Set ```last.fm``` property value to 
 your api key as shown below: ```api_key=<Your API key>```.  
