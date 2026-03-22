@@ -16,11 +16,14 @@ public final class LastFmModule extends AbstractModule {
   }
 
   private static final String API_KEY_PROPERTY_NAME = "api_key";
+  private static final String SHARED_SECRET_PROPERTY_NAME = "shared_secret";
 
   @Override
   protected void configure() {
     bind(HttpClient.class).toProvider(this::lastFmHttpClient).in(Scopes.SINGLETON);
     bind(String.class).annotatedWith(Names.named("lastFmApiKey")).toInstance(lastFmProperties.getProperty(API_KEY_PROPERTY_NAME));
+    bind(String.class).annotatedWith(Names.named("lastFmSharedSecret")).toInstance(lastFmProperties.getProperty(SHARED_SECRET_PROPERTY_NAME));
+    bind(LastFmAuthenticationHandler.class).toProvider(LastFmAuthenticationHandlerFactory.class).asEagerSingleton();
   }
 
   public HttpClient lastFmHttpClient() {
@@ -28,5 +31,6 @@ public final class LastFmModule extends AbstractModule {
         .connectTimeout(Duration.ofSeconds(10))
         .build();
   }
+
 
 }

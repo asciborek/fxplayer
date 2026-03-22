@@ -102,6 +102,12 @@
       <version>33.5.0-jre</version>
     </dependency>
     <dependency>
+      <groupId>dev.failsafe</groupId>
+      <artifactId>failsafe</artifactId>
+      <version>3.3.2</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
       <groupId>net.jthink</groupId>
       <artifactId>jaudiotagger</artifactId>
       <version>3.0.1</version>

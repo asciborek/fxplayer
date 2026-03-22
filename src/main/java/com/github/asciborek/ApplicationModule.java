@@ -2,6 +2,10 @@ package com.github.asciborek;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.github.asciborek.album_cover.AlbumCoverController;
 import com.github.asciborek.album_cover.AlbumCoverControllerFactory;
 import com.github.asciborek.artist_info.ArtistInfoController;
@@ -56,6 +60,7 @@ final class ApplicationModule extends AbstractModule {
     bind(DataSource.class).toProvider(this::dataSource).asEagerSingleton();
     bind(EventBus.class).toInstance(eventBus);
     bind(ObjectMapper.class).toProvider(this::objectMapper).in(Scopes.SINGLETON);
+    bind(XmlMapper.class).toProvider(this::xmlMapper).in(Scopes.SINGLETON);
     bind(DeadEventLoggingListener.class).asEagerSingleton();
     bind(NotificationsPublisher.class).toProvider(NotificationPublisherFactory.class).asEagerSingleton();
     bind(SettingsService.class).toProvider(SettingsServiceFactory.class).in(Scopes.SINGLETON);
@@ -72,6 +77,14 @@ final class ApplicationModule extends AbstractModule {
     var objectMapper = new ObjectMapper();
     objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     return objectMapper;
+  }
+
+  private XmlMapper xmlMapper() {
+    var mapper = new XmlMapper();
+    mapper.registerModules(new Jdk8Module());
+    mapper.registerModules(new JavaTimeModule());
+    mapper.enable(SerializationFeature.INDENT_OUTPUT);
+    return mapper;
   }
 
   private DateTimeFormatter dateTimeFormatter() {

@@ -27,6 +27,7 @@
       </Menu>
       <Menu text="Tools">
         <CheckMenuItem fx:id="showSidebarMenuItem" text="Show Sidebar" onAction="#onShowSidebarChange" selected="true"/>
+        <MenuItem text="Last FM" onAction="#onLastFmMenuItem"/>
       </Menu>
     </MenuBar>
   </top>
