@@ -6,7 +6,6 @@ import com.github.asciborek.metadata.EditTagsController;
 import com.github.asciborek.metadata.Track;
 import com.github.asciborek.metadata.TrackMetadataUpdater;
 import com.google.common.eventbus.EventBus;
-import com.google.inject.Inject;
 import java.io.IOException;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;

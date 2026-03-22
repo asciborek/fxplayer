@@ -13,7 +13,6 @@ import com.github.asciborek.player.PlayerEvent.ShowSidebarChangeEvent;
 import com.github.asciborek.settings.SettingsService;
 import com.github.asciborek.util.FileUtils;
 import com.google.common.eventbus.EventBus;
-import com.google.inject.Inject;
 import java.io.File;
 import java.net.URL;
 import java.util.List;

@@ -103,6 +103,7 @@ public final class PlaylistController implements Initializable {
     switch (keyEvent.getCode()) {
       case SPACE -> playOrPauseSelectedTrack();
       case DELETE -> removeSelectedTrack();
+      default-> {}
     }
   }
 
