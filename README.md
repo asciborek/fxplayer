@@ -1,10 +1,10 @@
 FxPlayer is my music player written for fun. Currently, it supports mp3, mp4 and wav files.
 
 ## How to build the application
-In order to build the application you need JDK 25, and
+In order to build the application you need JDK 26, and
 the "last_fm.properties" file (which is put in .gitignore) stored in the ```src/main/resources```.
-In the current moment only the api key is required. Set ```last.fm``` property value to 
-your api key as shown below: ```api_key=<Your API key>```.  
+Set ```last.fm``` property value to your api key as shown below: ```api_key=<Your API key>```
+and your ```shared secret``` as ```shared_secret=<Your shared secret```.  
 You can obtain the key on the [last.fm api page](https://www.last.fm/api).
 I've tested the application only on the  Linux System (Kubuntu 20.04), so I can't guarantee
 that it will work on other operating systems.
@@ -38,3 +38,8 @@ component scanning.
 - [x] Fetching artist info from last.fm and displaying it.
 - [x] Display the current track album cover
 - [x] Removing tracks from playlist after track files being deleted
+
+## To do:
+- [ ] Finish last.fm authorization - currently the rest client is implemented, but not stored and UI for authorization is not implemented.
+- [ ] Implement scrobbling to last_fm
+- [ ] Love tracks on last.fm
