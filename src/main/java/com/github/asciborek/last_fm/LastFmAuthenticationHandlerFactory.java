@@ -14,27 +14,28 @@ public class LastFmAuthenticationHandlerFactory implements Provider<LastFmAuthen
   private final ExecutorService executorService;
   private final HttpClient httpClient;
   private final ObjectMapper objectMapper;
-  private final XmlMapper xmlMapper;
   private final EventBus eventBus;
+  private final LastFmUserService lastFmUserService;
   private final String apiKey;
   private final String sharedSecret;
 
   @Inject
   public LastFmAuthenticationHandlerFactory(ExecutorService executorService, HttpClient httpClient,
-      ObjectMapper objectMapper, XmlMapper xmlMapper, EventBus eventBus,
+      ObjectMapper objectMapper, EventBus eventBus, LastFmUserService lastFmUserService,
       @Named("lastFmApiKey") String apiKey, @Named("lastFmSharedSecret") String sharedSecret) {
     this.executorService = executorService;
     this.httpClient = httpClient;
     this.objectMapper = objectMapper;
-    this.xmlMapper = xmlMapper;
     this.eventBus = eventBus;
+    this.lastFmUserService = lastFmUserService;
     this.apiKey = apiKey;
     this.sharedSecret = sharedSecret;
   }
 
   @Override
   public LastFmAuthenticationHandler get() {
-    LastFmAuthenticationHandler handler = new LastFmAuthenticationHandler(executorService, httpClient, objectMapper, apiKey, sharedSecret);
+    SessionTokenFetcher sessionTokenFetcher = new SessionTokenFetcher(httpClient, eventBus, objectMapper, apiKey, sharedSecret);
+    LastFmAuthenticationHandler handler = new LastFmAuthenticationHandler(executorService, httpClient, objectMapper, sessionTokenFetcher, lastFmUserService, apiKey);
     eventBus.register(handler);
     return handler;
   }

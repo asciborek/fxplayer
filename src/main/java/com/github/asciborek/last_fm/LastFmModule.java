@@ -23,7 +23,9 @@ public final class LastFmModule extends AbstractModule {
     bind(HttpClient.class).toProvider(this::lastFmHttpClient).in(Scopes.SINGLETON);
     bind(String.class).annotatedWith(Names.named("lastFmApiKey")).toInstance(lastFmProperties.getProperty(API_KEY_PROPERTY_NAME));
     bind(String.class).annotatedWith(Names.named("lastFmSharedSecret")).toInstance(lastFmProperties.getProperty(SHARED_SECRET_PROPERTY_NAME));
+    bind(LastFmUserService.class).toProvider(LastFmSessionServiceFactory.class).in(Scopes.SINGLETON);
     bind(LastFmAuthenticationHandler.class).toProvider(LastFmAuthenticationHandlerFactory.class).asEagerSingleton();
+    bind(OpenLastFmSettingsCommandHandler.class).toProvider(OpenLastFmSettingsCommandHandlerFactory.class).asEagerSingleton();
   }
 
   public HttpClient lastFmHttpClient() {
@@ -31,6 +33,5 @@ public final class LastFmModule extends AbstractModule {
         .connectTimeout(Duration.ofSeconds(10))
         .build();
   }
-
 
 }

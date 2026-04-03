@@ -2,7 +2,7 @@ package com.github.asciborek.player;
 
 import static javafx.scene.input.KeyCombination.keyCombination;
 
-import com.github.asciborek.last_fm.LastFmAuthenticateCommand;
+import com.github.asciborek.last_fm.OpenLastFmSettingsCommand;
 import com.github.asciborek.player.PlayerCommand.AddDirectoryCommand;
 import com.github.asciborek.player.PlayerCommand.AddTrackCommand;
 import com.github.asciborek.player.PlayerCommand.ClearPlaylistCommand;
@@ -157,7 +157,7 @@ public final class MainWindowController implements Initializable {
   }
 
   public void onLastFmMenuItem() {
-    eventBus.post(new LastFmAuthenticateCommand());
+    eventBus.post(new OpenLastFmSettingsCommand());
   }
 
   public void quit() {

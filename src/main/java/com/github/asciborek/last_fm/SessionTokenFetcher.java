@@ -3,8 +3,12 @@ package com.github.asciborek.last_fm;
 import static java.net.HttpURLConnection.HTTP_OK;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.eventbus.EventBus;
 import dev.failsafe.Failsafe;
 import dev.failsafe.RetryPolicy;
+import dev.failsafe.event.EventListener;
+import dev.failsafe.event.ExecutionAttemptedEvent;
+import dev.failsafe.event.ExecutionCompletedEvent;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URLEncoder;
@@ -20,9 +24,9 @@ import java.util.function.Consumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-final class FetchSessionTokenHandler implements Consumer<LastFmToken> {
+final class SessionTokenFetcher {
 
-  private static final Logger LOG = LoggerFactory.getLogger(FetchSessionTokenHandler.class);
+  private static final Logger LOG = LoggerFactory.getLogger(SessionTokenFetcher.class);
 
   private static final String AUTH_SESSION_URI_TEMPLATE =
       "https://ws.audioscrobbler.com/2.0/?method=auth.getSession&api_key=%s&token=%s&api_sig=%s&format=json";
@@ -30,28 +34,33 @@ final class FetchSessionTokenHandler implements Consumer<LastFmToken> {
 
 
   private final HttpClient httpClient;
+  private final EventBus eventBus;
   private final ObjectMapper objectMapper;
   private final String apiKey;
   private final String sharedSecret;
+  private final RetryPolicy<LastFmSessionResponse> retryPolicy;
 
-  public FetchSessionTokenHandler(HttpClient httpClient, ObjectMapper objectMapper, String apiKey,
+  public SessionTokenFetcher(HttpClient httpClient, EventBus eventBus, ObjectMapper objectMapper, String apiKey,
       String sharedSecret) {
     this.httpClient = httpClient;
+    this.eventBus = eventBus;
     this.objectMapper = objectMapper;
     this.apiKey = apiKey;
     this.sharedSecret = sharedSecret;
-  }
-
-
-  @Override
-  public void accept(LastFmToken lastFmToken) {
-    RetryPolicy<LastFmSessionResponse> retryPolicy = RetryPolicy.<LastFmSessionResponse>builder()
+    retryPolicy = RetryPolicy.<LastFmSessionResponse>builder()
         .handleResultIf(this::shouldRetry)
         .withDelay(Duration.of(3, ChronoUnit.SECONDS))
         .withMaxAttempts(10)
+        .onRetriesExceeded(this::onRetriesExceeded)
+        .onSuccess(this::handleNonRetryableErrorResponse)
         .build();
-    var tokenResponse = Failsafe.with(retryPolicy).get(() -> fetchLastFmSessionResponse(lastFmToken.token()));
+  }
+
+  public LastFmSessionResponse fetchSessionToken(LastFmRequestToken lastFmRequestToken) {
+    var tokenResponse = Failsafe.with(retryPolicy).get(() -> fetchLastFmSessionResponse(
+        lastFmRequestToken.token()));
     LOG.info("get session token response {}", tokenResponse);
+    return tokenResponse;
   }
 
   private boolean shouldRetry(LastFmSessionResponse response) {
@@ -61,7 +70,19 @@ final class FetchSessionTokenHandler implements Consumer<LastFmToken> {
     return false;
   }
 
+  private void onRetriesExceeded(ExecutionCompletedEvent<LastFmSessionResponse> event) {
+    eventBus.post(new UserAuthenticationEvent.BrowserConfirmationTimeoutEvent());
+  }
+
+  private void handleNonRetryableErrorResponse(ExecutionCompletedEvent<LastFmSessionResponse> event) {
+    LastFmSessionResponse sessionResponse = event.getResult();
+    if (sessionResponse instanceof LastFmSessionResponse.LastFmErrorResponse) {
+      eventBus.post(new UserAuthenticationEvent.NotRetryableAuthenticationErrorEvent());
+    }
+  }
+
   private LastFmSessionResponse fetchLastFmSessionResponse(String token) {
+    eventBus.post(new UserAuthenticationEvent.WaitingForBrowserConfirmationEvent());
     var requestUri = String.format(
         AUTH_SESSION_URI_TEMPLATE,
         URLEncoder.encode(apiKey, StandardCharsets.UTF_8),

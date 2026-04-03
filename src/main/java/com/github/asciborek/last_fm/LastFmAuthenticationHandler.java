@@ -41,31 +41,39 @@ public class LastFmAuthenticationHandler {
   private final Executor delayedExecutor;
   private final HttpClient httpClient;
   private final ObjectMapper objectMapper;
+  private final SessionTokenFetcher sessionTokenFetcher;
+  private final LastFmUserService lastFmUserService;
   private final String apiKey;
-  private final String sharedSecret;
-  private final FetchSessionTokenHandler sessionTokenHandler;
 
-  public LastFmAuthenticationHandler(ExecutorService executorService,
-      HttpClient httpClient, ObjectMapper objectMapper, String apiKey, String sharedSecret) {
+
+  LastFmAuthenticationHandler(ExecutorService executorService,
+      HttpClient httpClient, ObjectMapper objectMapper, SessionTokenFetcher sessionTokenFetcher,
+      LastFmUserService lastFmUserService, String apiKey) {
     this.executorService = executorService;
     this.delayedExecutor = CompletableFuture.delayedExecutor(5, TimeUnit.SECONDS, executorService);
     this.httpClient = httpClient;
     this.objectMapper = objectMapper;
     this.apiKey = apiKey;
-    this.sharedSecret = sharedSecret;
-    this.sessionTokenHandler = new FetchSessionTokenHandler(httpClient, objectMapper, apiKey, sharedSecret);
+    this.sessionTokenFetcher = sessionTokenFetcher;
+    this.lastFmUserService = lastFmUserService;
   }
 
-
-  @Subscribe
-  void onAuthenticateCommand(LastFmAuthenticateCommand authenticateCommand) {
+  void authenticate() {
     LOG.info("last.fm authentication requested");
     CompletableFuture.supplyAsync(this::fetchRequestToken, executorService)
         .thenApply(this::openUserAuthorization)
-        .thenAcceptAsync(sessionTokenHandler, delayedExecutor);
+        .thenApplyAsync(sessionTokenFetcher::fetchSessionToken, delayedExecutor)
+        .thenAccept(response -> {
+          if (response instanceof LastFmSessionResponse.LastFmSessionSuccessResponse(
+              LastFmSessionResponse.Session session
+          )) {
+            LOG.info("Successfully authenticated with last.fm, username {}", session.name());
+            lastFmUserService.updateUserSession(new UserSession(session.name(), session.key()));
+          }
+        });
   }
 
-  private LastFmToken fetchRequestToken() {
+  private LastFmRequestToken fetchRequestToken() {
     var requestUri = String.format(AUTH_REQUEST_TOKEN_URI_TEMPLATE, apiKey);
     var request = HttpRequest.newBuilder()
         .uri(URI.create(requestUri))
@@ -77,7 +85,7 @@ public class LastFmAuthenticationHandler {
       if (response.statusCode() != HTTP_OK) {
         throw new LastFmAuthenticationException(response.statusCode());
       }
-      return objectMapper.readValue(response.body(), LastFmToken.class);
+      return objectMapper.readValue(response.body(), LastFmRequestToken.class);
     } catch (IOException e) {
       throw new LastFmAuthenticationException("Error while fetching last.fm request token");
     } catch (InterruptedException e) {
@@ -86,7 +94,7 @@ public class LastFmAuthenticationHandler {
     }
   }
 
-  private LastFmToken openUserAuthorization(LastFmToken token) {
+  private LastFmRequestToken openUserAuthorization(LastFmRequestToken token) {
     LOG.info("Received request token, opening user authorization page");
     var authUri = URI.create(String.format(
         USER_AUTH_URI_TEMPLATE,
