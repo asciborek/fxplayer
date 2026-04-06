@@ -38,8 +38,9 @@ component scanning.
 - [x] Fetching artist info from last.fm and displaying it.
 - [x] Display the current track album cover
 - [x] Removing tracks from playlist after track files being deleted
+- [x] Last.fm authentication, storing encrypted session key in the file
 
 ## To do:
-- [ ] Finish last.fm authorization - currently the rest client is implemented, but not stored and UI for authorization is not implemented.
+- [ ] Implement logout from last.fm
 - [ ] Implement scrobbling to last_fm
 - [ ] Love tracks on last.fm

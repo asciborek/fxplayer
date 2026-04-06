@@ -20,6 +20,8 @@ import com.github.asciborek.settings.SettingsService;
 import com.github.asciborek.settings.SettingsServiceFactory;
 import com.github.asciborek.util.DeadEventLoggingListener;
 import com.github.asciborek.util.FileUtils;
+import com.github.asciborek.util.StringEncryptor;
+import com.github.asciborek.util.StringEncryptorFactory;
 import com.github.asciborek.util.SystemTimeProvider;
 import com.github.asciborek.util.TimeProvider;
 import com.google.common.eventbus.EventBus;
@@ -66,6 +68,7 @@ final class ApplicationModule extends AbstractModule {
     bind(SettingsService.class).toProvider(SettingsServiceFactory.class).in(Scopes.SINGLETON);
     bind(AlbumCoverController.class).toProvider(AlbumCoverControllerFactory.class).in(Scopes.SINGLETON);
     bind(ArtistInfoController.class).toProvider(ArtistInfoControllerFactory.class).in(Scopes.SINGLETON);
+    bind(StringEncryptor.class).toProvider(StringEncryptorFactory.class).in(Scopes.SINGLETON);
 
     install(new MetadataModule());
     install(new LocalStatisticsModule());

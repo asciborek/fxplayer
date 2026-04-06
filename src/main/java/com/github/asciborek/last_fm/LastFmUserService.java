@@ -10,13 +10,16 @@ public final class LastFmUserService {
 
   private static final Logger LOG = LoggerFactory.getLogger(LastFmUserService.class);
 
+  private final UserSessionStorage userSessionStorage;
   private final EventBus eventBus;
 
-  public LastFmUserService(EventBus eventBus) {
-    this.eventBus = eventBus;
-  }
+  private final AtomicReference<UserSession> userSession = new AtomicReference<>();
 
-  private AtomicReference<UserSession> userSession = new AtomicReference<>();
+  public LastFmUserService(UserSessionStorage userSessionStorage, EventBus eventBus) {
+    this.userSessionStorage = userSessionStorage;
+    this.eventBus = eventBus;
+    userSessionStorage.load().ifPresent(userSession::set);
+  }
 
   public Optional<UserSession> getUserSession() {
     return Optional.ofNullable(userSession.get());
@@ -24,6 +27,7 @@ public final class LastFmUserService {
 
   public void updateUserSession(UserSession userSession) {
     LOG.info("Updated User Session for {}", userSession.username());
+    userSessionStorage.save(userSession);
     this.userSession.set(userSession);
     eventBus.post(new UserAuthenticationEvent.UserAuthenticatedEvent(userSession));
 
