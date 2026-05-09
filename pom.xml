@@ -11,7 +11,7 @@
   <properties>
     <maven.compiler.source>26</maven.compiler.source>
     <maven.compiler.target>26</maven.compiler.target>
-    <javafx-version>26</javafx-version>
+    <javafx-version>27-ea+14</javafx-version>
     <junit-version>5.10.2</junit-version>
     <jackson-version>2.21.2</jackson-version>
   </properties>
