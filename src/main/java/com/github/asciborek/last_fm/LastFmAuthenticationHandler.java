@@ -50,7 +50,7 @@ public class LastFmAuthenticationHandler {
       HttpClient httpClient, ObjectMapper objectMapper, SessionTokenFetcher sessionTokenFetcher,
       LastFmUserService lastFmUserService, String apiKey) {
     this.executorService = executorService;
-    this.delayedExecutor = CompletableFuture.delayedExecutor(5, TimeUnit.SECONDS, executorService);
+    this.delayedExecutor = CompletableFuture.delayedExecutor(2, TimeUnit.SECONDS, executorService);
     this.httpClient = httpClient;
     this.objectMapper = objectMapper;
     this.apiKey = apiKey;

@@ -7,6 +7,7 @@ import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.text.Text;
 
 public class LastFmSettingsWindowController implements Initializable {
@@ -26,6 +27,9 @@ public class LastFmSettingsWindowController implements Initializable {
 
   @FXML
   private Button logoutButton;
+
+  @FXML
+  private ProgressIndicator loadingIndicator;
 
   public LastFmSettingsWindowController(LastFmUserService lastFmUserService,
       LastFmAuthenticationHandler lastFmAuthenticationHandler) {
@@ -56,6 +60,10 @@ public class LastFmSettingsWindowController implements Initializable {
   public void onWaitingForBrowsersConfirmation(UserAuthenticationEvent.WaitingForBrowserConfirmationEvent event) {
     loginStatusText.setText(WAITING_FOR_BROWSERS_CONFIRMATION);
     loginButton.setDisable(true);
+    loginButton.setVisible(false);
+    loginButton.setManaged(false);
+    loadingIndicator.setVisible(true);
+    loadingIndicator.setManaged(true);
   }
 
   @Subscribe
@@ -63,6 +71,9 @@ public class LastFmSettingsWindowController implements Initializable {
     loginStatusText.setText(BROWSER_CONFIRMATION_TIMEOUT);
     loginButton.setDisable(false);
     loginButton.setVisible(true);
+    loginButton.setManaged(true);
+    loadingIndicator.setVisible(false);
+    loadingIndicator.setManaged(false);
   }
 
   @Subscribe
@@ -70,6 +81,9 @@ public class LastFmSettingsWindowController implements Initializable {
     loginStatusText.setText(AUTHENTICATION_ERROR);
     loginButton.setDisable(false);
     loginButton.setVisible(true);
+    loginButton.setManaged(true);
+    loadingIndicator.setVisible(false);
+    loadingIndicator.setManaged(false);
   }
 
   @Subscribe
@@ -80,14 +94,22 @@ public class LastFmSettingsWindowController implements Initializable {
   private void handleAuthenticatedUsername(UserSession userSession) {
     loginStatusText.setText("Logged in as " + userSession.username());
     loginButton.setVisible(false);
+    loginButton.setManaged(false);
     logoutButton.setVisible(true);
+    logoutButton.setManaged(true);
+    loadingIndicator.setVisible(false);
+    loadingIndicator.setManaged(false);
   }
 
   private void handleNotAuthenticatedUser() {
     loginStatusText.setText(NOT_LOGGED_IN);
     loginButton.setDisable(false);
     loginButton.setVisible(true);
+    loginButton.setManaged(true);
     logoutButton.setVisible(false);
+    logoutButton.setManaged(false);
+    loadingIndicator.setVisible(false);
+    loadingIndicator.setManaged(false);
   }
 
 }
