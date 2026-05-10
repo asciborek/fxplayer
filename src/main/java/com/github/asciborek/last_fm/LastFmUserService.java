@@ -30,6 +30,14 @@ public final class LastFmUserService {
     userSessionStorage.save(userSession);
     this.userSession.set(userSession);
     eventBus.post(new UserAuthenticationEvent.UserAuthenticatedEvent(userSession));
-
   }
+
+  public boolean deleteUserSession() {
+    boolean deleted = userSessionStorage.delete();
+    if (deleted) {
+      userSession.set(null);
+    }
+    return deleted;
+  }
+
 }

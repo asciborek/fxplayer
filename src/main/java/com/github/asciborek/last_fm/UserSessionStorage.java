@@ -2,6 +2,7 @@ package com.github.asciborek.last_fm;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.asciborek.util.StringEncryptor;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
 
@@ -27,8 +28,21 @@ public class UserSessionStorage {
     }
   }
 
+  boolean delete() {
+    try {
+      if (Files.exists(sessionFilePath)) {
+        Files.delete(sessionFilePath);
+        return true;
+      }
+      return false;
+    } catch (Exception e) {
+      return false;
+    }
+
+  }
+
   Optional<UserSession> load() {
-    if (!sessionFilePath.toFile().exists()) {
+    if (!Files.exists(sessionFilePath)) {
       return Optional.empty();
     }
     try {

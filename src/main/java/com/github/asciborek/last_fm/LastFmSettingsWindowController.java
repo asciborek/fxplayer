@@ -24,6 +24,9 @@ public class LastFmSettingsWindowController implements Initializable {
   @FXML
   private Button loginButton;
 
+  @FXML
+  private Button logoutButton;
+
   public LastFmSettingsWindowController(LastFmUserService lastFmUserService,
       LastFmAuthenticationHandler lastFmAuthenticationHandler) {
     this.lastFmUserService = lastFmUserService;
@@ -40,6 +43,13 @@ public class LastFmSettingsWindowController implements Initializable {
 
   public void onLogin() {
     lastFmAuthenticationHandler.authenticate();
+  }
+
+  public void onLogout() {
+    boolean deleted = lastFmUserService.deleteUserSession();
+    if (deleted) {
+      handleNotAuthenticatedUser();
+    }
   }
 
   @Subscribe
@@ -70,12 +80,14 @@ public class LastFmSettingsWindowController implements Initializable {
   private void handleAuthenticatedUsername(UserSession userSession) {
     loginStatusText.setText("Logged in as " + userSession.username());
     loginButton.setVisible(false);
+    logoutButton.setVisible(true);
   }
 
   private void handleNotAuthenticatedUser() {
     loginStatusText.setText(NOT_LOGGED_IN);
     loginButton.setDisable(false);
     loginButton.setVisible(true);
+    logoutButton.setVisible(false);
   }
 
 }

@@ -39,8 +39,8 @@ component scanning.
 - [x] Display the current track album cover
 - [x] Removing tracks from playlist after track files being deleted
 - [x] Last.fm authentication, storing encrypted session key in the file
+- [x] Signing out locally from last.fm (removing session key file)
 
 ## To do:
-- [ ] Implement logout from last.fm
 - [ ] Implement scrobbling to last_fm
 - [ ] Love tracks on last.fm
