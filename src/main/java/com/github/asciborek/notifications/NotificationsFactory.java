@@ -33,11 +33,11 @@ final class NotificationsFactory {
   }
 
   private Notifications notification(String text, Duration hideAfter) {
-    return Notifications.create()
+    Notifications notifications =  Notifications.create()
         .title(NOTIFICATION_TITLE)
         .text(text)
-        .hideAfter(hideAfter)
-        .position(Pos.BOTTOM_RIGHT);
+        .hideAfter(hideAfter);
+    return notifications.threshold(3, notifications);
   }
 
 }
