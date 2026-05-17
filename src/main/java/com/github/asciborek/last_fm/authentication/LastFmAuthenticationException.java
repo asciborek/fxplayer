@@ -1,4 +1,4 @@
-package com.github.asciborek.last_fm;
+package com.github.asciborek.last_fm.authentication;
 
 final class LastFmAuthenticationException extends RuntimeException {
 

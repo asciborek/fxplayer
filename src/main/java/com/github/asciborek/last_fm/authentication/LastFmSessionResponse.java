@@ -1,7 +1,4 @@
-package com.github.asciborek.last_fm;
-
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText;
+package com.github.asciborek.last_fm.authentication;
 
 public sealed interface LastFmSessionResponse {
 

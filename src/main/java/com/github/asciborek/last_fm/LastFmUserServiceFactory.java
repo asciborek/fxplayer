@@ -7,14 +7,14 @@ import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
-public class LastFmSessionServiceFactory implements Provider<LastFmUserService> {
+public class LastFmUserServiceFactory implements Provider<LastFmUserService> {
 
   private final EventBus eventBus;
   private final StringEncryptor stringEncryptor;
   private final ObjectMapper objectMapper;
 
   @Inject
-  public LastFmSessionServiceFactory(EventBus eventBus, StringEncryptor stringEncryptor, ObjectMapper objectMapper) {
+  public LastFmUserServiceFactory(EventBus eventBus, StringEncryptor stringEncryptor, ObjectMapper objectMapper) {
     this.eventBus = eventBus;
     this.stringEncryptor = stringEncryptor;
     this.objectMapper = objectMapper;

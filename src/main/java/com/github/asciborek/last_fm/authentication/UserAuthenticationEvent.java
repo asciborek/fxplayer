@@ -1,4 +1,6 @@
-package com.github.asciborek.last_fm;
+package com.github.asciborek.last_fm.authentication;
+
+import com.github.asciborek.last_fm.UserSession;
 
 public sealed interface UserAuthenticationEvent {
 

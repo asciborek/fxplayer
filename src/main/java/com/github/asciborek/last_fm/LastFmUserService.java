@@ -1,5 +1,6 @@
 package com.github.asciborek.last_fm;
 
+import com.github.asciborek.last_fm.authentication.UserAuthenticationEvent;
 import com.google.common.eventbus.EventBus;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
@@ -23,6 +24,10 @@ public final class LastFmUserService {
 
   public Optional<UserSession> getUserSession() {
     return Optional.ofNullable(userSession.get());
+  }
+
+  public boolean isUserAuthenticated() {
+    return getUserSession().isPresent();
   }
 
   public void updateUserSession(UserSession userSession) {

@@ -2,6 +2,7 @@ package com.github.asciborek.last_fm;
 
 import static com.google.common.io.Resources.getResource;
 
+import com.github.asciborek.last_fm.authentication.LastFmAuthenticationHandler;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import javafx.fxml.FXMLLoader;

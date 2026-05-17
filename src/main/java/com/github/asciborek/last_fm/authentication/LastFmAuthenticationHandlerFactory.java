@@ -1,7 +1,7 @@
-package com.github.asciborek.last_fm;
+package com.github.asciborek.last_fm.authentication;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.github.asciborek.last_fm.LastFmUserService;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.google.inject.Provider;

@@ -1,5 +1,9 @@
 package com.github.asciborek.last_fm;
 
+import com.github.asciborek.last_fm.authentication.LastFmAuthenticationHandler;
+import com.github.asciborek.last_fm.authentication.LastFmAuthenticationHandlerFactory;
+import com.github.asciborek.last_fm.scrobbling.TrackEventsHandler;
+import com.github.asciborek.last_fm.scrobbling.TrackPlayedEventHandlerFactory;
 import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
 import com.google.inject.name.Names;
@@ -23,9 +27,10 @@ public final class LastFmModule extends AbstractModule {
     bind(HttpClient.class).toProvider(this::lastFmHttpClient).in(Scopes.SINGLETON);
     bind(String.class).annotatedWith(Names.named("lastFmApiKey")).toInstance(lastFmProperties.getProperty(API_KEY_PROPERTY_NAME));
     bind(String.class).annotatedWith(Names.named("lastFmSharedSecret")).toInstance(lastFmProperties.getProperty(SHARED_SECRET_PROPERTY_NAME));
-    bind(LastFmUserService.class).toProvider(LastFmSessionServiceFactory.class).in(Scopes.SINGLETON);
+    bind(LastFmUserService.class).toProvider(LastFmUserServiceFactory.class).in(Scopes.SINGLETON);
     bind(LastFmAuthenticationHandler.class).toProvider(LastFmAuthenticationHandlerFactory.class).in(Scopes.SINGLETON);
     bind(OpenLastFmSettingsCommandHandler.class).toProvider(OpenLastFmSettingsCommandHandlerFactory.class).asEagerSingleton();
+    bind(TrackEventsHandler.class).toProvider(TrackPlayedEventHandlerFactory.class).asEagerSingleton();
   }
 
   public HttpClient lastFmHttpClient() {

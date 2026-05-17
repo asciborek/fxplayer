@@ -1,6 +1,8 @@
 package com.github.asciborek.last_fm;
 
-import com.github.asciborek.last_fm.UserAuthenticationEvent.UserAuthenticatedEvent;
+import com.github.asciborek.last_fm.authentication.UserAuthenticationEvent;
+import com.github.asciborek.last_fm.authentication.UserAuthenticationEvent.UserAuthenticatedEvent;
+import com.github.asciborek.last_fm.authentication.LastFmAuthenticationHandler;
 import com.google.common.eventbus.Subscribe;
 import java.net.URL;
 import java.util.ResourceBundle;

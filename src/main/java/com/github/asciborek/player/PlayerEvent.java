@@ -27,10 +27,7 @@ public sealed interface PlayerEvent {
 
   record ShowSidebarChangeEvent(boolean showSidebar) implements PlayerEvent {}
 
-  record TrackPlayedEvent(Track track, Instant eventTime) {
-    public long timestamp() {
-      return eventTime.toEpochMilli();
-    }
+  record TrackPlayedEvent(Track track, Instant timestamp) implements PlayerEvent {
   }
 
 }

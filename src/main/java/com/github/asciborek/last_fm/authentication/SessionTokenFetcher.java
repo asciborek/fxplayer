@@ -1,13 +1,14 @@
-package com.github.asciborek.last_fm;
+package com.github.asciborek.last_fm.authentication;
 
 import static java.net.HttpURLConnection.HTTP_OK;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.asciborek.last_fm.authentication.UserAuthenticationEvent.BrowserConfirmationTimeoutEvent;
+import com.github.asciborek.last_fm.authentication.UserAuthenticationEvent.NotRetryableAuthenticationErrorEvent;
+import com.github.asciborek.last_fm.authentication.UserAuthenticationEvent.WaitingForBrowserConfirmationEvent;
 import com.google.common.eventbus.EventBus;
 import dev.failsafe.Failsafe;
 import dev.failsafe.RetryPolicy;
-import dev.failsafe.event.EventListener;
-import dev.failsafe.event.ExecutionAttemptedEvent;
 import dev.failsafe.event.ExecutionCompletedEvent;
 import java.io.IOException;
 import java.net.URI;
@@ -20,7 +21,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
-import java.util.function.Consumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,18 +71,18 @@ final class SessionTokenFetcher {
   }
 
   private void onRetriesExceeded(ExecutionCompletedEvent<LastFmSessionResponse> event) {
-    eventBus.post(new UserAuthenticationEvent.BrowserConfirmationTimeoutEvent());
+    eventBus.post(new BrowserConfirmationTimeoutEvent());
   }
 
   private void handleNonRetryableErrorResponse(ExecutionCompletedEvent<LastFmSessionResponse> event) {
     LastFmSessionResponse sessionResponse = event.getResult();
     if (sessionResponse instanceof LastFmSessionResponse.LastFmErrorResponse) {
-      eventBus.post(new UserAuthenticationEvent.NotRetryableAuthenticationErrorEvent());
+      eventBus.post(new NotRetryableAuthenticationErrorEvent());
     }
   }
 
   private LastFmSessionResponse fetchLastFmSessionResponse(String token) {
-    eventBus.post(new UserAuthenticationEvent.WaitingForBrowserConfirmationEvent());
+    eventBus.post(new WaitingForBrowserConfirmationEvent());
     var requestUri = String.format(
         AUTH_SESSION_URI_TEMPLATE,
         URLEncoder.encode(apiKey, StandardCharsets.UTF_8),

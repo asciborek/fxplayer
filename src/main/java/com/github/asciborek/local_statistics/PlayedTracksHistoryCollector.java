@@ -36,7 +36,7 @@ final class PlayedTracksHistoryCollector {
             trackPlayedEvent.track().artist(),
             trackPlayedEvent.track().album(),
             trackPlayedEvent.track().title(),
-            trackPlayedEvent.timestamp()
+            trackPlayedEvent.timestamp().toEpochMilli()
         ).execute();
   }
 }

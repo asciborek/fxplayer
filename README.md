@@ -40,7 +40,8 @@ component scanning.
 - [x] Removing tracks from playlist after track files being deleted
 - [x] Last.fm authentication, storing encrypted session key in the file
 - [x] Signing out locally from last.fm (removing session key file)
+- [x] Happy Path for scrobbling to Last_fm 
 
 ## To do:
-- [ ] Implement scrobbling to last_fm
-- [ ] Love tracks on last.fm
+- [ ] Implement error handling and outbox pattern for scrobbling 
+- [ ] Love tracks on Last.fm

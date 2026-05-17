@@ -1,5 +1,6 @@
 package com.github.asciborek.last_fm;
 
+import com.github.asciborek.last_fm.authentication.LastFmAuthenticationHandler;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.google.inject.Provider;

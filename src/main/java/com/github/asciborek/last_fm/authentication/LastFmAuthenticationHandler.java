@@ -1,7 +1,10 @@
-package com.github.asciborek.last_fm;
+package com.github.asciborek.last_fm.authentication;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.eventbus.Subscribe;
+import com.github.asciborek.last_fm.authentication.LastFmSessionResponse.LastFmSessionSuccessResponse;
+import com.github.asciborek.last_fm.authentication.LastFmSessionResponse.Session;
+import com.github.asciborek.last_fm.LastFmUserService;
+import com.github.asciborek.last_fm.UserSession;
 import java.awt.Desktop;
 import java.io.IOException;
 import java.net.URI;
@@ -58,14 +61,14 @@ public class LastFmAuthenticationHandler {
     this.lastFmUserService = lastFmUserService;
   }
 
-  void authenticate() {
+  public void authenticate() {
     LOG.info("last.fm authentication requested");
     CompletableFuture.supplyAsync(this::fetchRequestToken, executorService)
         .thenApply(this::openUserAuthorization)
         .thenApplyAsync(sessionTokenFetcher::fetchSessionToken, delayedExecutor)
         .thenAccept(response -> {
-          if (response instanceof LastFmSessionResponse.LastFmSessionSuccessResponse(
-              LastFmSessionResponse.Session session
+          if (response instanceof LastFmSessionSuccessResponse(
+              Session session
           )) {
             LOG.info("Successfully authenticated with last.fm, username {}", session.name());
             lastFmUserService.updateUserSession(new UserSession(session.name(), session.key()));
