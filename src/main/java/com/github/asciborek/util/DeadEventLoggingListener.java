@@ -8,15 +8,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("UnstableApiUsage")
-public final class DeadEventLoggingListener {
+public final class DeadEventLoggingListener implements EventHandler {
 
   private static final Logger LOG = LoggerFactory.getLogger(DeadEventLoggingListener.class);
-
-  @Inject
-  public DeadEventLoggingListener(EventBus eventBus) {
-    eventBus.register(this);
-    LOG.info("DeadEventLoggingListener has been registered");
-  }
 
   @Subscribe
   public void onDeadEvent(DeadEvent deadEvent) {

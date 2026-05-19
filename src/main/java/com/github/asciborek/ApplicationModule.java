@@ -19,6 +19,7 @@ import com.github.asciborek.player.PlayerModule;
 import com.github.asciborek.settings.SettingsService;
 import com.github.asciborek.settings.SettingsServiceFactory;
 import com.github.asciborek.util.DeadEventLoggingListener;
+import com.github.asciborek.util.EventHandlerInitializer;
 import com.github.asciborek.util.FileUtils;
 import com.github.asciborek.util.StringEncryptor;
 import com.github.asciborek.util.StringEncryptorFactory;
@@ -27,6 +28,7 @@ import com.github.asciborek.util.TimeProvider;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
+import com.google.inject.matcher.Matchers;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import java.nio.file.Path;
@@ -56,6 +58,9 @@ final class ApplicationModule extends AbstractModule {
     final var executorService = Executors.newVirtualThreadPerTaskExecutor();
     final var eventBus = new EventBus();
 
+    // Auto-register EventHandler implementations with EventBus
+    bindListener(Matchers.any(), new EventHandlerInitializer(eventBus));
+
     bind(TimeProvider.class).toInstance(new SystemTimeProvider());
     bind(DateTimeFormatter.class).toProvider(this::dateTimeFormatter).in(Scopes.SINGLETON);
     bind(ExecutorService.class).toInstance(executorService);
@@ -64,6 +69,7 @@ final class ApplicationModule extends AbstractModule {
     bind(ObjectMapper.class).toProvider(this::objectMapper).in(Scopes.SINGLETON);
     bind(XmlMapper.class).toProvider(this::xmlMapper).in(Scopes.SINGLETON);
     bind(DeadEventLoggingListener.class).asEagerSingleton();
+
     bind(NotificationsPublisher.class).toProvider(NotificationPublisherFactory.class).asEagerSingleton();
     bind(SettingsService.class).toProvider(SettingsServiceFactory.class).in(Scopes.SINGLETON);
     bind(AlbumCoverController.class).toProvider(AlbumCoverControllerFactory.class).in(Scopes.SINGLETON);

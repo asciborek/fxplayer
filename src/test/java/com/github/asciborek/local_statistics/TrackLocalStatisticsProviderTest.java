@@ -53,7 +53,7 @@ public class TrackLocalStatisticsProviderTest {
   @DisplayName("read played tracks statistics")
   void readPlayedTracksStatistics() throws Exception {
     //given
-    final PlayedTracksHistoryCollector collector = createCollector();
+    final TrackPlayedEventEventHandler collector = createCollector();
     final TrackLocalStatisticsProvider trackLocalStatisticsProvider = createTrackLocalStatisticsProvider();
     final Instant firstPlayed = Instant.now();
     final Instant secondPlayed = firstPlayed.plus( 1, ChronoUnit.HOURS);
@@ -98,8 +98,8 @@ public class TrackLocalStatisticsProviderTest {
     Files.delete(dbFile);
   }
 
-  private PlayedTracksHistoryCollector createCollector() {
-    return new PlayedTracksHistoryCollector(executorService, dataSource);
+  private TrackPlayedEventEventHandler createCollector() {
+    return new TrackPlayedEventEventHandler(executorService, dataSource);
   }
 
   private TrackLocalStatisticsProvider createTrackLocalStatisticsProvider() {

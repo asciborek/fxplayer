@@ -4,19 +4,22 @@ import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.table;
 
 import com.github.asciborek.player.PlayerEvent.TrackPlayedEvent;
+import com.github.asciborek.util.EventHandler;
 import com.google.common.eventbus.Subscribe;
+import com.google.inject.Inject;
 import java.util.concurrent.ExecutorService;
 import javax.sql.DataSource;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 
-final class PlayedTracksHistoryCollector {
+public final class TrackPlayedEventEventHandler implements EventHandler {
 
   private final ExecutorService executorService;
   private final DSLContext dslContext;
 
-  PlayedTracksHistoryCollector(ExecutorService executorService, DataSource dataSource) {
+  @Inject
+  public TrackPlayedEventEventHandler(ExecutorService executorService, DataSource dataSource) {
     this.executorService = executorService;
     dslContext = DSL.using(dataSource, SQLDialect.SQLITE);
   }

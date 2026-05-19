@@ -6,7 +6,7 @@ public class LocalStatisticsModule extends PrivateModule {
 
   @Override
   protected void configure() {
-    bind(PlayedTracksHistoryCollector.class).toProvider(PlayedTracksHistoryCollectorFactory.class).asEagerSingleton();
+    bind(TrackPlayedEventEventHandler.class).asEagerSingleton();
     bind(LocalTrackStatisticsController.class).toProvider(LocalTrackStatisticsControllerFactory.class);
     expose(LocalTrackStatisticsController.class);
   }
