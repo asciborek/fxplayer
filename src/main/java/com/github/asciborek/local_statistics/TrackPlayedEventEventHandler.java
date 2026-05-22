@@ -4,7 +4,7 @@ import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.table;
 
 import com.github.asciborek.player.PlayerEvent.TrackPlayedEvent;
-import com.github.asciborek.util.EventHandler;
+import com.github.asciborek.util.AutoRegistrableEventBusListener;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import java.util.concurrent.ExecutorService;
@@ -13,7 +13,8 @@ import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 
-public final class TrackPlayedEventEventHandler implements EventHandler {
+@AutoRegistrableEventBusListener
+public final class TrackPlayedEventEventHandler {
 
   private final ExecutorService executorService;
   private final DSLContext dslContext;

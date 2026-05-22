@@ -1,14 +1,13 @@
 package com.github.asciborek.util;
 
 import com.google.common.eventbus.DeadEvent;
-import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import com.google.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@SuppressWarnings("UnstableApiUsage")
-public final class DeadEventLoggingListener implements EventHandler {
+@SuppressWarnings({"UnstableApiUsage"})
+@AutoRegistrableEventBusListener
+public final class DeadEventLoggingListener {
 
   private static final Logger LOG = LoggerFactory.getLogger(DeadEventLoggingListener.class);
 

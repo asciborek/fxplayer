@@ -1,7 +1,6 @@
 package com.github.asciborek.util;
 
 import com.google.common.eventbus.EventBus;
-import com.google.inject.Inject;
 import com.google.inject.TypeLiteral;
 import com.google.inject.spi.InjectionListener;
 import com.google.inject.spi.TypeEncounter;
@@ -35,7 +34,7 @@ public final class EventHandlerInitializer implements TypeListener {
 
     @Override
     public void afterInjection(I injectable) {
-      if (injectable instanceof EventHandler) {
+      if (type.getRawType().isAnnotationPresent(AutoRegistrableEventBusListener.class)) {
         LOG.info("Registering {} with EventBus", type.getRawType().getSimpleName());
         eventBus.register(injectable);
       }

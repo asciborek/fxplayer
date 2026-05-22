@@ -3,6 +3,8 @@ package com.github.asciborek.last_fm.scrobbling;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.asciborek.metadata.Track;
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URLEncoder;
@@ -19,9 +21,9 @@ import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TrackApiClient {
+public class TrackApiService {
 
-  private static final Logger LOG = LoggerFactory.getLogger(TrackApiClient.class);
+  private static final Logger LOG = LoggerFactory.getLogger(TrackApiService.class);
 
   private static final String LAST_FM_API_URL = "https://ws.audioscrobbler.com/2.0/";
   private static final int HTTP_OK = 200;
@@ -31,7 +33,9 @@ public class TrackApiClient {
   private final String apiKey;
   private final String sharedSecret;
 
-  public TrackApiClient(HttpClient httpClient, ObjectMapper objectMapper, String apiKey, String sharedSecret) {
+  @Inject
+  public TrackApiService(HttpClient httpClient, ObjectMapper objectMapper,
+      @Named("lastFmApiKey")  String apiKey, @Named("lastFmSharedSecret")String sharedSecret) {
     this.httpClient = httpClient;
     this.objectMapper = objectMapper;
     this.apiKey = apiKey;
