@@ -1,5 +1,8 @@
 package com.github.asciborek.last_fm.scrobbling;
 
+import static com.github.asciborek.last_fm.scrobbling.TrackApiErrorCode.SERVICE_OFFLINE;
+import static com.github.asciborek.last_fm.scrobbling.TrackApiErrorCode.TEMPORARY_ERROR;
+
 import com.github.asciborek.last_fm.LastFmUserService;
 import com.github.asciborek.player.PlayerEvent.StartPlayingTrackEvent;
 import com.github.asciborek.util.AutoRegistrableEventBusListener;
@@ -9,6 +12,7 @@ import dev.failsafe.Failsafe;
 import dev.failsafe.RetryPolicy;
 import dev.failsafe.event.ExecutionAttemptedEvent;
 import java.time.Duration;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +21,7 @@ import org.slf4j.LoggerFactory;
 public final class StartPlayingTrackEventHandler {
 
   private static final Logger LOG = LoggerFactory.getLogger(StartPlayingTrackEventHandler.class);
+  private static final Set<TrackApiErrorCode> TEMPORARY_ERRORS = Set.of(SERVICE_OFFLINE, TEMPORARY_ERROR);
 
   private final LastFmUserService lastFmUserService;
   private final TrackApiService trackApiService;
@@ -52,10 +57,18 @@ public final class StartPlayingTrackEventHandler {
     return RetryPolicy.<NowPlayingResponse>builder()
         .withDelay(delay)
         .handle(RuntimeException.class)
+        .handleResultIf(this::isTemporaryError)
         .withMaxAttempts(5)
         .withMaxDuration(maxDuration)
         .onRetry(this::logRetry)
         .build();
+  }
+
+  private boolean isTemporaryError(NowPlayingResponse nowPlayingResponse) {
+    if (nowPlayingResponse instanceof NowPlayingResponse.ErrorResponse errorResponse) {
+      return TEMPORARY_ERRORS.contains(errorResponse.error());
+    }
+    return false;
   }
 
   private void logRetry(ExecutionAttemptedEvent<NowPlayingResponse> event) {

@@ -15,9 +15,9 @@ public enum TrackApiErrorCode {
   INVALID_API_KEY(10, "Invalid API key"),
   SERVICE_OFFLINE(11, "Service offline"),
   INVALID_METHOD_SIGNATURE(13, "Invalid method signature"),
-  TEMPORARY_ERROR(14, "Temporary error"),
+  TEMPORARY_ERROR(16, "Temporary error"),
   RATE_LIMIT_EXCEEDED(15, "Rate limit exceeded"),
-  API_KEY_SUSPENDED(16, "API key suspended"),
+  API_KEY_SUSPENDED(26, "API key suspended"),
   UNKNOWN(99, "Unknown error");
 
   private static final Map<Integer, TrackApiErrorCode> CODE_ERROR_MAP;
