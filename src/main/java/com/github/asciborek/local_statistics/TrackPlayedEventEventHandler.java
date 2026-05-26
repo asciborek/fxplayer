@@ -40,7 +40,7 @@ public final class TrackPlayedEventEventHandler {
             trackPlayedEvent.track().artist(),
             trackPlayedEvent.track().album(),
             trackPlayedEvent.track().title(),
-            trackPlayedEvent.timestamp().toEpochMilli()
+            trackPlayedEvent.timestamp()
         ).execute();
   }
 }

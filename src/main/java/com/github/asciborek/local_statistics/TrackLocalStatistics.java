@@ -3,18 +3,18 @@ package com.github.asciborek.local_statistics;
 import java.time.Instant;
 import java.util.Optional;
 
-public record TrackLocalStatistics(long totalCount, Long firstPlayedEpochMilli, Long lastPlayedEpochMilli) {
+public record TrackLocalStatistics(long totalCount, Long firstPlayedTimestamp, Long lastPlayedTimestamp) {
 
   public Optional<Instant> firstPlayed() {
-    if (firstPlayedEpochMilli != null) {
-      return Optional.of(Instant.ofEpochMilli(firstPlayedEpochMilli));
+    if (firstPlayedTimestamp != null) {
+      return Optional.of(Instant.ofEpochSecond(firstPlayedTimestamp));
     }
     return Optional.empty();
   }
 
   public Optional<Instant> lastPlayed() {
-    if (firstPlayedEpochMilli != null) {
-      return Optional.of(Instant.ofEpochMilli(lastPlayedEpochMilli));
+    if (lastPlayedTimestamp != null) {
+      return Optional.of(Instant.ofEpochSecond(lastPlayedTimestamp));
     }
     return Optional.empty();
   }

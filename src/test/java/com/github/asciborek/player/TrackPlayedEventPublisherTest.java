@@ -68,7 +68,7 @@ final class TrackPlayedEventPublisherTest {
     //when
     assertThat(testEventListener.getEventsCount()).isEqualTo(1);
     assertThat(testEventListener.getEventsSnapshot()).first()
-        .extracting(TrackPlayedEvent::timestamp)
+        .extracting(TrackPlayedEvent::eventTime)
         .isEqualTo(now.toEpochMilli());
   }
 
@@ -90,7 +90,7 @@ final class TrackPlayedEventPublisherTest {
     //when
     assertThat(testEventListener.getEventsCount()).isEqualTo(1);
     assertThat(testEventListener.getEventsSnapshot()).first()
-        .extracting(TrackPlayedEvent::timestamp)
+        .extracting(TrackPlayedEvent::eventTime)
         .isEqualTo(now.toEpochMilli());
   }
 

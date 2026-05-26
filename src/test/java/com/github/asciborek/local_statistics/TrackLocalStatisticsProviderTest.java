@@ -69,8 +69,8 @@ public class TrackLocalStatisticsProviderTest {
 
     //then
     assertThat(statistics.totalCount()).isEqualTo(3);
-    assertThat(statistics.firstPlayedEpochMilli()).isEqualTo(firstPlayed.toEpochMilli());
-    assertThat(statistics.lastPlayedEpochMilli()).isEqualTo(thirdPlayed.toEpochMilli());
+    assertThat(statistics.firstPlayedTimestamp()).isEqualTo(firstPlayed.getEpochSecond());
+    assertThat(statistics.lastPlayedTimestamp()).isEqualTo(thirdPlayed.getEpochSecond());
     assertThat(statistics.firstPlayed()).isNotEmpty();
     assertThat(statistics.lastPlayed()).isNotEmpty();
   }
@@ -86,8 +86,8 @@ public class TrackLocalStatisticsProviderTest {
 
     //then
     assertThat(statistics.totalCount()).isEqualTo(0);
-    assertThat(statistics.firstPlayedEpochMilli()).isNull();
-    assertThat(statistics.lastPlayedEpochMilli()).isNull();
+    assertThat(statistics.firstPlayedTimestamp()).isNull();
+    assertThat(statistics.lastPlayedTimestamp()).isNull();
     assertThat(statistics.firstPlayed()).isEmpty();
     assertThat(statistics.lastPlayed()).isEmpty();
   }

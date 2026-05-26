@@ -42,7 +42,7 @@ public final class TrackPlayedEventHandler {
     return new Scrobble(trackPlayedEvent.track().artist(),
         trackPlayedEvent.track().title(),
         trackPlayedEvent.track().album(),
-        trackPlayedEvent.timestamp().getEpochSecond());
+        trackPlayedEvent.timestamp());
   }
 
 }
