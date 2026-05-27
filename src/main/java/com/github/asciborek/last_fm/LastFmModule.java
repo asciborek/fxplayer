@@ -2,6 +2,9 @@ package com.github.asciborek.last_fm;
 
 import com.github.asciborek.last_fm.authentication.LastFmAuthenticationHandler;
 import com.github.asciborek.last_fm.authentication.LastFmAuthenticationHandlerFactory;
+import com.github.asciborek.last_fm.scrobbling.ScrobblesDao;
+import com.github.asciborek.last_fm.scrobbling.ScrobblesOutboxProcessor;
+import com.github.asciborek.last_fm.scrobbling.ScrobblesOutboxProcessorFactory;
 import com.github.asciborek.last_fm.scrobbling.StartPlayingTrackEventHandler;
 import com.github.asciborek.last_fm.scrobbling.TrackApiService;
 import com.github.asciborek.last_fm.scrobbling.TrackPlayedEventHandler;
@@ -11,6 +14,8 @@ import com.google.inject.name.Names;
 import java.net.http.HttpClient;
 import java.time.Duration;
 import java.util.Properties;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 public final class LastFmModule extends AbstractModule {
 
@@ -36,15 +41,22 @@ public final class LastFmModule extends AbstractModule {
     bind(OpenLastFmSettingsCommandHandler.class).toProvider(OpenLastFmSettingsCommandHandlerFactory.class).asEagerSingleton();
 
     //bind track-related components
+    bind(ScheduledExecutorService.class).toProvider(this::scheduledExecutorService).in(Scopes.SINGLETON); //outbox worker executor service
     bind(TrackApiService.class).in(Scopes.SINGLETON);
+    bind(ScrobblesDao.class).in(Scopes.SINGLETON);
     bind(StartPlayingTrackEventHandler.class).asEagerSingleton();
     bind(TrackPlayedEventHandler.class).asEagerSingleton();
+    bind(ScrobblesOutboxProcessor.class).toProvider(ScrobblesOutboxProcessorFactory.class).asEagerSingleton();
   }
 
   public HttpClient lastFmHttpClient() {
     return HttpClient.newBuilder()
         .connectTimeout(Duration.ofSeconds(10))
         .build();
+  }
+
+  public ScheduledExecutorService scheduledExecutorService() {
+    return Executors.newSingleThreadScheduledExecutor();
   }
 
 }

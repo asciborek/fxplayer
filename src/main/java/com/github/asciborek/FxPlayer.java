@@ -14,6 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -51,7 +52,7 @@ public final class FxPlayer extends Application {
   @Override
   public void init() {
     //The JavaFx "stop" method won't handle SIGINT
-    Runtime.getRuntime().addShutdownHook(new Thread(this::shutdownExecutor));
+    Runtime.getRuntime().addShutdownHook(new Thread(this::shutdownExecutors));
   }
 
   @Override
@@ -72,7 +73,7 @@ public final class FxPlayer extends Application {
   public void stop() {
     LOG.info("Application Exit");
     eventBus.post(new CloseApplicationEvent());
-    new Thread(this::shutdownExecutor).start(); //to prevent frozen UI
+    new Thread(this::shutdownExecutors).start(); //to prevent frozen UI
   }
 
   private void initMainWindow(Stage primaryStage, Parent root) {
@@ -93,10 +94,16 @@ public final class FxPlayer extends Application {
     return properties;
   }
 
-  private void shutdownExecutor() {
+  private void shutdownExecutors() {
     ExecutorService executorService = injector.getInstance(ExecutorService.class);
+    ExecutorService scheduledExecutorService = injector.getInstance(ScheduledExecutorService.class);
+    shutDownExecutor(executorService);
+    shutDownExecutor(scheduledExecutorService);
+  }
+
+  private void shutDownExecutor(ExecutorService executorService) {
     if (!executorService.isTerminated()) {
-      LOG.info("start terminating executorService");
+      LOG.info("start terminating executorService {}", executorService);
       try {
         if (!executorService.awaitTermination(3, TimeUnit.SECONDS)){
           LOG.info("awaitTermination didn't terminate executorService, calling executorService.shutdownNow()");
@@ -106,7 +113,6 @@ public final class FxPlayer extends Application {
         LOG.error("InterruptedException during awaitTermination, calling executorService.shutdownNow()", e);
         executorService.shutdownNow();
       }
-
     }
   }
 
