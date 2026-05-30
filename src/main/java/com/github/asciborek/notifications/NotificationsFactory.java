@@ -1,9 +1,8 @@
 package com.github.asciborek.notifications;
 
+import com.github.asciborek.last_fm.InvalidSessionKeyEvent;
 import com.github.asciborek.metadata.Track;
-import javafx.geometry.Pos;
 import javafx.util.Duration;
-import org.controlsfx.control.NotificationPane;
 import org.controlsfx.control.Notifications;
 
 final class NotificationsFactory {
@@ -32,6 +31,13 @@ final class NotificationsFactory {
 
   public Notifications playlistFinishedNotification() {
     return notification("Playlist Finished", PLAYLIST_FINISHED_NOTIFICATION_DURATION);
+  }
+
+  public Notifications invalidSessionKeyNotification(String username) {
+    return Notifications.create()
+        .title("Invalid Last.fm session")
+        .text("Invalid session for user " + username + ". Please re-authenticate!")
+        .hideAfter(Duration.seconds(10));
   }
 
   private Notifications notification(String text, Duration hideAfter) {

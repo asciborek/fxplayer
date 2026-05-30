@@ -1,5 +1,6 @@
 package com.github.asciborek.last_fm;
 
+import com.github.asciborek.last_fm.authentication.InvalidSessionKeyEventHandler;
 import com.github.asciborek.last_fm.authentication.LastFmAuthenticationHandler;
 import com.github.asciborek.last_fm.authentication.LastFmAuthenticationHandlerFactory;
 import com.github.asciborek.last_fm.scrobbling.ScrobblesDao;
@@ -39,6 +40,7 @@ public final class LastFmModule extends AbstractModule {
     bind(LastFmUserService.class).toProvider(LastFmUserServiceFactory.class).in(Scopes.SINGLETON);
     bind(LastFmAuthenticationHandler.class).toProvider(LastFmAuthenticationHandlerFactory.class).in(Scopes.SINGLETON);
     bind(OpenLastFmSettingsCommandHandler.class).toProvider(OpenLastFmSettingsCommandHandlerFactory.class).asEagerSingleton();
+    bind(InvalidSessionKeyEventHandler.class).asEagerSingleton();
 
     //bind track-related components
     bind(ScheduledExecutorService.class).toProvider(this::scheduledExecutorService).in(Scopes.SINGLETON); //outbox worker executor service

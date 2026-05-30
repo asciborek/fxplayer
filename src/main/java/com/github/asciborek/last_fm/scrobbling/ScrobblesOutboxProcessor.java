@@ -1,8 +1,14 @@
 package com.github.asciborek.last_fm.scrobbling;
 
+import static com.github.asciborek.last_fm.scrobbling.TrackApiErrorCode.INVALID_SESSION_KEY;
+
 import com.github.asciborek.FxPlayer.CloseApplicationEvent;
+import com.github.asciborek.last_fm.InvalidSessionKeyEvent;
 import com.github.asciborek.last_fm.LastFmUserService;
 import com.github.asciborek.last_fm.UserSession;
+import com.github.asciborek.last_fm.scrobbling.ScrobbleResponse.ErrorResponse;
+import com.github.asciborek.last_fm.scrobbling.ScrobbleResponse.SuccessResponse;
+import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -15,6 +21,7 @@ public class ScrobblesOutboxProcessor {
   private static final Logger LOG = LoggerFactory.getLogger(ScrobblesOutboxProcessor.class);
 
   private final ScheduledExecutorService scheduledExecutorService;
+  private final EventBus eventBus;
   private final LastFmUserService lastFmUserService;
   private final ScrobblesDao scrobblesDao;
   private final TrackApiService trackApiService;
@@ -22,10 +29,12 @@ public class ScrobblesOutboxProcessor {
   private ScheduledFuture<?> processScrobblesFuture;
 
   public ScrobblesOutboxProcessor(ScheduledExecutorService scheduledExecutorService,
+      EventBus eventBus,
       LastFmUserService lastFmUserService,
       ScrobblesDao scrobblesDao,
       TrackApiService trackApiService) {
     this.scheduledExecutorService = scheduledExecutorService;
+    this.eventBus = eventBus;
     this.lastFmUserService = lastFmUserService;
     this.scrobblesDao = scrobblesDao;
     this.trackApiService = trackApiService;
@@ -61,7 +70,10 @@ public class ScrobblesOutboxProcessor {
           .orElse(0L); //shouldn't it be possible to have none timestamps here
       var response = trackApiService.sendScrobbleTracksRequest(scrobbles, userSession.token());
       LOG.info("response of scrobbling tracks: {} is {}", scrobbles, response);
-      if (response instanceof ScrobbleResponse.SuccessResponse) {
+      if (response instanceof ErrorResponse errorResponse && errorResponse.error() == INVALID_SESSION_KEY) {
+        eventBus.post(new InvalidSessionKeyEvent(userSession.username()));
+      }
+      if (response instanceof SuccessResponse) {
         int rowsAffected = scrobblesDao.deleteByTimestampLessThanEqual(maxTimestamp);
         LOG.info("{} rows deleted from scrobbles outbox table", rowsAffected);
       }

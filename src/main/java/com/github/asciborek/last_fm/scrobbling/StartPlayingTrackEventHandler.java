@@ -1,11 +1,16 @@
 package com.github.asciborek.last_fm.scrobbling;
 
+import static com.github.asciborek.last_fm.scrobbling.TrackApiErrorCode.INVALID_SESSION_KEY;
 import static com.github.asciborek.last_fm.scrobbling.TrackApiErrorCode.SERVICE_OFFLINE;
 import static com.github.asciborek.last_fm.scrobbling.TrackApiErrorCode.TEMPORARY_ERROR;
 
+import com.github.asciborek.last_fm.InvalidSessionKeyEvent;
 import com.github.asciborek.last_fm.LastFmUserService;
+import com.github.asciborek.last_fm.UserSession;
+import com.github.asciborek.last_fm.scrobbling.NowPlayingResponse.ErrorResponse;
 import com.github.asciborek.player.PlayerEvent.StartPlayingTrackEvent;
 import com.github.asciborek.util.AutoRegistrableEventBusListener;
+import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import dev.failsafe.Failsafe;
@@ -25,6 +30,7 @@ public final class StartPlayingTrackEventHandler {
 
   private final LastFmUserService lastFmUserService;
   private final TrackApiService trackApiService;
+  private final EventBus eventBus;
   private final ExecutorService executorService;
   private final RetryPolicy<NowPlayingResponse> retryPolicy;
 
@@ -32,14 +38,15 @@ public final class StartPlayingTrackEventHandler {
   @Inject
   @SuppressWarnings("unused")
   public StartPlayingTrackEventHandler(LastFmUserService lastFmUserService,
-      TrackApiService trackApiService, ExecutorService executorService) {
-    this(lastFmUserService, trackApiService, executorService, Duration.ofSeconds(3), Duration.ofSeconds(12));
+      TrackApiService trackApiService, EventBus eventBus, ExecutorService executorService) {
+    this(lastFmUserService, trackApiService, eventBus, executorService, Duration.ofSeconds(3), Duration.ofSeconds(12));
   }
 
   StartPlayingTrackEventHandler(LastFmUserService lastFmUserService,
-      TrackApiService trackApiService, ExecutorService executorService, Duration delay, Duration maxDuration) {
+      TrackApiService trackApiService, EventBus eventBus, ExecutorService executorService, Duration delay, Duration maxDuration) {
     this.lastFmUserService = lastFmUserService;
     this.trackApiService = trackApiService;
+    this.eventBus = eventBus;
     this.executorService = executorService;
     this.retryPolicy = retryPolicy(delay, maxDuration);
   }
@@ -50,7 +57,14 @@ public final class StartPlayingTrackEventHandler {
     lastFmUserService.getUserSession().ifPresent(session -> Failsafe.with(retryPolicy)
         .with(executorService)
         .getAsync(() -> trackApiService.sendUpdateNowPlayingRequest(event.track(), session.token()))
-        .thenAccept(nowPlayingResponse -> LOG.info("update now playing response: {}", nowPlayingResponse)));
+        .thenAccept(nowPlayingResponse -> handleResponse(nowPlayingResponse, session)));
+  }
+
+  private void handleResponse(NowPlayingResponse response, UserSession session) {
+    LOG.info("update now playing response: {}", response);
+    if (response instanceof ErrorResponse errorResponse && errorResponse.error() == INVALID_SESSION_KEY) {
+      eventBus.post(new InvalidSessionKeyEvent(session.username()));
+    }
   }
 
   private RetryPolicy<NowPlayingResponse> retryPolicy(Duration delay, Duration maxDuration) {
@@ -65,7 +79,7 @@ public final class StartPlayingTrackEventHandler {
   }
 
   private boolean isTemporaryError(NowPlayingResponse nowPlayingResponse) {
-    if (nowPlayingResponse instanceof NowPlayingResponse.ErrorResponse errorResponse) {
+    if (nowPlayingResponse instanceof ErrorResponse errorResponse) {
       return TEMPORARY_ERRORS.contains(errorResponse.error());
     }
     return false;

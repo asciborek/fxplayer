@@ -1,12 +1,18 @@
 package com.github.asciborek.last_fm.scrobbling;
 
 
+import static com.github.asciborek.last_fm.scrobbling.TrackApiErrorCode.INVALID_SESSION_KEY;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import com.github.asciborek.GenericTestEventListener;
+import com.github.asciborek.last_fm.InvalidSessionKeyEvent;
 import com.github.asciborek.last_fm.LastFmUserService;
 import com.github.asciborek.last_fm.UserSession;
 import com.github.asciborek.last_fm.scrobbling.NowPlayingResponse.ErrorResponse;
 import com.github.asciborek.last_fm.scrobbling.NowPlayingResponse.SuccessResponse;
 import com.github.asciborek.metadata.Track;
 import com.github.asciborek.player.PlayerEvent.StartPlayingTrackEvent;
+import com.google.common.eventbus.EventBus;
 import java.net.ConnectException;
 import java.time.Duration;
 import java.util.Optional;
@@ -15,6 +21,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -31,15 +38,25 @@ class StartPlayingTrackEventHandlerTest {
   private static final RandomStringUtils randomStringUtils = RandomStringUtils.secure();
 
   private final ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor();
+  private final EventBus eventBus = new EventBus();
+  private final GenericTestEventListener<InvalidSessionKeyEvent> testEventListener = new GenericTestEventListener<>(
+      InvalidSessionKeyEvent.class);
+
   private LastFmUserService lastFmUserService;
   private TrackApiService trackApiService;
   private StartPlayingTrackEventHandler eventHandler;
+
+  @BeforeAll
+  void initTestListener() {
+    eventBus.register(testEventListener);
+  }
 
   @BeforeEach
   void resetMocks() {
     lastFmUserService = Mockito.mock(LastFmUserService.class);
     trackApiService = Mockito.mock(TrackApiService.class);
     eventHandler = eventHandler(Duration.ofMillis(200), Duration.ofSeconds(2));
+    testEventListener.clearEvents();
   }
 
   @AfterAll
@@ -107,7 +124,7 @@ class StartPlayingTrackEventHandlerTest {
   }
 
   @ParameterizedTest
-  @EnumSource(value = TrackApiErrorCode.class, mode = Mode.EXCLUDE, names = {"SERVICE_OFFLINE", "TEMPORARY_ERROR"})
+  @EnumSource(value = TrackApiErrorCode.class, mode = Mode.EXCLUDE, names = {"INVALID_SESSION_KEY", "SERVICE_OFFLINE", "TEMPORARY_ERROR"})
   void doNotRetryOnNotTemporaryError(TrackApiErrorCode errorCode) {
     ErrorResponse errorResponse = new ErrorResponse(errorCode, errorCode.getMessage());
     UserSession userSession = userSession();
@@ -122,6 +139,26 @@ class StartPlayingTrackEventHandlerTest {
 
     Mockito.verify(trackApiService, Mockito.timeout(2000).times(1))
         .sendUpdateNowPlayingRequest(event.track(), userSession.token());
+  }
+
+  @Test
+  void sendEventOnInvalidSessionError() {
+    ErrorResponse errorResponse = new ErrorResponse(INVALID_SESSION_KEY, INVALID_SESSION_KEY.getMessage());
+    UserSession userSession = userSession();
+    StartPlayingTrackEvent event = event();
+    Mockito.when(lastFmUserService.getUserSession()).thenReturn(Optional.of(userSession));
+
+    Mockito.when(trackApiService.sendUpdateNowPlayingRequest(event.track(), userSession.token()))
+        .thenReturn(errorResponse)
+        .thenReturn(new SuccessResponse());
+
+    eventHandler.onStartPlayingTrackEvent(event);
+
+    Mockito.verify(trackApiService, Mockito.timeout(2000).times(1))
+        .sendUpdateNowPlayingRequest(event.track(), userSession.token());
+
+    assertThat(testEventListener.getEventsCount()).isEqualTo(1);
+    assertThat(testEventListener.getEventsSnapshot().get(0).username()).isEqualTo(userSession.username());
   }
 
   @Test
@@ -150,7 +187,7 @@ class StartPlayingTrackEventHandlerTest {
   }
 
   private StartPlayingTrackEventHandler eventHandler(Duration delay, Duration maxDuration) {
-    return new StartPlayingTrackEventHandler(lastFmUserService, trackApiService, executorService, delay, maxDuration);
+    return new StartPlayingTrackEventHandler(lastFmUserService, trackApiService, eventBus, executorService, delay, maxDuration);
   }
 
 

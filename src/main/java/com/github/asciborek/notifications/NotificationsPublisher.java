@@ -1,10 +1,12 @@
 package com.github.asciborek.notifications;
 
+import com.github.asciborek.last_fm.InvalidSessionKeyEvent;
 import com.github.asciborek.player.PlayerEvent.PausePlayingTrackEvent;
 import com.github.asciborek.player.PlayerEvent.PlaylistFinishedEvent;
 import com.github.asciborek.player.PlayerEvent.ResumePlayingTrackEvent;
 import com.github.asciborek.player.PlayerEvent.StartPlayingTrackEvent;
 import com.google.common.eventbus.Subscribe;
+import javafx.application.Platform;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,6 +54,14 @@ public final class NotificationsPublisher {
     notificationsFactory
         .playlistFinishedNotification()
         .showInformation();
+  }
+
+  @Subscribe
+  public void onInvalidSessionKeyEvent(InvalidSessionKeyEvent invalidSessionKeyEvent) {
+    Platform.runLater(() ->
+        notificationsFactory.invalidSessionKeyNotification(invalidSessionKeyEvent.username())
+        .showWarning()
+    );
   }
 
 }

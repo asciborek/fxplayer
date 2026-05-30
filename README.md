@@ -43,5 +43,4 @@ component scanning.
 - [x] Last.fm scrobbling 
 
 ## To do:
-- [ ] Additional error handling on last.fm scrobbling
-- [ ] Love tracks on Last.fm
+- [ ] Love tracks on Last.fm (Optional)

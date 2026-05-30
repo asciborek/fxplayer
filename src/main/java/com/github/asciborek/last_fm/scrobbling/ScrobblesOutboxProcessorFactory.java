@@ -27,7 +27,7 @@ public class ScrobblesOutboxProcessorFactory implements Provider<ScrobblesOutbox
 
   @Override
   public ScrobblesOutboxProcessor get() {
-    ScrobblesOutboxProcessor outBoxProcessor = new ScrobblesOutboxProcessor(scheduledExecutorService, lastFmUserService, scrobblesDao, trackApiService);
+    ScrobblesOutboxProcessor outBoxProcessor = new ScrobblesOutboxProcessor(scheduledExecutorService, eventBus, lastFmUserService, scrobblesDao, trackApiService);
     outBoxProcessor.init();
     eventBus.register(outBoxProcessor);
     return outBoxProcessor;
