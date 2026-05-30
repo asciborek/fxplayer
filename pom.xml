@@ -6,12 +6,12 @@
 
   <groupId>com.github.asciborek</groupId>
   <artifactId>fxplayer</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1</version>
 
   <properties>
     <maven.compiler.source>26</maven.compiler.source>
     <maven.compiler.target>26</maven.compiler.target>
-    <javafx-version>27-ea+14</javafx-version>
+    <javafx-version>27-ea+18</javafx-version>
     <junit-version>5.10.2</junit-version>
     <jackson-version>2.21.2</jackson-version>
     <mockito-version>5.23.0</mockito-version>

@@ -97,8 +97,14 @@ public final class FxPlayer extends Application {
   private void shutdownExecutors() {
     ExecutorService executorService = injector.getInstance(ExecutorService.class);
     ExecutorService scheduledExecutorService = injector.getInstance(ScheduledExecutorService.class);
-    shutDownExecutor(executorService);
-    shutDownExecutor(scheduledExecutorService);
+    Thread shutDownExecutorThread = Thread.ofVirtual().start(() -> shutDownExecutor(executorService));
+    Thread shutDownScheduledExecutorThread = Thread.ofVirtual().start(() -> shutDownExecutor(scheduledExecutorService));
+    try {
+      shutDownExecutorThread.join();
+      shutDownScheduledExecutorThread.join();
+    } catch (Exception e) {
+      LOG.error("shutting down executors error", e);
+    }
   }
 
   private void shutDownExecutor(ExecutorService executorService) {
@@ -106,7 +112,7 @@ public final class FxPlayer extends Application {
       LOG.info("start terminating executorService {}", executorService);
       try {
         if (!executorService.awaitTermination(3, TimeUnit.SECONDS)){
-          LOG.info("awaitTermination didn't terminate executorService, calling executorService.shutdownNow()");
+          LOG.info("awaitTermination didn't terminate executorService {}, calling executorService.shutdownNow()", executorService);
           executorService.shutdownNow();
         }
       } catch (InterruptedException e) {

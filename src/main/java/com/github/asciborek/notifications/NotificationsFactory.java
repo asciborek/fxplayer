@@ -3,6 +3,7 @@ package com.github.asciborek.notifications;
 import com.github.asciborek.metadata.Track;
 import javafx.geometry.Pos;
 import javafx.util.Duration;
+import org.controlsfx.control.NotificationPane;
 import org.controlsfx.control.Notifications;
 
 final class NotificationsFactory {
@@ -14,6 +15,7 @@ final class NotificationsFactory {
   private static final Duration PLAYLIST_FINISHED_NOTIFICATION_DURATION = Duration.seconds(5);
 
   public Notifications startPlayingTrackNotification(Track track) {
+
     var text = String.format("Start playing %s - %s", track.artist(), track.title());
     return notification(text, START_PLAYING_TRACK_NOTIFICATION_DURATION);
   }
