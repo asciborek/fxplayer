@@ -15,6 +15,14 @@ final class Settings {
 
   public Settings() {}
 
+  public Settings(Double volumeLevel, String addDirectoryDirectoryChooserInitDirectory,
+      String addTrackFileChooserInitDirectory, String openFileFileChooserInitDirectory) {
+    this.volumeLevel = volumeLevel;
+    this.addDirectoryDirectoryChooserInitDirectory = addDirectoryDirectoryChooserInitDirectory;
+    this.addTrackFileChooserInitDirectory = addTrackFileChooserInitDirectory;
+    this.openFileFileChooserInitDirectory = openFileFileChooserInitDirectory;
+  }
+
   public Optional<Double> getVolumeLevel() {
     return Optional.ofNullable(volumeLevel);
   }

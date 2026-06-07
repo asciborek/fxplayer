@@ -1,19 +1,15 @@
 package com.github.asciborek.settings;
 
-import static com.github.asciborek.settings.SqliteSettingsStorage.SETTINGS_TABLE;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.github.asciborek.FxPlayer.CloseApplicationEvent;
 import com.github.asciborek.TestUtils;
 import com.github.asciborek.util.FileUtils;
-import com.zaxxer.hikari.HikariDataSource;
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import org.jooq.SQLDialect;
-import org.jooq.impl.DSL;
-import org.junit.jupiter.api.AfterAll;
+import java.nio.file.Paths;
+import java.time.Instant;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -24,18 +20,17 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 @TestInstance(Lifecycle.PER_CLASS)
 public class SettingsServiceTest {
 
-  private final Path dbFile = TestUtils.getTempSqliteFile();
-  private final HikariDataSource dataSource = TestUtils.createSqliteDatasource(dbFile);
+  private final Path settingsFile = getTempFile();
+  private final SettingsStorage fileSettingsStorage = settingsStorage(settingsFile);
 
   @BeforeAll
   void initDb() {
-    TestUtils.initDb(dataSource);
   }
 
   @Test
-  @DisplayName("load the default settings if the settings row doesn't exist")
-  void loadDefaultSettingsIfSettingsRowDoesNotExist() {
-    var settingsService = new SettingsService(creteSqliteSettingsStorage());
+  @DisplayName("load the default settings if the settings file doesn't exist")
+  void loadDefaultSettingsIfSettingsFileDoesNotExist() {
+    var settingsService = new SettingsService(fileSettingsStorage);
 
     //default volume value is max
     assertThat(SettingsService.MAX_VOLUME_LEVEL).isEqualTo(settingsService.getVolume());
@@ -46,21 +41,21 @@ public class SettingsServiceTest {
   }
 
   @Test
-  @DisplayName("save and read settings in database")
-  void saveAndReadSettingsInDatabase() {
+  @DisplayName("save and read settings in and from file")
+  void saveAndReadSettingsInFromFile() {
     var expectedVolumeValue = 0.3;
     var expectedAddTrackFileChooserDirectory = new File(FileUtils.getUserHome() + "/Music/Haken/Affinity");
     var expectedAddDirectoryDirectoryChooserDirectory = new File(FileUtils.getUserHome() + "/Music/Haken/Virus");
     var expectedOpenFileFileChooserDirectory = new File(FileUtils.getUserHome() + "/Music/Haken/Vector");
 
-    var settingsService = new SettingsService(creteSqliteSettingsStorage());
+    var settingsService = new SettingsService(fileSettingsStorage);
     settingsService.setVolume(expectedVolumeValue);
     settingsService.setAddTrackFileChooserInitDirectory(expectedAddTrackFileChooserDirectory);
     settingsService.setAddDirectoryDirectoryChooserInitDirectory(expectedAddDirectoryDirectoryChooserDirectory);
     settingsService.setOpenFileFileChooserInitDirectory(expectedOpenFileFileChooserDirectory);
     settingsService.onCloseApplicationEvent(new CloseApplicationEvent());
 
-    var newSettingsService = new SettingsService(creteSqliteSettingsStorage());
+    var newSettingsService = new SettingsService(fileSettingsStorage);
     assertThat(newSettingsService.getVolume()).isEqualTo(expectedVolumeValue);
     assertThat(newSettingsService.getDirectoryDirectoryChooserInitDirectory()).isEqualTo(expectedAddDirectoryDirectoryChooserDirectory);
     assertThat(newSettingsService.getAddTrackFileChooserInitDirectory()).isEqualTo(expectedAddTrackFileChooserDirectory);
@@ -68,14 +63,14 @@ public class SettingsServiceTest {
   }
 
   @Test
-  @DisplayName("update settings if the settings row already exists")
-  void updateSettingsIfRowExists() {
+  @DisplayName("update settings if the file already exists")
+  void updateSettingsIfFileExists() {
     var initVolumeValue = 0.3;
     var initAddTrackFileChooserDirectory = new File(FileUtils.getUserHome() + "/Music/Haken/Affinity");
     var initAddDirectoryDirectoryChooserDirectory = new File(FileUtils.getUserHome() + "/Music/Haken/Virus");
     var initOpenFileFileChooserDirectory = new File(FileUtils.getUserHome() + "/Music/Haken/Vector");
-
-    var settingsService = new SettingsService(creteSqliteSettingsStorage());
+    
+    var settingsService = new SettingsService(fileSettingsStorage);
     settingsService.setVolume(initVolumeValue);
     settingsService.setAddTrackFileChooserInitDirectory(initAddTrackFileChooserDirectory);
     settingsService.setAddDirectoryDirectoryChooserInitDirectory(initAddDirectoryDirectoryChooserDirectory);
@@ -87,14 +82,14 @@ public class SettingsServiceTest {
     var finalAddDirectoryDirectoryChooserDirectory = new File(FileUtils.getUserHome() + "/Music/Haken/Virus");
     var finalOpenFileFileChooserDirectory = new File(FileUtils.getUserHome() + "/Music/Haken/Restoration");
 
-    var newSettingsService = new SettingsService(creteSqliteSettingsStorage());
+    var newSettingsService = new SettingsService(fileSettingsStorage);
     newSettingsService.setVolume(finalVolumeValue);
     newSettingsService.setAddDirectoryDirectoryChooserInitDirectory(finalAddDirectoryDirectoryChooserDirectory);
     newSettingsService.setAddTrackFileChooserInitDirectory(finalAddTrackFileChooserDirectory);
     newSettingsService.setOpenFileFileChooserInitDirectory(finalOpenFileFileChooserDirectory);
     newSettingsService.onCloseApplicationEvent(new CloseApplicationEvent());
 
-    var finalSettingsService = new SettingsService(creteSqliteSettingsStorage());
+    var finalSettingsService = new SettingsService(fileSettingsStorage);
     assertThat(finalSettingsService.getVolume()).isEqualTo(finalVolumeValue);
     assertThat(finalSettingsService.getAddTrackFileChooserInitDirectory()).isEqualTo(finalAddTrackFileChooserDirectory);
     assertThat(finalSettingsService.getDirectoryDirectoryChooserInitDirectory()).isEqualTo(finalAddDirectoryDirectoryChooserDirectory);
@@ -102,19 +97,16 @@ public class SettingsServiceTest {
   }
 
   @AfterEach
-  void removeSettingsAfterTest() {
-    var context = DSL.using(dataSource, SQLDialect.SQLITE);
-    context.deleteFrom(DSL.table(SETTINGS_TABLE)).execute();
+  void removeSettingsAfterTest() throws Exception {
+    Files.deleteIfExists(settingsFile);
+  }
+  
+  private SettingsStorage settingsStorage(Path tempFile) {
+    return  new JsonFileSettingsStorage(TestUtils.objectMapper(), tempFile);
   }
 
-  @AfterAll
-  void tearDownDb() throws IOException {
-    dataSource.close();
-    Files.delete(dbFile);
-  }
-
-  private SqliteSettingsStorage creteSqliteSettingsStorage() {
-    return new SqliteSettingsStorage(dataSource);
+  private Path getTempFile() {
+    return Paths.get(FileUtils.getTempDirectory(), "settings-" + Instant.now().toEpochMilli() + ".json");
   }
 
 }

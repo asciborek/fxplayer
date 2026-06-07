@@ -3,6 +3,7 @@ package com.github.asciborek;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.github.asciborek.util.FileUtils;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -34,10 +35,15 @@ public final class TestUtils {
     }
   }
 
-  public static ObjectReader objectReader(){
+  public static ObjectMapper objectMapper() {
     var objectMapper = new ObjectMapper();
     objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-    return objectMapper.reader();
+    objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+    return objectMapper;
+  }
+
+  public static ObjectReader objectReader(){
+    return objectMapper().reader();
   }
 
   public static HikariDataSource createSqliteDatasource(Path dbFile) {
