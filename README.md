@@ -44,3 +44,29 @@ component scanning.
 
 ## To do:
 - [ ] Love tracks on Last.fm (Optional)
+
+## CI / Tests
+
+This project uses a GitHub Actions workflow at `.github/workflows/tests.yml` to run automated tests on push and pull requests.
+
+What the workflow does:
+
+- Runs on `ubuntu-latest`.
+- Sets up Java (Temurin) JDK 26 using `actions/setup-java@v5`.
+- Runs the Maven test suite with:
+
+```bash
+mvn clean test --batch-mode
+```
+
+- Generates a Surefire/site report with:
+
+```bash
+mvn site -DskipTests --batch-mode
+```
+
+- Uploads the `target/site/` directory as a workflow artifact (named `test-reports`) and retains it for 30 days.
+
+Running tests locally
+
+To run the same tests locally (or to reproduce CI behavior) use the commands above. After running `mvn site` the HTML test reports are available under `target/site/` and can be opened in your browser.
