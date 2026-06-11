@@ -43,7 +43,7 @@ final class OpenLastFmSettingsCommandHandler {
 
   private Object lastFmSettingsControllerFactory(Class<?> clazz) {
     if (clazz.equals(LastFmSettingsWindowController.class)) {
-      LastFmSettingsWindowController controller = new LastFmSettingsWindowController(lastFmUserService, lastFmAuthenticationHandler);
+      LastFmSettingsWindowController controller = new LastFmSettingsWindowController(lastFmUserService, lastFmAuthenticationHandler, eventBus);
       eventBus.register(controller);
       return controller;
     }

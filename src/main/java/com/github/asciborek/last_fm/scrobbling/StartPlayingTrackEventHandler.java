@@ -54,6 +54,10 @@ public final class StartPlayingTrackEventHandler {
   @Subscribe
   public void onStartPlayingTrackEvent(StartPlayingTrackEvent event) {
     LOG.info("Received start playing track event: {}", event);
+    if (lastFmUserService.isOnlineScrobblingDisabled()) {
+      LOG.info("Online scrobbling is disabled, not sending now playing request");
+      return;
+    }
     lastFmUserService.getUserSession().ifPresent(session -> Failsafe.with(retryPolicy)
         .with(executorService)
         .getAsync(() -> trackApiService.sendUpdateNowPlayingRequest(event.track(), session.token()))

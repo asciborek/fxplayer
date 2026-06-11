@@ -11,7 +11,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -22,10 +21,6 @@ public class SettingsServiceTest {
 
   private final Path settingsFile = getTempFile();
   private final SettingsStorage fileSettingsStorage = settingsStorage(settingsFile);
-
-  @BeforeAll
-  void initDb() {
-  }
 
   @Test
   @DisplayName("load the default settings if the settings file doesn't exist")
@@ -38,6 +33,10 @@ public class SettingsServiceTest {
     assertThat(settingsService.getAddTrackFileChooserInitDirectory()).isEqualTo(new File(FileUtils.getUserHome()));
     assertThat(settingsService.getDirectoryDirectoryChooserInitDirectory()).isEqualTo(new File(FileUtils.getUserHome()));
     assertThat(settingsService.getOpenFileFileChooserInitDirectory()).isEqualTo(new File(FileUtils.getUserHome()));
+    //default LastFm settings should have lastFmEnabled=true and offlineModeEnabled=false
+    var lastFmSettings = settingsService.getLastFmSettings();
+    assertThat(lastFmSettings.scrobblingEnabled()).isTrue();
+    assertThat(lastFmSettings.offlineModeEnabled()).isFalse();
   }
 
   @Test
@@ -47,12 +46,14 @@ public class SettingsServiceTest {
     var expectedAddTrackFileChooserDirectory = new File(FileUtils.getUserHome() + "/Music/Haken/Affinity");
     var expectedAddDirectoryDirectoryChooserDirectory = new File(FileUtils.getUserHome() + "/Music/Haken/Virus");
     var expectedOpenFileFileChooserDirectory = new File(FileUtils.getUserHome() + "/Music/Haken/Vector");
+    var expectedLastFmSettings = new LastFmSettings(true, true);
 
     var settingsService = new SettingsService(fileSettingsStorage);
     settingsService.setVolume(expectedVolumeValue);
     settingsService.setAddTrackFileChooserInitDirectory(expectedAddTrackFileChooserDirectory);
     settingsService.setAddDirectoryDirectoryChooserInitDirectory(expectedAddDirectoryDirectoryChooserDirectory);
     settingsService.setOpenFileFileChooserInitDirectory(expectedOpenFileFileChooserDirectory);
+    settingsService.setLastFmSettings(expectedLastFmSettings);
     settingsService.onCloseApplicationEvent(new CloseApplicationEvent());
 
     var newSettingsService = new SettingsService(fileSettingsStorage);
@@ -60,6 +61,7 @@ public class SettingsServiceTest {
     assertThat(newSettingsService.getDirectoryDirectoryChooserInitDirectory()).isEqualTo(expectedAddDirectoryDirectoryChooserDirectory);
     assertThat(newSettingsService.getAddTrackFileChooserInitDirectory()).isEqualTo(expectedAddTrackFileChooserDirectory);
     assertThat(newSettingsService.getOpenFileFileChooserInitDirectory()).isEqualTo(expectedOpenFileFileChooserDirectory);
+    assertThat(newSettingsService.getLastFmSettings()).isEqualTo(expectedLastFmSettings);
   }
 
   @Test
@@ -69,24 +71,28 @@ public class SettingsServiceTest {
     var initAddTrackFileChooserDirectory = new File(FileUtils.getUserHome() + "/Music/Haken/Affinity");
     var initAddDirectoryDirectoryChooserDirectory = new File(FileUtils.getUserHome() + "/Music/Haken/Virus");
     var initOpenFileFileChooserDirectory = new File(FileUtils.getUserHome() + "/Music/Haken/Vector");
-    
+    var initLastFmSettings = new LastFmSettings(true, false);
+
     var settingsService = new SettingsService(fileSettingsStorage);
     settingsService.setVolume(initVolumeValue);
     settingsService.setAddTrackFileChooserInitDirectory(initAddTrackFileChooserDirectory);
     settingsService.setAddDirectoryDirectoryChooserInitDirectory(initAddDirectoryDirectoryChooserDirectory);
     settingsService.setOpenFileFileChooserInitDirectory(initOpenFileFileChooserDirectory);
+    settingsService.setLastFmSettings(initLastFmSettings);
     settingsService.onCloseApplicationEvent(new CloseApplicationEvent());
 
     var finalVolumeValue = 0.5;
     var finalAddTrackFileChooserDirectory = new File(FileUtils.getUserHome() + "/Music/Haken/Affinity");
     var finalAddDirectoryDirectoryChooserDirectory = new File(FileUtils.getUserHome() + "/Music/Haken/Virus");
     var finalOpenFileFileChooserDirectory = new File(FileUtils.getUserHome() + "/Music/Haken/Restoration");
+    var finalLastFmSettings = new LastFmSettings(true, true);
 
     var newSettingsService = new SettingsService(fileSettingsStorage);
     newSettingsService.setVolume(finalVolumeValue);
     newSettingsService.setAddDirectoryDirectoryChooserInitDirectory(finalAddDirectoryDirectoryChooserDirectory);
     newSettingsService.setAddTrackFileChooserInitDirectory(finalAddTrackFileChooserDirectory);
     newSettingsService.setOpenFileFileChooserInitDirectory(finalOpenFileFileChooserDirectory);
+    newSettingsService.setLastFmSettings(finalLastFmSettings);
     newSettingsService.onCloseApplicationEvent(new CloseApplicationEvent());
 
     var finalSettingsService = new SettingsService(fileSettingsStorage);
@@ -94,6 +100,7 @@ public class SettingsServiceTest {
     assertThat(finalSettingsService.getAddTrackFileChooserInitDirectory()).isEqualTo(finalAddTrackFileChooserDirectory);
     assertThat(finalSettingsService.getDirectoryDirectoryChooserInitDirectory()).isEqualTo(finalAddDirectoryDirectoryChooserDirectory);
     assertThat(finalSettingsService.getOpenFileFileChooserInitDirectory()).isEqualTo(finalOpenFileFileChooserDirectory);
+    assertThat(finalSettingsService.getLastFmSettings()).isEqualTo(finalLastFmSettings);
   }
 
   @AfterEach

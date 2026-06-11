@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ProgressIndicator?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
@@ -42,4 +43,16 @@
       maxHeight="30.0"
       style="-fx-padding: 0;"/>
   </HBox>
+
+  <CheckBox fx:id="enableScrobblingCheckBox"
+    text="Enable Last.fm scrobbling"
+    onAction="#onEnableScrobblingToggled"
+    selected="true"
+    style="-fx-font-size: 11px;"/>
+
+  <CheckBox fx:id="offlineModeCheckBox"
+    text="Offline mode (Only cache scrobbles)"
+    onAction="#onOfflineModeToggled"
+    selected="false"
+    style="-fx-font-size: 11px;"/>
 </VBox>

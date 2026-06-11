@@ -1,6 +1,7 @@
 package com.github.asciborek.last_fm;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.asciborek.settings.SettingsService;
 import com.github.asciborek.util.FileUtils;
 import com.github.asciborek.util.StringEncryptor;
 import com.google.common.eventbus.EventBus;
@@ -9,12 +10,15 @@ import com.google.inject.Provider;
 
 public class LastFmUserServiceFactory implements Provider<LastFmUserService> {
 
+  private final SettingsService settingsService;
   private final EventBus eventBus;
   private final StringEncryptor stringEncryptor;
   private final ObjectMapper objectMapper;
 
   @Inject
-  public LastFmUserServiceFactory(EventBus eventBus, StringEncryptor stringEncryptor, ObjectMapper objectMapper) {
+  public LastFmUserServiceFactory(SettingsService settingsService, EventBus eventBus,
+      StringEncryptor stringEncryptor, ObjectMapper objectMapper) {
+    this.settingsService = settingsService;
     this.eventBus = eventBus;
     this.stringEncryptor = stringEncryptor;
     this.objectMapper = objectMapper;
@@ -24,7 +28,7 @@ public class LastFmUserServiceFactory implements Provider<LastFmUserService> {
   public LastFmUserService get() {
     var sessionFilePath = FileUtils.getApplicationDataDirectory().resolve("last_fm_session.json");
     var userSessionStorage = new UserSessionStorage(objectMapper, stringEncryptor, sessionFilePath);
-    return new LastFmUserService(userSessionStorage, eventBus);
+    return new LastFmUserService(settingsService, userSessionStorage, eventBus);
   }
 
 }

@@ -68,6 +68,14 @@ public final class SettingsService {
         .orElseGet(this::getUserHome);
   }
 
+  public void setLastFmSettings(LastFmSettings lastFmSettings) {
+    settings.setLastFmSettings(lastFmSettings);
+  }
+
+  public LastFmSettings getLastFmSettings() {
+    return settings.getLastFmSettings().orElseGet(() -> new LastFmSettings(true, false));
+  }
+
   private File getUserHome() {
     return new File(FileUtils.getUserHome());
   }

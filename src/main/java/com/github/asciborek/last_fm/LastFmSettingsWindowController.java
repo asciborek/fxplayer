@@ -3,12 +3,15 @@ package com.github.asciborek.last_fm;
 import com.github.asciborek.last_fm.authentication.UserAuthenticationEvent;
 import com.github.asciborek.last_fm.authentication.UserAuthenticationEvent.UserAuthenticatedEvent;
 import com.github.asciborek.last_fm.authentication.LastFmAuthenticationHandler;
+import com.github.asciborek.settings.LastFmSettings;
+import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.text.Text;
 
@@ -18,8 +21,10 @@ public class LastFmSettingsWindowController implements Initializable {
   private static final String WAITING_FOR_BROWSERS_CONFIRMATION = "Waiting for your confirmation in browser...";
   private static final String BROWSER_CONFIRMATION_TIMEOUT = "Could not get browser confirmation. \n You can try again";
   private static final String AUTHENTICATION_ERROR = "There was an error while trying to authenticate";
+
   private final LastFmUserService lastFmUserService;
   private final LastFmAuthenticationHandler lastFmAuthenticationHandler;
+  private final EventBus eventBus;
 
   @FXML
   private Text loginStatusText;
@@ -33,10 +38,19 @@ public class LastFmSettingsWindowController implements Initializable {
   @FXML
   private ProgressIndicator loadingIndicator;
 
+  @FXML
+  private CheckBox enableScrobblingCheckBox;
+
+  @FXML
+  private CheckBox offlineModeCheckBox;
+
+
   public LastFmSettingsWindowController(LastFmUserService lastFmUserService,
-      LastFmAuthenticationHandler lastFmAuthenticationHandler) {
+      LastFmAuthenticationHandler lastFmAuthenticationHandler,
+      EventBus eventBus) {
     this.lastFmUserService = lastFmUserService;
     this.lastFmAuthenticationHandler = lastFmAuthenticationHandler;
+    this.eventBus = eventBus;
   }
 
   @Override
@@ -45,6 +59,11 @@ public class LastFmSettingsWindowController implements Initializable {
         this::handleAuthenticatedUsername,
         this::handleNotAuthenticatedUser
     );
+    // Keep offline mode disabled whenever scrobbling is not enabled
+    offlineModeCheckBox.disableProperty().bind(enableScrobblingCheckBox.selectedProperty().not());
+    var settings = lastFmUserService.getLastFmSettings();
+    enableScrobblingCheckBox.setSelected(settings.scrobblingEnabled());
+    offlineModeCheckBox.setSelected(settings.offlineModeEnabled());
   }
 
   public void onLogin() {
@@ -93,6 +112,32 @@ public class LastFmSettingsWindowController implements Initializable {
     handleAuthenticatedUsername(userAuthenticatedEvent.userSession());
   }
 
+  public void onEnableScrobblingToggled() {
+    boolean isEnabled = enableScrobblingCheckBox.isSelected();
+    // If disabling scrobbling, uncheck offline mode if it was checked
+    if (!isEnabled && offlineModeCheckBox.isSelected()) {
+      offlineModeCheckBox.setSelected(false);
+    }
+    persistSettings();
+  }
+
+  public void onOfflineModeToggled() {
+    boolean isEnabled = enableScrobblingCheckBox.isSelected();
+    // If trying to check offline mode when scrobbling is disabled, prevent it
+    if (offlineModeCheckBox.isSelected() && !isEnabled) {
+      offlineModeCheckBox.setSelected(false);
+    }
+    persistSettings();
+  }
+
+  private void persistSettings() {
+    final boolean scrobblingEnabled = enableScrobblingCheckBox.isSelected();
+    final boolean isOfflineModeEnabled = offlineModeCheckBox.isSelected();
+    var lastFmSettings = new LastFmSettings(scrobblingEnabled, isOfflineModeEnabled);
+    lastFmUserService.setLastFmSettings(lastFmSettings);
+    eventBus.post(new LastFmSettingsChangedEvent(lastFmSettings));
+  }
+
   private void handleAuthenticatedUsername(UserSession userSession) {
     loginStatusText.setText("Logged in as " + userSession.username());
     loginButton.setVisible(false);
@@ -101,6 +146,7 @@ public class LastFmSettingsWindowController implements Initializable {
     logoutButton.setManaged(true);
     loadingIndicator.setVisible(false);
     loadingIndicator.setManaged(false);
+    enableScrobblingCheckBox.setDisable(false);
   }
 
   private void handleNotAuthenticatedUser() {
@@ -112,6 +158,7 @@ public class LastFmSettingsWindowController implements Initializable {
     logoutButton.setManaged(false);
     loadingIndicator.setVisible(false);
     loadingIndicator.setManaged(false);
+    enableScrobblingCheckBox.setDisable(false);
   }
 
 }

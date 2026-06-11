@@ -4,6 +4,7 @@ import static com.github.asciborek.last_fm.scrobbling.TrackApiErrorCode.INVALID_
 
 import com.github.asciborek.FxPlayer.CloseApplicationEvent;
 import com.github.asciborek.last_fm.InvalidSessionKeyEvent;
+import com.github.asciborek.last_fm.LastFmSettingsChangedEvent;
 import com.github.asciborek.last_fm.LastFmUserService;
 import com.github.asciborek.last_fm.UserSession;
 import com.github.asciborek.last_fm.scrobbling.ScrobbleResponse.ErrorResponse;
@@ -27,6 +28,7 @@ public class ScrobblesOutboxProcessor {
   private final TrackApiService trackApiService;
 
   private ScheduledFuture<?> processScrobblesFuture;
+  private boolean isScheduled = false;
 
   public ScrobblesOutboxProcessor(ScheduledExecutorService scheduledExecutorService,
       EventBus eventBus,
@@ -41,7 +43,23 @@ public class ScrobblesOutboxProcessor {
   }
 
   public void init() {
-    processScrobblesFuture = scheduledExecutorService.scheduleAtFixedRate(this::processScrobbles, 2L, 30L, TimeUnit.SECONDS);
+    if (lastFmUserService.isOnlineScrobblingEnabled()) {
+      scheduleProcessing();
+    }
+  }
+
+  @Subscribe
+  public void onLastFmSettingsChanged(LastFmSettingsChangedEvent settingsChangedEvent) {
+    LOG.info("LastFm settings changed {}", settingsChangedEvent);
+    if (lastFmUserService.isOnlineScrobblingEnabled() && (!isScheduled)) {
+      scheduleProcessing();
+    } else if (lastFmUserService.isOnlineScrobblingDisabled() && isScheduled) {
+      LOG.info("Online scrobbling disabled, cancelling processScrobblesFuture");
+      isScheduled = false;
+      if (processScrobblesFuture != null) {
+        processScrobblesFuture.cancel(false);
+      }
+    }
   }
 
   @Subscribe
@@ -52,11 +70,20 @@ public class ScrobblesOutboxProcessor {
     }
   }
 
-  public void processScrobbles() {
+  private void scheduleProcessing() {
+    isScheduled = true;
+    processScrobblesFuture = scheduledExecutorService.scheduleAtFixedRate(this::processScrobbles, 2L, 30L, TimeUnit.SECONDS);
+  }
+
+  private void processScrobbles() {
     lastFmUserService.getUserSession().ifPresent(this::processScrobbles);
   }
 
   private void processScrobbles(UserSession userSession) {
+    if (lastFmUserService.isOnlineScrobblingDisabled()) {
+      LOG.info("Online scrobbling is disabled, not processing scrobbles");
+      return;
+    }
     try {
       var scrobbles = scrobblesDao.getNewestScrobbles();
       if (scrobbles.isEmpty()) {

@@ -13,14 +13,19 @@ final class Settings {
 
   private String openFileFileChooserInitDirectory;
 
+  private LastFmSettings lastFmSettings;
+
   public Settings() {}
 
   public Settings(Double volumeLevel, String addDirectoryDirectoryChooserInitDirectory,
-      String addTrackFileChooserInitDirectory, String openFileFileChooserInitDirectory) {
+      String addTrackFileChooserInitDirectory, String openFileFileChooserInitDirectory,
+      LastFmSettings lastFmSettings
+  ) {
     this.volumeLevel = volumeLevel;
     this.addDirectoryDirectoryChooserInitDirectory = addDirectoryDirectoryChooserInitDirectory;
     this.addTrackFileChooserInitDirectory = addTrackFileChooserInitDirectory;
     this.openFileFileChooserInitDirectory = openFileFileChooserInitDirectory;
+    this.lastFmSettings = lastFmSettings;
   }
 
   public Optional<Double> getVolumeLevel() {
@@ -56,5 +61,13 @@ final class Settings {
   public Optional<String> getOpenFileFileChooserInitDirectory() {
     return Strings.isNullOrEmpty(openFileFileChooserInitDirectory) ? Optional.empty() : Optional.of(
         openFileFileChooserInitDirectory);
+  }
+
+  public void setLastFmSettings(LastFmSettings lastFmSettings) {
+    this.lastFmSettings = lastFmSettings;
+  }
+
+  public Optional<LastFmSettings> getLastFmSettings() {
+    return Optional.ofNullable(lastFmSettings);
   }
 }

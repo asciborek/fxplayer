@@ -51,7 +51,8 @@ final class JsonFileSettingsStorage implements SettingsStorage {
     return new Settings(snapshot.coreSettings().volumeLevel(),
         snapshot.coreSettings().addDirectoryDirectoryChooserInitDirectory(),
         snapshot.coreSettings().addTrackFileChooserInitDirectory(),
-        snapshot.coreSettings().openFileFileChooserInitDirectory());
+        snapshot.coreSettings().openFileFileChooserInitDirectory(),
+        snapshot.lastFmSettings());
   }
 
   private SettingsSnapshot mapToSnapshot(Settings settings) {
@@ -59,11 +60,12 @@ final class JsonFileSettingsStorage implements SettingsStorage {
         new CoreSettingsSnapshot(settings.getVolumeLevel().orElse(null),
         settings.getAddDirectoryDirectoryChooserInitDirectory().orElse(null),
         settings.getAddTrackFileChooserInitDirectory().orElse(null),
-        settings.getOpenFileFileChooserInitDirectory().orElse(null))
+        settings.getOpenFileFileChooserInitDirectory().orElse(null)),
+        settings.getLastFmSettings().orElse(null)
     );
   }
 
-  public record SettingsSnapshot(CoreSettingsSnapshot coreSettings) {}
+  public record SettingsSnapshot(CoreSettingsSnapshot coreSettings, LastFmSettings lastFmSettings) {}
 
   public record CoreSettingsSnapshot(Double volumeLevel,
                                      String addDirectoryDirectoryChooserInitDirectory,
