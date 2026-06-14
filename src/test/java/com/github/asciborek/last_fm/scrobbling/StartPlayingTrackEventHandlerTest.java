@@ -12,6 +12,7 @@ import com.github.asciborek.last_fm.scrobbling.NowPlayingResponse.ErrorResponse;
 import com.github.asciborek.last_fm.scrobbling.NowPlayingResponse.SuccessResponse;
 import com.github.asciborek.metadata.Track;
 import com.github.asciborek.player.PlayerEvent.StartPlayingTrackEvent;
+import com.github.asciborek.settings.LastFmSettings;
 import com.google.common.eventbus.EventBus;
 import java.net.ConnectException;
 import java.time.Duration;
@@ -147,6 +148,7 @@ class StartPlayingTrackEventHandlerTest {
     UserSession userSession = userSession();
     StartPlayingTrackEvent event = event();
     Mockito.when(lastFmUserService.getUserSession()).thenReturn(Optional.of(userSession));
+    Mockito.when(lastFmUserService.getLastFmSettings()).thenReturn(new LastFmSettings(true, false));
 
     Mockito.when(trackApiService.sendUpdateNowPlayingRequest(event.track(), userSession.token()))
         .thenReturn(errorResponse)
