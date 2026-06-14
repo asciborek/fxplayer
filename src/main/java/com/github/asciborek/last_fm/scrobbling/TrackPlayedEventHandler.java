@@ -1,10 +1,12 @@
 package com.github.asciborek.last_fm.scrobbling;
 
 import com.github.asciborek.last_fm.LastFmUserService;
+import com.github.asciborek.metadata.Track;
 import com.github.asciborek.player.PlayerEvent.TrackPlayedEvent;
 import com.github.asciborek.util.AutoRegistrableEventBusListener;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
+import java.time.Duration;
 import java.util.concurrent.ExecutorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +15,7 @@ import org.slf4j.LoggerFactory;
 public final class TrackPlayedEventHandler {
 
   private static final Logger LOG = LoggerFactory.getLogger(TrackPlayedEventHandler.class);
+  private static final Duration MIN_TRACK_DURATION = Duration.ofSeconds(30);
 
   private final LastFmUserService lastFmUserService;
   private final ScrobblesDao scrobblesDao;
@@ -29,11 +32,9 @@ public final class TrackPlayedEventHandler {
   @Subscribe
   public void onTrackPlayedEvent(TrackPlayedEvent event) {
     LOG.info("Received track played event: {}", event);
-    if (shouldInsertScrobble()) {
+    if (shouldInsertScrobble(event.track())) {
       Scrobble scrobble = toScrobble(event);
       executorService.submit(() -> scrobblesDao.insertScrobble(scrobble));
-    } else {
-      LOG.info("Scrobbling disabled, not saving scrobble to outbox table");
     }
   }
 
@@ -44,8 +45,8 @@ public final class TrackPlayedEventHandler {
         trackPlayedEvent.timestamp());
   }
 
-  private boolean shouldInsertScrobble() {
-    return lastFmUserService.getLastFmSettings().scrobblingEnabled();
+  private boolean shouldInsertScrobble(Track track) {
+    return lastFmUserService.getLastFmSettings().scrobblingEnabled() && track.duration().compareTo(MIN_TRACK_DURATION) >= 0;
   }
 
 }
