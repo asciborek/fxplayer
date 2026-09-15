@@ -17,6 +17,12 @@ jobs:
         java-version: '27'
         distribution: 'temurin'
         cache: maven
+    
+    - name: Debug Java version
+      run: |
+        java -version
+        javac -version
+        mvn -version
 
     - name: Run tests with Maven
       run: mvn clean test --batch-mode
@@ -32,4 +38,3 @@ jobs:
         name: test-reports
         path: target/site/
         retention-days: 30
-
